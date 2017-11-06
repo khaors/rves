@@ -19,7 +19,7 @@ library(rves)
 
 # Introduction
 
-Importance of subsurface investigations.
+Importance of subsurface investigations. Specially for groundwater.
 
 The Vertical Electrical Sounding (VES) is one of the oldest resistivity methods and its main advantages include 
 
