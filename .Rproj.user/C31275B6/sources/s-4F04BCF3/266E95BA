@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1493135363573.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "266E95BA",
+    "lastKnownWriteTime" : 1509985360,
+    "last_content_update" : 1509985360565,
+    "path" : "~/Oscar/Rfiles/rves/R/ves.R",
+    "project_path" : "R/ves.R",
+    "properties" : {
+        "cursorPosition" : "91,29",
+        "scrollLine" : "74",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

@@ -1,0 +1,56 @@
+---
+title: "RVES Tutorial: Vertical Electrical Sounding interpretation using R"
+author: "Oscar Garcia-Cabrejo"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{RVES tutorial}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+library(rves)
+```
+
+# Introduction
+
+Importance of subsurface investigations.
+
+The Vertical Electrical Sounding (VES) is one of the oldest resistivity methods and its main advantages include 
+
+- low cost due to its minimal requirements for equipment and personal
+- large investigation depth as required in some specific problems such as groundwater exploration
+
+This method is based on the measurements of the electrical apparent resistivity of the geological medium when the distance between the electrical source and the measurement nodes is increased. From this information the true resistivities and thicknesses of the geological model are estimated.
+
+# Methodology
+
+## VES: Basic Concepts
+
+The apparent resistivity is defined as:
+
+$$
+\rho_{app,k} = k \frac{U_{MN}}{I_{AB}}
+$$
+where $k$ is the so called geometric factor of the electrode array, $U_{MN}$ is the voltage between the electrodes $M$ and $N$ and $I_{AB}$ is the electric current applied between the measurement electrodes $A$ and $B$. 
+
+The geometric factor of the array is defined as:
+$$
+k=\frac{2 \pi}{\frac{1}{r_{AM}} - \frac{1}{r_{BM}} - \frac{1}{r_{AN}} + \frac{1}{r_{BN}} }
+$$
+where $r$ is the distance between the electrodes.
+
+The values of the apparent resistivity $\rho_{app,k}$ change as the electrode separation $AB/2$ is increased.  
+
+## Parameter Estimation
+
+# Examples
+
+## VES 1
+
+

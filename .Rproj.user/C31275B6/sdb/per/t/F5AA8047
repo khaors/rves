@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "Package: rves\nType: Package\nTitle: R package for the interpretation of Vertical Electric Soundings\nVersion: 0.1.0\nAuthor: Oscar Garcia-Cabrejo\nMaintainer: Oscar Garcia-Cabrejo <khaors@gmail.com>\nDescription: This package includes functions for analyzing the Vertical Electric Soundings commonly used in Groundwater Exploration.\nDepends:\n    R(>= 3.0.0)\nLicense: GPL\nEncoding: UTF-8\nLazyData: true\nRoxygenNote: 6.0.1\nImports: stringi, GenSA, GA\n",
+    "created" : 1496702758323.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3105749853",
+    "id" : "F5AA8047",
+    "lastKnownWriteTime" : 1503943132,
+    "last_content_update" : 1503943132935,
+    "path" : "~/Oscar/Rfiles/rves/DESCRIPTION",
+    "project_path" : "DESCRIPTION",
+    "properties" : {
+    },
+    "relative_order" : 5,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "dcf"
+}

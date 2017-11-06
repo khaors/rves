@@ -1,0 +1,21 @@
+{
+    "collab_server" : "",
+    "contents" : "#' @section utilities functions:\n#'\n#' This section includes all the functions required in other sections of this package.\n#' The functions included in this section are:\n#'\n#' convolution, krtrans, apparent_resistivities\n#'\n#' @docType package\n#' @name rves\nNULL\n#' @title\n#' convolution\n#' @description\n#' Function to calculate the discrete convolution between two numeric vectors\n#' @param x A numeric vector of length lx\n#' @param y A numeric vector of length ly\n#' @return\n#' A numeric vector of length (lx+ly-1) with the results of the convolution between the x and y vectors\n#' @author\n#' Oscar Garcia-Cabrejo \\email{khaors@gmail.com}\n#' @family utilities functions\n#' @export\nconvolution <- function(x, y) {\n  lx <- length(x)\n  ly <- length(y)\n  cxy <- vector(\"numeric\", length = lx+ly-1)\n  for(i in 1:lx) {\n    xi <- x[i]\n    for(j in 1:ly) {\n      ij <- i+j-1\n      cxy[ij] <- cxy[ij] + xi * y[j]\n    }\n  }\n  return(cxy)\n}\n#' @title\n#' krtrans\n#' @description\n#' Function to calculate the resistivity transform of a given model of a layered earth\n#' @param lambda The transform parameter\n#' @param nlayers the number of layers in the model\n#' @param thick A numeric vector with the thicknesses of the layers in the Earth model\n#' @param rho A numeric vector with the real resistivities of the layers in the Earth model\n#' @return\n#' A numeric vector with the result of the resistivity transform\n#' @author\n#' Oscar Garcia-Cabrejo \\email{khaors@gmail.com}\n#' @family utilities functions\n#' @export\nkrtrans <- function(lambda, nlayers, thick, rho){\n  trans <- rho[nlayers]\n  for(i in seq(nlayers-1,1,-1)) {\n    tlt <- tanh(thick[i]*lambda)\n    trans <- (trans + rho[i]*tlt)/(1+trans*tlt/rho[i])\n  }\n  return(trans)\n}\n#' @title\n#' apparent_resistivities\n#' @description\n#' Function to calculate the apparent resistivities using a given Earth model.\n#' @param rho A numeric vector with the values of the real resistivities of an Earth model\n#' @param thick A numeric vector with the values of the thicknesses of the Earth model\n#' @param filt A numeric vector with the values of the coefficients of the linear filter for an Schlumberger array\n#' @return\n#' A list with the following elements:This section includes all the functions\n#' \\itemize{\n#' \\item appres: A numeric vector with the values of the apparent resistivities\n#' \\item ab2: A numeric vector with the values of the electrode spacing\n#' }\n#' @author\n#' Oscar Garcia-Cabrejo \\email{khaors@gmail.com}\n#' @family utilities functions\n#' @export\napparent_resistivities <- function(rho, thick, filt) {\n  ncoeff <- length(filt)\n  ntpoints <- 40\n  dy <- 0.48052648\n  Tr <- vector(\"numeric\", length = ntpoints)\n  lambda <- vector(\"numeric\", length = ntpoints)\n  spa <- vector(\"numeric\", length = ntpoints)\n  nlayers <- length(rho)\n  for (k in seq(1, ntpoints, 1)) {\n    off <- -5.9+dy*k\n    lambda[k] <- 1/exp(off)\n    Tr[k] <- krtrans(lambda[k], nlayers, thick, rho)\n    spa[k] <- exp(off)\n    #print(spa)\n  }\n  #print(spa)\n  #\n  result <- convolution(Tr, filt)\n  #print(result)\n  #\n  nappres <- length(result)-2*ncoeff\n  appres <- vector(\"numeric\", length = nappres)\n  ab2 <- vector(\"numeric\", length = nappres)\n  for(i in 0:nappres){\n    appres[i] <- result[i+ncoeff]\n    off <- dy*(i+2) #reference  CALIB_A The 2 found by trial and error\n    ab2[i] <- exp(off)\n  }\n  #\n  res <- list(\"ab2\" = ab2, \"appres\" = appres)\n  return(res)\n}\n",
+    "created" : 1493135505580.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "817118603",
+    "id" : "E89774E2",
+    "lastKnownWriteTime" : 1504397787,
+    "last_content_update" : 1504397787841,
+    "path" : "~/Oscar/Rfiles/rves/R/ves_utilities.R",
+    "project_path" : "R/ves_utilities.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

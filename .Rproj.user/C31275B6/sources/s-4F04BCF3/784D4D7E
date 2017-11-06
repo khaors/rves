@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1493135402254.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "784D4D7E",
+    "lastKnownWriteTime" : 1509985099,
+    "last_content_update" : 1509985099235,
+    "path" : "~/Oscar/Rfiles/rves/R/calibration.R",
+    "project_path" : "R/calibration.R",
+    "properties" : {
+        "cursorPosition" : "0,0",
+        "scrollLine" : "0",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
