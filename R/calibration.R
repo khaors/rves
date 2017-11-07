@@ -262,6 +262,7 @@ calibrate <- function(ves, opt.method = c("L-BFGS-B", "SA", "GA"),
 #' @family calibration functions
 #' @importFrom numDeriv jacobian
 #' @importFrom pracma mod
+#' @export
 calibrate_nls <- function(ves, par0, iterations = 100, ireport = 10){
   if(class(ves) != "ves"){
     stop('ERROR: A VES object is required as input')
@@ -271,10 +272,10 @@ calibrate_nls <- function(ves, par0, iterations = 100, ireport = 10){
   spacing <- ves$ab2
   measured <- ves$appres
   npar <- length(par0)
+  nparh <- npar/2
   niter <- iterations
   iter <- 0
   cpar <- par0
-  cpar[npar] <- 500
   cpar1 <- as.matrix(cpar, npar, 1)
   mu_max <- 20
   mu <- mu_max
@@ -325,6 +326,7 @@ calibrate_nls <- function(ves, par0, iterations = 100, ireport = 10){
     iter <- iter+1
   }
   res <- list(par = cpar, value = current.error, rel.error = current.error1,
-              cal.error = cal.error)
+              cal.error = cal.error, rho = cpar[1:nparh],
+              thickness = cpar[(nparh+1):npar])
   return(res)
 }

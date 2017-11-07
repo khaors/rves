@@ -85,31 +85,56 @@ print.ves <- function(x, ...){
 #' layers are included.
 #' @param x A VES object
 #' @param ... Additional parameters to be passed to the plot function
-#' @importFrom grDevices colors
-#' @importFrom graphics plot
-#' @importFrom graphics lines
+#' @importFrom ggplot2 geom_point geom_line scale_x_log10 scale_y_log10 xlab ylab ggtitle
+#' @importFrom ggplot2 theme_bw geom_path ggplot aes
+#' @importFrom pracma logseq
 #' @export
 plot.ves <- function(x, ...){
   if(class(x) != 'ves'){
     stop('A VES object is required as input')
   }
   ves <- x
+  ves.df <- data.frame(ab2 = ves$ab2, appres = ves$appres)
+  pbase <- NULL
+  ab2 <- NULL
+  appres <- NULL
+  res <- NULL
+  breaks <- 10^(-10:10)
+  minor_breaks <- rep(1:9, 21)*(10^rep(-10:10, each=9))
+  yrng <- range(ves$appres)
+  log10yrng <- abs(diff(log10(yrng)))
+  #print(log10yrng)
   if(!ves$interpreted){
-    plot(ves$ab2, ves$appres, type = 'p', log = 'xy', xlab = 'ab2(m)',
-         ylab = 'Apparent Resistivity(Ohm.m)', main = ves$id)
+    pbase <- ggplot() + geom_point(aes(x = ab2, y = appres), data = ves.df,
+                                   col = "red", size = 2) +
+      scale_x_log10(breaks = breaks, minor_breaks = minor_breaks) +
+      ylab( expression(paste("Apparent Resitivity ", Omega, phantom() %.% phantom(), "m"))) +
+      xlab('AB2(m)') +
+      ggtitle(paste("Profile: ", ves$id)) +
+      theme_bw()
+    if(log10yrng < 1){
+      pbase <- pbase + scale_y_log10(breaks = minor_breaks)
+    }
+    else{
+      pbase <- pbase + scale_y_log10(breaks = breaks, minor_breaks = minor_breaks)
+    }
+    print(pbase)
   }
   if(ves$interpreted){
     ymn <- 0.8*min(ves$appres, ves$rhopar)
     ymx <- 1.5*max(ves$appres, ves$rhopar)
-    plot(ves$ab2, ves$appres, type = 'p', log = 'xy', xlab = 'ab2(m)',
-         ylab = 'Apparent Resistivity(Ohm.m)', ylim = c(ymn, ymx), main = ves$id)
+    #print(c(ymn,ymx))
     fit.parameters <- ves$fit.parameters
     rho <- ves$rhopar
     thick <- ves$thickpar
+    spacing <- ves$ab2
     nlayers <- length(rho)
-    depth <- cumsum(thick)
+    depth <- min(spacing) + cumsum(thick)
+    sp <- pracma::logseq(min(spacing), max(spacing), 500)
+    res.model <- apparent_resistivities(rho, thick, rves::filt$V1, sp)
+    res.model.df <- data.frame(ab2 = res.model$ab2, appres = res.model$appres)
     pos_layers <- vector('numeric', length = (nlayers+1))
-    pos_layers[1] <- 1
+    pos_layers[1] <- min(spacing)
     pos_layers[2:(nlayers+1)] <- depth
     pos_layers1 <- vector('numeric', length = (nlayers*2))
     rho_layers <- vector('numeric', length = (nlayers*2))
@@ -119,9 +144,24 @@ plot.ves <- function(x, ...){
       pos_layers1[begin_pos:end_pos] <- c(pos_layers[ilay], pos_layers[ilay+1])
       rho_layers[begin_pos:end_pos] <- rep(rho[ilay], 2)
     }
-    lines(pos_layers1, rho_layers, col = 'red')
-    res.model <- apparent_resistivities(rho,thick, as.matrix(rves::filt$V1))
-    lines(res.model$ab2, res.model$appres, col = "blue")
+    model.par.df <- data.frame(depth = pos_layers1, res = rho_layers)
+    pbase <- ggplot() + geom_point(aes(x = ab2, y = appres), data = ves.df,
+                                   col = "red", size = 2) +
+      geom_line(aes(x = ab2, y = appres), data = res.model.df, col = "blue") +
+      geom_path(aes(x = depth, y = res), data = model.par.df, col = "green") +
+      scale_x_log10(breaks = breaks, minor_breaks = minor_breaks) +
+      ylab( expression(paste("Apparent Resitivity ", Omega, phantom() %.% phantom(), "m"))) +
+      xlab('AB2(m)') +
+      ggtitle(paste("Profile: ", ves$id)) +
+      theme_bw()
+    if(log10yrng < 1){
+      pbase <- pbase + scale_y_log10(breaks = minor_breaks)
+    }
+    else{
+      pbase <- pbase + scale_y_log10(breaks = breaks, minor_breaks = minor_breaks)
+    }
+    print(pbase)
   }
+  return(pbase)
 }
 
