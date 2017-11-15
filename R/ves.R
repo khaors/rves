@@ -87,6 +87,7 @@ print.ves <- function(x, ...){
 #' @param ... Additional parameters to be passed to the plot function
 #' @importFrom ggplot2 geom_point geom_line scale_x_log10 scale_y_log10 xlab ylab ggtitle
 #' @importFrom ggplot2 theme_bw geom_path ggplot aes
+#' @importFrom gridExtra grid.arrange
 #' @importFrom pracma logseq
 #' @export
 plot.ves <- function(x, ...){
@@ -130,7 +131,7 @@ plot.ves <- function(x, ...){
     spacing <- ves$ab2
     nlayers <- length(rho)
     depth <- min(spacing) + cumsum(thick)
-    sp <- pracma::logseq(min(spacing), max(spacing), 500)
+    sp <- pracma::logseq(min(spacing), max(spacing), 2*length(ves$ab2))
     res.model <- apparent_resistivities(rho, thick, rves::filt$V1, sp)
     res.model.df <- data.frame(ab2 = res.model$ab2, appres = res.model$appres)
     pos_layers <- vector('numeric', length = (nlayers+1))
@@ -152,7 +153,7 @@ plot.ves <- function(x, ...){
       scale_x_log10(breaks = breaks, minor_breaks = minor_breaks) +
       ylab( expression(paste("Apparent Resitivity ", Omega, phantom() %.% phantom(), "m"))) +
       xlab('AB2(m)') +
-      ggtitle(paste("Profile: ", ves$id)) +
+      ggtitle(paste("Survey: ", ves$id)) +
       theme_bw()
     if(log10yrng < 1){
       pbase <- pbase + scale_y_log10(breaks = minor_breaks)
