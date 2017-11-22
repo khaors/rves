@@ -9,6 +9,8 @@
 
 library(shiny)
 library(rves)
+library(ggplot2)
+library(gridExtra)
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
@@ -232,6 +234,7 @@ shinyServer(function(input, output) {
       current.ves$thickpar <- current.res$thickness
       current.ves$interpreted <- TRUE
       server.env$current.ves <- current.ves
+      #
       output$automatic_results <- renderUI({
         current.ves <- server.env$current.ves
         if(is.null(current.ves))
@@ -267,8 +270,54 @@ shinyServer(function(input, output) {
       }
       row.names(res.df) <- layers
       res.df
-    }, rownames = TRUE, digits = 3)
+    }, rownames = TRUE, digits = 3)# renderTable
 
   }) #observeEvent
-#
+  ########################################################################################
+  #                           Model Diagnostic Tab
+  ########################################################################################
+  output$model_diagnostic <- renderPlot({
+    current.ves <- server.env$current.ves
+    if(is.null(current.ves))
+      return(NULL)
+    if(!current.ves$interpreted)
+      return(NULL)
+    print(input$diagnostic.type)
+    if(input$diagnostic.type == "None")
+      return(NULL)
+    else if(input$diagnostic.type == "Model Diagnostic"){
+      rho <- current.ves$rhopar
+      thick <- current.ves$thickpar
+      spacing <- current.ves$ab2
+      meas.app.rho <- current.ves$appres
+      cal.app.rho <- apparent_resistivities(rho, thick, filt = rves::filt$V1,
+                                            spacing = spacing)
+      print(names(cal.app.rho))
+      residuals.rho <- meas.app.rho-cal.app.rho$appres
+      abs.residuals.rho <- sqrt(abs(residuals.rho))
+      # Plot measured rho vs calculated rho
+      df1 <- data.frame(measured = meas.app.rho, calculated = cal.app.rho$appres,
+                        residuals = residuals.rho,
+                        abs.residuals = abs.residuals.rho)
+      p1 <- ggplot() + geom_point(aes(x=measured, y=calculated), data = df1) +
+        ggtitle("a) Measured vs Calculated")
+      #
+      p2 <- ggplot(data = df1, aes(x = calculated, y = residuals)) + geom_point() +
+        geom_smooth() +
+        ggtitle("b) Residuals")
+      #
+      p3 <- ggplot(data = df1, aes(x = calculated, y = abs.residuals)) + geom_point() +
+        geom_smooth() +
+        ggtitle("c) Absolute Residuals")
+      #
+      p4 <- ggplot(data = df1, aes(sample = residuals)) + geom_qq() +
+        ggtitle("d) QQ plot")
+      ptot <- grid.arrange(p1, p2, p3, p4, ncol = 2)
+      print(ptot)
+    }
+    else if(input$diagnostic.type == "Sample Influence"){
+      return(NULL)
+    }
+  })
+
 })

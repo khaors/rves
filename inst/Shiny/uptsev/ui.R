@@ -36,6 +36,7 @@ dbSidebar <- dashboardSidebar(
     menuItem("Graphical Inversion", tabName = "manual", icon = icon("hand-spock-o")),
     menuItem("Automatic Inversion", tabName = "automatic", icon = icon("fighter-jet")),
     #menuItem("Reports", tabName = "reports", icon = icon("cogs")),
+    menuItem("Model Diagnostic", tabName = "diagnostic", icon = icon("wrench")),
     menuItem("Source Code", icon = icon("code"), href = "https://github.com/khaors/rves")
   )
 )
@@ -206,6 +207,33 @@ automaticTab <- tabItem(
   )
 )
 #########################################################################################
+#                                    diagnosticTab
+#########################################################################################
+diagnosticTab <- tabItem(
+  tabName = "diagnostic",
+  h3("VES Inversion: Estimated Model Diagnostic"),
+  br(),
+  fluidRow(
+    tags$em("On this tab you can check if the assumptions behind the estimation procedure
+            hold or are violated. If these assumption hold then there is a greater confidence
+            in the model results, otherwise the estimated parameters (real resistivities and
+            thicknesses) must be used with care.")
+  ),
+  br(),
+  sidebarLayout(
+    sidebarPanel(
+      width = 4,
+      selectInput(inputId = "diagnostic.type", label = "Select the Diagnostic Type",
+                  choices = c("None", "Model Diagnostic", "Sample Influence"), selected = "None")
+    ),
+    mainPanel(
+      # Add Plot
+      plotOutput(outputId = "model_diagnostic") #, height = 500, width = 500*1.5)
+    )
+  )
+)
+
+#########################################################################################
 #                                    reportsTab
 #########################################################################################
 reportsTab <- tabItem(
@@ -256,7 +284,8 @@ userInterface <- dashboardPage(
       homeTab ,
       dataTab,
       manualTab,
-      automaticTab#,reportsTab
+      automaticTab, #,reportsTab
+      diagnosticTab
     )
   )
 )
