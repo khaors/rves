@@ -153,7 +153,7 @@ plot.ves <- function(x, ...){
       scale_x_log10(breaks = breaks, minor_breaks = minor_breaks) +
       ylab( expression(paste("Apparent Resitivity ", Omega, phantom() %.% phantom(), "m"))) +
       xlab('AB2(m)') +
-      ggtitle(paste("Survey: ", ves$id)) +
+      ggtitle(paste("Profile: ", ves$id)) +
       theme_bw()
     if(log10yrng < 1){
       pbase <- pbase + scale_y_log10(breaks = minor_breaks)
