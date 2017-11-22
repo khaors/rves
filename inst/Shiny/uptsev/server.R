@@ -91,11 +91,6 @@ shinyServer(function(input, output) {
       rho <- isolate(as.numeric(unlist(strsplit(input$manual_res,","))))
       thick <- isolate(as.numeric(unlist(strsplit(input$manual_thick,","))))
       p <- NULL
-      #if(server.env$first){
-      #  p <- plot(server.env$current.ves)
-      #  server.env$first <- FALSE
-      #  return(p)
-      #}
       #
       if(server.env$first){
         p <- plot(server.env$current.ves)
@@ -200,8 +195,8 @@ shinyServer(function(input, output) {
     }
     # Define Initial Solution
     par0 <- c(rho, thick)
-    print(par0)
-    print(class(par0))
+    #print(par0)
+    #print(class(par0))
     # Estimate model parameters
     output$automatic_msg <- renderText({"Working on estimation..."})
     current.res <- calibrate_nls(current.ves.auto, par0 = par0)
@@ -255,16 +250,25 @@ shinyServer(function(input, output) {
         str1 <- "<h3>Results Parameter Estimation</h3><br>"
         str2 <- paste("<b>Relative Error(%)= </b>", format(rel.err, digits = 3), "<br>", sep = " ")
         str3 <- paste("<b>Mean Squared Error= </b>", format(mse, digits = 3), "<br><br>", sep = " ")
-        str4 <- paste("<h3>Earth Model</h3><br><b>Resistivities (Ohm m), Thickness(m)</b><br><br>")
-        str5 <- ""
-        for(ilay in 1:length(rho)){
-          str5 <- paste(str5, format(rho[ilay], digits =3), ",",
-                        format(thick[ilay],digits=3), "<br>")
-        }
-        HTML(paste(str1, str2, str3, str4, str5))
+        HTML(paste(str1, str2, str3)) #, str4, str5))
       })
       plot(current.ves)
-    })
-  })
+    }) #renderPlot
+    #
+    output$automatic_table <- renderTable({
+      current.ves <- server.env$current.ves
+      rho <- current.ves$rhopar
+      thick <- current.ves$thickpar
+      res.df <- data.frame('Real_Resistivity(Ohm_m)' = rho, 'Thickness(m)' = thick)
+      nlay <- length(rho)
+      layers <- vector('character', nlay)
+      for(i in 1:nlay){
+        layers[i] <- paste0("Layer", as.character(i))
+      }
+      row.names(res.df) <- layers
+      res.df
+    }, rownames = TRUE, digits = 3)
+
+  }) #observeEvent
 #
 })

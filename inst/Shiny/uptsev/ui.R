@@ -199,7 +199,9 @@ automaticTab <- tabItem(
       br(),
       textOutput(outputId = "automatic_msg"),
       br(),
-      uiOutput(outputId = 'automatic_results')
+      uiOutput(outputId = 'automatic_results'),
+      br(),
+      uiOutput(outputId = "automatic_table")
     )
   )
 )
