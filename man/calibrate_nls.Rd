@@ -22,6 +22,7 @@ A list with the following entries:
 \item value: The value or the RSS (Residual sum of squares)
 \item rel.erro: The value of the relative error (in percentage)
 \item cal.error: A matrix with the RSS and relative error at each iteration
+\item hessian: First order approximation of the Hessian matrix. This is calculate using the Jacobian matrix.
 }
 }
 \description{

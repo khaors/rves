@@ -253,6 +253,7 @@ calibrate <- function(ves, opt.method = c("L-BFGS-B", "SA", "GA"),
 #' \item value: The value or the RSS (Residual sum of squares)
 #' \item rel.erro: The value of the relative error (in percentage)
 #' \item cal.error: A matrix with the RSS and relative error at each iteration
+#' \item hessian: First order approximation of the Hessian matrix. This is calculate using the Jacobian matrix.
 #' }
 #' @author
 #' Oscar Garcia-Cabrejo \email{khaors@gmail.com}
@@ -325,8 +326,9 @@ calibrate_nls <- function(ves, par0, iterations = 100, ireport = 10){
     }
     iter <- iter+1
   }
+  J <- jacobian(apparent_resistivities_simple, cpar, filt=rves::filt$V1, spacing=spacing)
   res <- list(par = cpar, value = current.error, rel.error = current.error1,
               cal.error = cal.error, rho = cpar[1:nparh],
-              thickness = cpar[(nparh+1):npar])
+              thickness = cpar[(nparh+1):npar], hessian = t(J)%*%J)
   return(res)
 }
