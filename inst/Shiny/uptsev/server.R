@@ -315,9 +315,6 @@ shinyServer(function(input, output) {
       ptot <- grid.arrange(p1, p2, p3, p4, ncol = 2)
       print(ptot)
     }
-    else if(input$diagnostic.type == "Sample Influence"){
-      return(NULL)
-    }
   })
 
 })

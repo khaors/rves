@@ -224,7 +224,7 @@ diagnosticTab <- tabItem(
     sidebarPanel(
       width = 4,
       selectInput(inputId = "diagnostic.type", label = "Select the Diagnostic Type",
-                  choices = c("None", "Model Diagnostic", "Sample Influence"), selected = "None")
+                  choices = c("None", "Model Diagnostic"), selected = "None")
     ),
     mainPanel(
       # Add Plot
