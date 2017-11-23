@@ -23,10 +23,6 @@ shinyServer(function(input, output) {
   dInput <- reactive({
     in.file <- input$file1
     #
-    #validate(
-    #  need(input$file1, 'Check if file is loaded')
-    #)
-    #
     if (is.null(in.file))
       return(NULL)
     #
@@ -67,6 +63,7 @@ shinyServer(function(input, output) {
   output$manual_run <- renderUI({
     tmp <- actionButton(inputId = "manual_run1", label = "Press to Plot")
   })
+  #
   manual.model.results <- function(){
     current.ves.manual <- server.env$current.ves
     if(is.null(current.ves.manual))
@@ -195,13 +192,25 @@ shinyServer(function(input, output) {
       output$automatic_msg <- renderText("Incorrect dimensions of rho or thick")
       return(NULL)
     }
+    #
+    check_options <- isolate(input$automatic_options1)
+    nls_niter <- 100
+    nls_nreport <- 10
+    if(check_options){
+      if(input$automatic_method == "Nonlinear Least Squares"){
+        nls_niter <- isolate(as.numeric(input$nls_niter))
+        nls_nreport <- isolate(as.numeric(nls_nreport))
+      }
+    }
     # Define Initial Solution
     par0 <- c(rho, thick)
     #print(par0)
     #print(class(par0))
     # Estimate model parameters
     output$automatic_msg <- renderText({"Working on estimation..."})
-    current.res <- calibrate_nls(current.ves.auto, par0 = par0)
+    current.res <- calibrate_nls(current.ves.auto, par0 = par0,
+                                 iterations = nls_niter,
+                                 ireport = nls_nreport)
     output$automatic_msg <- renderText({"Working on estimation...Finished"})
     #print(names(current.res))
     return(current.res)
