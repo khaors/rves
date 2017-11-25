@@ -13,7 +13,7 @@ library(ggplot2)
 library(gridExtra)
 
 # Define server logic required to draw a histogram
-shinyServer(function(input, output) {
+shinyServer(function(input, output, session) {
   server.env <- environment() # used to allocate in functions
   current.table <- NULL
   current.ves.manual <- NULL
@@ -135,6 +135,18 @@ shinyServer(function(input, output) {
   #                 link ,'" frameborder="0" allowfullscreen></iframe>'))
   # })
   #
+  observeEvent(input$automatic_import, {
+    nlayers <- as.numeric(input$manual_nlayers)
+    rho <- as.numeric(unlist(strsplit(input$manual_res,",")))
+    thick <- as.numeric(unlist(strsplit(input$manual_thick,",")))
+    print(nlayers)
+    print(rho)
+    print(thick)
+    updateTextInput(session, inputId = "automatic_nlayers", value = as.character(nlayers))
+    updateTextInput(session, inputId = "automatic_res", value = as.character(rho))
+    updateTextInput(session, inputId = "automatic_thick", value = as.character(thick))
+  })
+  #
   output$automatic_options2 <- renderUI({
     current.ves.auto <- server.env$current.ves
     tmp <- NULL
@@ -215,6 +227,14 @@ shinyServer(function(input, output) {
     #print(names(current.res))
     return(current.res)
   }
+  #
+  observeEvent(input$automatic_plot,{
+    output$automatic_plot <- renderPlot({
+      current.ves <- server.env$current.ves
+      current.ves$interpreted <- FALSE
+      plot(current.ves)
+    })
+  })
   #
   observeEvent(input$auto_run, {
     output$automatic_plot <- renderPlot({

@@ -182,15 +182,17 @@ automaticTab <- tabItem(
   br(),
   sidebarLayout(
     sidebarPanel(
-      textInput(inputId = "automatic_nlayers", label = "Number Layers", value = 1),
-      textInput(inputId = "automatic_res", label = "Initial Solution: Real Resistivities", value = 10),
-      textInput(inputId = "automatic_thick", label = "Initial Solution: Thicknesses", value = 10),
+      actionButton(inputId = "automatic_import", label = "Import Graphical Model"),
+      textInput(inputId = "automatic_nlayers", label = "Number Layers", value = "1"),
+      textInput(inputId = "automatic_res", label = "Initial Solution: Real Resistivities", value = "10"),
+      textInput(inputId = "automatic_thick", label = "Initial Solution: Thicknesses", value = "10"),
       selectInput(inputId = "automatic_method", label = "Optimization Method: ", choices = c("None", "Nonlinear Least Squares",
                                                                                              "Simmulated Annealing",
                                                                                              "Genetic Algorithms"),
                   selected = "None"),
       checkboxInput(inputId = "automatic_options1", label = "Specify Optimization Options?", value = FALSE),
       uiOutput("automatic_options2"),
+      actionButton(inputId = "automatic_plot", label = "Plot"),
       actionButton(inputId="auto_run",label= "run, SEV run", icon = icon("bullseye"))
     ),
     mainPanel(
