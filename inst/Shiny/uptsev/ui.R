@@ -71,11 +71,11 @@ homeTab <- tabItem(
       "This tool is primarily meant to support the teaching of Hydrogeology at School of Geological ",
       "Engineering, UPTC - Sogamoso, Boyaca, Colombia. Although the main target is only for educational",
       "purposes, this tool can be used by other users to analyze their VES but the accuracy ",
-      "and the geological interpretation derived from these results are not warranted",
+      "and the geological interpretation derived from these results are not warranted.",
+      "Therefore its use for other purposes beyond education is discouraged.",
       br(),br(),
-      "The dashboard uses the following R libraries below and is being developed in RStudio. ",
-      br(),
-      tags$a(href="http://shiny.rstudio.com/", "shiny"),
+      "The dashboard uses the following R libraries below and is being developed in RStudio using ",
+      " the packages ", tags$a(href="http://shiny.rstudio.com/", "shiny"),
       " and ",
       tags$a(href="https://rstudio.github.io/shinydashboard", "shinydashboard"),
       ". ",
@@ -92,7 +92,13 @@ homeTab <- tabItem(
       "2. Use the Graphical Inversion Tab to define a model using your 'Geophysical Skill'.",
       br(),br(),
       "3. Use the Automatic Inversion Tab to estimate the real resistivities and thicknesses using ",
-      "a Nonlinear Least-Squares approach."
+      "different optimization techniques. The convential approach is based on linear inverse theory ",
+      "and is called Nonlinear Least-Squares method. There other methods to find the resitivities and ",
+      "thicknesses based on optimization theory. These methods include Simulated Annealing, Genetic ",
+      "Algorithms, Particle Swarm Optimization, Differential Evoluation, among others",
+      br(),br(),
+      "4. Evaluate the estimated model on the Model Diagnostic Tab and be more confident about the ",
+      "estimated parameters."
     )
 
   )
