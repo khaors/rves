@@ -28,7 +28,8 @@ Other calibration functions: \code{\link{calibrate_nls}},
   \code{\link{log_mxad_resistivity}},
   \code{\link{log_rss_resistivity}},
   \code{\link{mnad_resistivity}},
-  \code{\link{mxad_resistivity}}
+  \code{\link{mxad_resistivity}},
+  \code{\link{relative_error_resitivity}}
 }
 \author{
 Oscar Garcia-Cabrejo \email{khaors@gmail.com}

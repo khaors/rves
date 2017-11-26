@@ -140,6 +140,24 @@ log_mxad_resistivity <- function(par, filter, apprho_measured, spacing){
   return(res)
 }
 #' @title
+#' relative_error_resistivity
+#' @description
+#' Function to calculate the relative error between the calculated and measured resistivities.
+#' @param rho A numeric vector with the values of the real resistivity
+#' @param thick A numeric vector with the values of the layer thicknesses
+#' @param spacing A numeric vector with the values of the electrode spacing
+#' @param rho.measured A numeric vector with the values of the apparent resistivity
+#' @return
+#' This function returns the value of the relative error.
+#' @author
+#' Oscar Garcia-Cabrejo \email{khaors@gmail.com}
+#' @family calibration functions
+relative_error_resitivity <- function(rho, thick, spacing, rho.measured){
+  rho.calc <- apparent_resistivities(rho, thick, rves::filt$V1, spacing)
+  rel.err <- mean(abs(rho.calc$appres - rho.measured)/rho.measured)
+  return(rel.err)
+}
+#' @title
 #' calibrate
 #' @description
 #' Function to estimate the resistivities and thicnesses of the layers.
@@ -162,6 +180,8 @@ log_mxad_resistivity <- function(par, filter, apprho_measured, spacing){
 #' \itemize{
 #' \item par: vector with all parameters
 #' \item value: value of the objective function
+#' \item rho: Numeric vector with the real resistivities
+#' \item thick: Numeric vector with the layer thicknesses
 #' }
 #' @importFrom stats optim
 #' @importFrom GenSA GenSA
@@ -209,11 +229,14 @@ calibrate <- function(ves, opt.method = c("L-BFGS-B", "SA", "GA", "PSO"),
     }
   }
   res1 <- NULL
+  nparh <- length(par0)/2
+  npar <- length((par0))
   if(opt.method == "L-BFGS-B"){
     res <- optim(par0,  fn = par.obj.fn, filter = as.matrix(rves::filt$V1),
                  apprho_measured = ves$appres, spacing = ves$ab2,
                  method = 'L-BFGS-B', lower = lower, upper = upper)
-    res1 <- list(par = res$par, value = res$value)
+    res1 <- list(par = res$par, value = res$value, rho = res$par[1:nparh],
+                 thick = res$par[(nparh+1):npar])
   }
   else if(opt.method == "SA"){
     if(is.null(control.par)){
@@ -223,7 +246,8 @@ calibrate <- function(ves, opt.method = c("L-BFGS-B", "SA", "GA", "PSO"),
     res <- GenSA(par0, fn = par.obj.fn, lower = lower, upper = upper,
                      control = control.par, filter = as.matrix(rves::filt$V1),
                      apprho_measured = ves$appres, spacing = ves$ab2)
-    res1 <- list(par = res$par, value = res$value)
+    res1 <- list(par = res$par, value = res$value, rho = res$par[1:nparh],
+                 thick = res$par[(nparh+1):npar])
   }
   else if(opt.method == "GA"){
     if(is.null(control.par)){
@@ -240,7 +264,8 @@ calibrate <- function(ves, opt.method = c("L-BFGS-B", "SA", "GA", "PSO"),
                  run = 50, maxFitness = -.05,
                  optim = TRUE, optimArgs = control.par)
     #print(res)
-    res1 <- list(par = res@solution, value = res@bestvalue)
+    res1 <- list(par = res@solution, value = res@bestvalue, rho = res@solution[1:nparh],
+                 thick = res@solution[(nparh+1):npar])
   }
   else if(opt.method == "PSO"){
     if(is.null(control.par)){
@@ -252,7 +277,8 @@ calibrate <- function(ves, opt.method = c("L-BFGS-B", "SA", "GA", "PSO"),
                        spacing = ves$ab2,
                        lower = lower,
                        upper= upper, control = control.par)
-    res1 <- list(par = res.pso$par, value = res.pso$value)
+    res1 <- list(par = res.pso$par, value = res.pso$value, rho = res.pso$par[1:nparh],
+                 thick = res.pso$par[(nparh+1):npar])
   }
   return(res1)
 }
