@@ -37,6 +37,7 @@ This function returns a list with the following entries:
 \item value: value of the objective function
 \item rho: Numeric vector with the real resistivities
 \item thick: Numeric vector with the layer thicknesses
+\item rel.error: The value of the relative error
 }
 }
 \description{

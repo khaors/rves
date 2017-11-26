@@ -182,6 +182,7 @@ relative_error_resitivity <- function(rho, thick, spacing, rho.measured){
 #' \item value: value of the objective function
 #' \item rho: Numeric vector with the real resistivities
 #' \item thick: Numeric vector with the layer thicknesses
+#' \item rel.error: The value of the relative error
 #' }
 #' @importFrom stats optim
 #' @importFrom GenSA GenSA
@@ -235,8 +236,12 @@ calibrate <- function(ves, opt.method = c("L-BFGS-B", "SA", "GA", "PSO"),
     res <- optim(par0,  fn = par.obj.fn, filter = as.matrix(rves::filt$V1),
                  apprho_measured = ves$appres, spacing = ves$ab2,
                  method = 'L-BFGS-B', lower = lower, upper = upper)
-    res1 <- list(par = res$par, value = res$value, rho = res$par[1:nparh],
-                 thick = res$par[(nparh+1):npar])
+    rho = res$par[1:nparh]
+    thick = res$par[(nparh+1):npar]
+    spacing <- ves$ab2
+    rel.err <- relative_error_resitivity(rho, thick, spacing, ves$appres)
+    res1 <- list(par = res$par, value = res$value, rho = rho,
+                 thick = thick, rel.err = rel.err)
   }
   else if(opt.method == "SA"){
     if(is.null(control.par)){
@@ -246,8 +251,12 @@ calibrate <- function(ves, opt.method = c("L-BFGS-B", "SA", "GA", "PSO"),
     res <- GenSA(par0, fn = par.obj.fn, lower = lower, upper = upper,
                      control = control.par, filter = as.matrix(rves::filt$V1),
                      apprho_measured = ves$appres, spacing = ves$ab2)
-    res1 <- list(par = res$par, value = res$value, rho = res$par[1:nparh],
-                 thick = res$par[(nparh+1):npar])
+    rho = res$par[1:nparh]
+    thick = res$par[(nparh+1):npar]
+    spacing <- ves$ab2
+    rel.err <- relative_error_resitivity(rho, thick, spacing, ves$appres)
+    res1 <- list(par = res$par, value = res$value, rho = rho,
+                 thick = thick, rel.err = rel.err)
   }
   else if(opt.method == "GA"){
     if(is.null(control.par)){
@@ -263,9 +272,12 @@ calibrate <- function(ves, opt.method = c("L-BFGS-B", "SA", "GA", "PSO"),
                  popSize = 300, maxiter = 100, pcrossover = 0.85, pmutation = .2,
                  run = 50, maxFitness = -.05,
                  optim = TRUE, optimArgs = control.par)
-    #print(res)
+    rho <- res@solution[1:nparh]
+    thick <- res@solution[(nparh+1):npar]
+    spacing <- ves$ab2
+    rel.err <- relative_error_resitivity(rho, thick, spacing, ves$appres)
     res1 <- list(par = res@solution, value = res@bestvalue, rho = res@solution[1:nparh],
-                 thick = res@solution[(nparh+1):npar])
+                 thick = res@solution[(nparh+1):npar], rel.err = rel.err)
   }
   else if(opt.method == "PSO"){
     if(is.null(control.par)){
@@ -277,8 +289,12 @@ calibrate <- function(ves, opt.method = c("L-BFGS-B", "SA", "GA", "PSO"),
                        spacing = ves$ab2,
                        lower = lower,
                        upper= upper, control = control.par)
-    res1 <- list(par = res.pso$par, value = res.pso$value, rho = res.pso$par[1:nparh],
-                 thick = res.pso$par[(nparh+1):npar])
+    rho <- res.pso$par[1:nparh]
+    thick <- res.pso$par[(nparh+1):npar]
+    spacing <- ves$ab2
+    rel.err <- relative_error_resitivity(rho, thick, spacing, ves$appres)
+    res1 <- list(par = res.pso$par, value = res.pso$value, rho = rho,
+                 thick = thick, rel.err = rel.err)
   }
   return(res1)
 }
@@ -296,7 +312,7 @@ calibrate <- function(ves, opt.method = c("L-BFGS-B", "SA", "GA", "PSO"),
 #' \itemize{
 #' \item par: A numeric vector with the values of the layer resistivities and thicknesses
 #' \item value: The value or the RSS (Residual sum of squares)
-#' \item rel.erro: The value of the relative error (in percentage)
+#' \item rel.error: The value of the relative error (in percentage)
 #' \item cal.error: A matrix with the RSS and relative error at each iteration
 #' \item hessian: First order approximation of the Hessian matrix. This is calculate using the Jacobian matrix.
 #' }
