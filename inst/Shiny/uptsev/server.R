@@ -139,9 +139,9 @@ shinyServer(function(input, output, session) {
     nlayers <- as.numeric(input$manual_nlayers)
     rho <- as.numeric(unlist(strsplit(input$manual_res,",")))
     thick <- as.numeric(unlist(strsplit(input$manual_thick,",")))
-    print(nlayers)
-    print(rho)
-    print(thick)
+    #print(nlayers)
+    #print(rho)
+    #print(thick)
     updateTextInput(session, inputId = "automatic_nlayers", value = as.character(nlayers))
     updateTextInput(session, inputId = "automatic_res", value = as.character(rho))
     updateTextInput(session, inputId = "automatic_thick", value = as.character(thick))
@@ -163,20 +163,59 @@ shinyServer(function(input, output, session) {
           textInput(inputId = "nls_nreport", label = "Number Iter Report= ", value = 10)
         )
       }
-      else if(input$automatic_method == "Simmulated Annealing"){
+      else if(input$automatic_method == "L-BFGS-B"){
         tmp <- wellPanel(
-          h3("Simmulated Annealing Options"),
+          h3("L-BFGS-B Options"),
           br(),
-          textInput(inputId = "sa_niter", label = "Max. Number Iterations", value = 100),
-          checkboxInput(inputId = "sa_smooth", label = "Smooth Function?", value = TRUE),
-          checkboxInput(inputId = "sa_simplefn", label = "Simple Function?", value = FALSE)
+          textInput(inputId = "lbfgs_lower", label = "Min value(rho, thicknness)= ",
+                    value = "0.1"),
+          textInput(inputId = "lbfgs_up_rho", label = "Max Value rho= ", value = "1000"),
+          textInput(inputId = "lbfgs_up_thick", label = "Max Value thickness= ",
+                    value = "1000")
+        )
+      }
+      else if(input$automatic_method == "Simulated Annealing"){
+        tmp <- wellPanel(
+          h3("Simulated Annealing Options"),
+          br(),
+          textInput(inputId = "sa_lower", label = "Min value(rho, thicknness)= ",
+                    value = "0.1"),
+          textInput(inputId = "sa_up_rho", label = "Max Value rho= ", value = "1000"),
+          textInput(inputId = "sa_up_thick", label = "Max Value thickness= ",
+                    value = "1000")
         )
       }
       else if(input$automatic_method == "Genetic Algorithms"){
         tmp <- wellPanel(
           h3("Genetic Algorithms Options"),
           br(),
-          textInput(inputId = "ga_niter", label = "Number Iterations", value = 100)
+          textInput(inputId = "ga_lower", label = "Min value(rho, thicknness)= ",
+                    value = "0.1"),
+          textInput(inputId = "ga_up_rho", label = "Max Value rho= ", value = "1000"),
+          textInput(inputId = "ga_up_thick", label = "Max Value thickness= ",
+                    value = "1000")
+        )
+      }
+      else if(input$automatic_method == "Particle Swarm Optimization"){
+        tmp <- wellPanel(
+          h3("Particle Swarm Optimization"),
+          br(),
+          textInput(inputId = "pso_lower", label = "Min value(rho, thicknness)= ",
+                    value = "0.1"),
+          textInput(inputId = "pso_up_rho", label = "Max Value rho= ", value = "1000"),
+          textInput(inputId = "pso_up_thick", label = "Max Value thickness= ",
+                    value = "1000")
+        )
+      }
+      else if(input$automatic_method == "Differential Evolution"){
+        tmp <- wellPanel(
+          h3("Differential Evolution"),
+          br(),
+          textInput(inputId = "de_lower", label = "Min value(rho, thicknness)= ",
+                    value = "0.1"),
+          textInput(inputId = "de_up_rho", label = "Max Value rho= ", value = "1000"),
+          textInput(inputId = "de_up_thick", label = "Max Value thickness= ",
+                    value = "1000")
         )
       }
     }
@@ -199,17 +238,18 @@ shinyServer(function(input, output, session) {
     #
     rho <- isolate(as.numeric(unlist(strsplit(input$automatic_res,","))))
     thick <- isolate(as.numeric(unlist(strsplit(input$automatic_thick,","))))
+    automatic_method <- isolate(input$automatic_method)
+    check_options <- isolate(input$automatic_options1)
     #
     if(length(rho) != nlayers | length(thick) != nlayers){
       output$automatic_msg <- renderText("Incorrect dimensions of rho or thick")
       return(NULL)
     }
     #
-    check_options <- isolate(input$automatic_options1)
     nls_niter <- 100
     nls_nreport <- 10
     if(check_options){
-      if(input$automatic_method == "Nonlinear Least Squares"){
+      if(automatic_method == "Nonlinear Least Squares"){
         nls_niter <- isolate(as.numeric(input$nls_niter))
         nls_nreport <- isolate(as.numeric(nls_nreport))
       }
@@ -220,9 +260,72 @@ shinyServer(function(input, output, session) {
     #print(class(par0))
     # Estimate model parameters
     output$automatic_msg <- renderText({"Working on estimation..."})
-    current.res <- calibrate_nls(current.ves.auto, par0 = par0,
-                                 iterations = nls_niter,
-                                 ireport = nls_nreport)
+    if(automatic_method == "Nonlinear Least Squares"){
+      current.res <- calibrate_nls(current.ves.auto, par0 = par0,
+                                   iterations = nls_niter,
+                                   ireport = nls_nreport)
+    }
+    else if(automatic_method == "L-BFGS-B"){
+      lower <- isolate(as.numeric(input$lbfgs_lower))
+      upper_rho <- isolate(as.numeric(input$lbfgs_up_rho))
+      upper_thick <- isolate(as.numeric(input$lbfgs_up_thick))
+      lower <- rep(lower, 2*nlayers)
+      upper <- c(rep(upper_rho, nlayers), rep(upper_thick, nlayers))
+      current.res <- calibrate(current.ves.auto, opt.method = "L-BFGS-B",
+                               obj.fn = "log_rss",
+                               par0 = par0,
+                               lower = lower, upper = upper)
+      #print(current.res)
+    }
+    else if(automatic_method == "Simulated Annealing"){
+      lower <- isolate(as.numeric(input$sa_lower))
+      upper_rho <- isolate(as.numeric(input$sa_up_rho))
+      upper_thick <- isolate(as.numeric(input$sa_up_thick))
+      #print(lower)
+      #print(c(upper_rho, upper_thick))
+      lower <- rep(lower, 2*nlayers)
+      upper <- c(rep(upper_rho, nlayers), rep(upper_thick, nlayers))
+      #print(lower)
+      #print(upper)
+      current.res <- calibrate(current.ves.auto, opt.method = "SA",
+                               obj.fn = "log_rss",
+                               par0 = par0,
+                               lower = lower, upper = upper)
+      #print(current.res)
+    }
+    else if(automatic_method == "Genetic Algorithms"){
+      lower <- isolate(as.numeric(input$ga_lower))
+      upper_rho <- isolate(as.numeric(input$ga_up_rho))
+      upper_thick <- isolate(as.numeric(input$ga_up_thick))
+      lower <- rep(lower, 2*nlayers)
+      upper <- c(rep(upper_rho, nlayers), rep(upper_thick, nlayers))
+      current.res <- calibrate(current.ves.auto, opt.method = "GA",
+                               obj.fn = "log_rss",
+                               par0 = par0,
+                               lower = lower, upper = upper)
+    }
+    else if(automatic_method == "Particle Swarm Optimization"){
+      lower <- isolate(as.numeric(input$pso_lower))
+      upper_rho <- isolate(as.numeric(input$pso_up_rho))
+      upper_thick <- isolate(as.numeric(input$pso_up_thick))
+      lower <- rep(lower, 2*nlayers)
+      upper <- c(rep(upper_rho, nlayers), rep(upper_thick, nlayers))
+      current.res <- calibrate(current.ves.auto, opt.method = "PSO",
+                               obj.fn = "log_rss",
+                               par0 = par0,
+                               lower = lower, upper = upper)
+    }
+    else if(automatic_method == "Differential Evolution"){
+      lower <- isolate(as.numeric(input$de_lower))
+      upper_rho <- isolate(as.numeric(input$de_up_rho))
+      upper_thick <- isolate(as.numeric(input$de_up_thick))
+      lower <- rep(lower, 2*nlayers)
+      upper <- c(rep(upper_rho, nlayers), rep(upper_thick, nlayers))
+      current.res <- calibrate(current.ves.auto, opt.method = "DE",
+                               obj.fn = "log_rss",
+                               par0 = par0,
+                               lower = lower, upper = upper)
+    }
     output$automatic_msg <- renderText({"Working on estimation...Finished"})
     #print(names(current.res))
     return(current.res)
@@ -255,9 +358,6 @@ shinyServer(function(input, output, session) {
       }
       #
       current.res <- calibrate.results()
-      #print(names(current.res))
-      #print(current.res$rho)
-      #print(current.res$thickness)
       #
       current.ves$rhopar <- current.res$rho
       current.ves$thickpar <- current.res$thickness
@@ -281,8 +381,9 @@ shinyServer(function(input, output, session) {
         mse <- mean((cal.app.rho$appres-meas.app.rho)^2)
         str1 <- "<h3>Results Parameter Estimation</h3><br>"
         str2 <- paste("<b>Relative Error(%)= </b>", format(rel.err, digits = 3), "<br>", sep = " ")
-        str3 <- paste("<b>Mean Squared Error= </b>", format(mse, digits = 3), "<br><br>", sep = " ")
-        HTML(paste(str1, str2, str3)) #, str4, str5))
+        str3 <- paste("<b>Mean Squared Error= </b>", format(mse, digits = 3), "<br>", sep = " ")
+        str4 <- paste("<b>Optimization Method= </b>", input$automatic_method, "<br><br>", sep = " ")
+        HTML(paste(str1, str2, str3, str4))
       })
       plot(current.ves)
     }) #renderPlot
@@ -321,7 +422,7 @@ shinyServer(function(input, output, session) {
       meas.app.rho <- current.ves$appres
       cal.app.rho <- apparent_resistivities(rho, thick, filt = rves::filt$V1,
                                             spacing = spacing)
-      print(names(cal.app.rho))
+      #print(names(cal.app.rho))
       residuals.rho <- meas.app.rho-cal.app.rho$appres
       abs.residuals.rho <- sqrt(abs(residuals.rho))
       # Plot measured rho vs calculated rho
