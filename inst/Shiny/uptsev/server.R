@@ -271,11 +271,12 @@ shinyServer(function(input, output, session) {
       upper_thick <- isolate(as.numeric(input$lbfgs_up_thick))
       lower <- rep(lower, 2*nlayers)
       upper <- c(rep(upper_rho, nlayers), rep(upper_thick, nlayers))
+      print("L-BFGS-B: Working...")
       current.res <- calibrate(current.ves.auto, opt.method = "L-BFGS-B",
                                obj.fn = "log_rss",
                                par0 = par0,
                                lower = lower, upper = upper)
-      #print(current.res)
+      print("L-BFGS-B: Finished")
     }
     else if(automatic_method == "Simulated Annealing"){
       lower <- isolate(as.numeric(input$sa_lower))
@@ -313,10 +314,12 @@ shinyServer(function(input, output, session) {
       upper_thick <- isolate(as.numeric(input$pso_up_thick))
       lower <- rep(lower, 2*nlayers)
       upper <- c(rep(upper_rho, nlayers), rep(upper_thick, nlayers))
+      print("PSO: Working...")
       current.res <- calibrate(current.ves.auto, opt.method = "PSO",
                                obj.fn = "log_rss",
                                par0 = par0,
                                lower = lower, upper = upper)
+      print("PSO: Finished")
     }
     else if(automatic_method == "Differential Evolution"){
       lower <- isolate(as.numeric(input$de_lower))
@@ -324,12 +327,14 @@ shinyServer(function(input, output, session) {
       upper_thick <- isolate(as.numeric(input$de_up_thick))
       lower <- rep(lower, 2*nlayers)
       upper <- c(rep(upper_rho, nlayers), rep(upper_thick, nlayers))
+      print("Differential Evolution: Working...")
       current.res <- calibrate(current.ves.auto, opt.method = "DE",
                                obj.fn = "log_rss",
                                par0 = par0,
                                lower = lower, upper = upper)
+      print("Differential Evolution: Finished")
     }
-    output$automatic_msg <- renderText({"Working on estimation...Finished"})
+    #output$automatic_msg <- renderText({"Working on estimation...Finished"})
     #print(names(current.res))
     return(current.res)
   }
@@ -439,18 +444,23 @@ shinyServer(function(input, output, session) {
       df1 <- data.frame(measured = meas.app.rho, calculated = cal.app.rho$appres,
                         residuals = residuals.rho,
                         abs.residuals = abs.residuals.rho)
-      p1 <- ggplot() + geom_point(aes(x=measured, y=calculated), data = df1) +
+      p1 <- ggplot() + geom_point(aes(x=measured, y=calculated), data = df1,
+                                  color = "red") +
+        coord_equal() +
         ggtitle("a) Measured vs Calculated")
       #
-      p2 <- ggplot(data = df1, aes(x = calculated, y = residuals)) + geom_point() +
+      p2 <- ggplot(data = df1, aes(x = calculated, y = residuals)) +
+        geom_point(color = "red") +
         geom_smooth() +
+        coord_equal() +
         ggtitle("b) Residuals")
       #
-      p3 <- ggplot(data = df1, aes(x = calculated, y = abs.residuals)) + geom_point() +
+      p3 <- ggplot(data = df1, aes(x = calculated, y = abs.residuals)) +
+        geom_point(color = "red") +
         geom_smooth() +
         ggtitle("c) Absolute Residuals")
       #
-      p4 <- ggplot(data = df1, aes(sample = residuals)) + geom_qq() +
+      p4 <- ggplot(data = df1, aes(sample = residuals)) + geom_qq(color = "red") +
         ggtitle("d) QQ plot")
       ptot <- grid.arrange(p1, p2, p3, p4, ncol = 2)
       print(ptot)
