@@ -144,7 +144,14 @@ log_mxad_resistivity <- function(par, filter, apprho_measured, spacing){
 #' @description
 #' Function to estimate the resistivities and thicnesses of the layers.
 #' @param ves A VES object
-#' @param opt.method A character string specifying the optimization method used to estimate the real resisitivity
+#' @param opt.method A character string specifying the optimization method used to estimate the real resisitivity.
+#' Currently the following methods are supported:
+#' \itemize{
+#' \item L-BFGS-B: Limited-memory modification of the BFGS quasi-Newton method (optim package)
+#' \item SA: Simulated Annealing (GenSA package)
+#' \item GA: Genetic Algorithms (GA package)
+#' \item PSO: Particle Swarm Optimization (pso package)
+#' }
 #' @param obj.fn Objective function used in the parameter estimation
 #' @param par0 A numeric vector with the Initial solution
 #' @param lower A numeric vector of length equal to the number of layers with the min values of the parameter space
@@ -153,18 +160,18 @@ log_mxad_resistivity <- function(par, filter, apprho_measured, spacing){
 #' @return
 #' This function returns a list with the following entries:
 #' \itemize{
-#' \item a
-#' \item b
-#' \item c
+#' \item par: vector with all parameters
+#' \item value: value of the objective function
 #' }
 #' @importFrom stats optim
 #' @importFrom GenSA GenSA
 #' @importFrom GA ga
+#' @importFrom pso psoptim
 #' @author
 #' Oscar Garcia-Cabrejo \email{khaors@gmail.com}
 #' @export
 #' @family calibration functions
-calibrate <- function(ves, opt.method = c("L-BFGS-B", "SA", "GA"),
+calibrate <- function(ves, opt.method = c("L-BFGS-B", "SA", "GA", "PSO"),
                       obj.fn = c('rss', 'mnad', 'mxad', 'log_rss', 'log_mnad', 'log_mxad'),
                       par0 = par0, lower = lower, upper = upper, control.par = NULL){
   if(class(ves) != "ves"){
@@ -229,11 +236,23 @@ calibrate <- function(ves, opt.method = c("L-BFGS-B", "SA", "GA"),
                  },
                  filter = as.matrix(rves::filt$V1), apprho_measured = ves$appres,
                  spacing = ves$ab2, min = lower, max = upper,
-                 popSize = 300, maxiter = 500, pcrossover = 0.85, pmutation = .2,
+                 popSize = 300, maxiter = 100, pcrossover = 0.85, pmutation = .2,
                  run = 50, maxFitness = -.05,
                  optim = TRUE, optimArgs = control.par)
-    print(res)
+    #print(res)
     res1 <- list(par = res@solution, value = res@bestvalue)
+  }
+  else if(opt.method == "PSO"){
+    if(is.null(control.par)){
+      control.par <- list(trace = 0, maxit.stagnate = 30, maxit = 300)
+    }
+    res.pso <- psoptim(par = par0, fn = par.obj.fn,
+                       filter = as.matrix(rves::filt$V1),
+                       apprho_measured = ves$appres,
+                       spacing = ves$ab2,
+                       lower = lower,
+                       upper= upper, control = control.par)
+    res1 <- list(par = res.pso$par, value = res.pso$value)
   }
   return(res1)
 }

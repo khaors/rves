@@ -4,14 +4,21 @@
 \alias{calibrate}
 \title{calibrate}
 \usage{
-calibrate(ves, opt.method = c("L-BFGS-B", "SA", "GA"), obj.fn = c("rss",
-  "mnad", "mxad", "log_rss", "log_mnad", "log_mxad"), par0 = par0,
-  lower = lower, upper = upper, control.par = NULL)
+calibrate(ves, opt.method = c("L-BFGS-B", "SA", "GA", "PSO"),
+  obj.fn = c("rss", "mnad", "mxad", "log_rss", "log_mnad", "log_mxad"),
+  par0 = par0, lower = lower, upper = upper, control.par = NULL)
 }
 \arguments{
 \item{ves}{A VES object}
 
-\item{opt.method}{A character string specifying the optimization method used to estimate the real resisitivity}
+\item{opt.method}{A character string specifying the optimization method used to estimate the real resisitivity.
+Currently the following methods are supported:
+\itemize{
+\item L-BFGS-B: Limited-memory modification of the BFGS quasi-Newton method (optim package)
+\item SA: Simulated Annealing (GenSA package)
+\item GA: Genetic Algorithms (GA package)
+\item PSO: Particle Swarm Optimization (pso package)
+}}
 
 \item{obj.fn}{Objective function used in the parameter estimation}
 
@@ -26,9 +33,8 @@ calibrate(ves, opt.method = c("L-BFGS-B", "SA", "GA"), obj.fn = c("rss",
 \value{
 This function returns a list with the following entries:
 \itemize{
-\item a
-\item b
-\item c
+\item par: vector with all parameters
+\item value: value of the objective function
 }
 }
 \description{
