@@ -311,12 +311,12 @@ calibrate <- function(ves, opt.method = c("L-BFGS-B", "SA", "GA", "PSO", "DE"),
                                        filter = as.matrix(rves::filt$V1),
                                        apprho_measured = ves$appres,
                                        spacing = ves$ab2))
-    rho <- res.de$optim$bestmem[1:nparh]
-    thick <- res.de$optim$bestmem[(nparh+1):npar]
+    rho <- unname(res.de$optim$bestmem[1:nparh])
+    thick <- unname(res.de$optim$bestmem[(nparh+1):npar])
     spacing <- ves$ab2
     rel.err <- relative_error_resitivity(rho, thick, spacing, ves$appres)
-    res1 <- list(par = res.de$optim$bestmem, value = 1e-1, rho = rho,
-                 thickness = thick, rel.err = rel.err)
+    res1 <- list(par = res.de$optim$bestmem, value = res.de$optim$bestval,
+                 rho = rho, thickness = thick, rel.err = rel.err)
   }
   return(res1)
 }
