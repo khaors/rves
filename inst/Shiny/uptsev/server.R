@@ -167,8 +167,10 @@ shinyServer(function(input, output, session) {
         tmp <- wellPanel(
           h3("L-BFGS-B Options"),
           br(),
-          textInput(inputId = "lbfgs_lower", label = "Min value(rho, thicknness)= ",
-                    value = "0.1"),
+          textInput(inputId = "lbfgs_low_rho", label = "Min value rho= ",
+                    value = "1.0"),
+          textInput(inputId = "lbfgs_low_thick", label = "Min value thickness= ",
+                    value = "1.0"),
           textInput(inputId = "lbfgs_up_rho", label = "Max Value rho= ", value = "1000"),
           textInput(inputId = "lbfgs_up_thick", label = "Max Value thickness= ",
                     value = "1000")
@@ -178,8 +180,10 @@ shinyServer(function(input, output, session) {
         tmp <- wellPanel(
           h3("Simulated Annealing Options"),
           br(),
-          textInput(inputId = "sa_lower", label = "Min value(rho, thicknness)= ",
-                    value = "0.1"),
+          textInput(inputId = "sa_low_rho", label = "Min value rho= ",
+                    value = "1.0"),
+          textInput(inputId = "sa_low_thick", label = "Min value thicknness= ",
+                    value = "1.0"),
           textInput(inputId = "sa_up_rho", label = "Max Value rho= ", value = "1000"),
           textInput(inputId = "sa_up_thick", label = "Max Value thickness= ",
                     value = "1000")
@@ -189,8 +193,10 @@ shinyServer(function(input, output, session) {
         tmp <- wellPanel(
           h3("Genetic Algorithms Options"),
           br(),
-          textInput(inputId = "ga_lower", label = "Min value(rho, thicknness)= ",
-                    value = "0.1"),
+          textInput(inputId = "ga_low_rho", label = "Min value rho= ",
+                    value = "1.0"),
+          textInput(inputId = "ga_low_thick", label = "Min value thickness= ",
+                    value = "1.0"),
           textInput(inputId = "ga_up_rho", label = "Max Value rho= ", value = "1000"),
           textInput(inputId = "ga_up_thick", label = "Max Value thickness= ",
                     value = "1000")
@@ -200,8 +206,10 @@ shinyServer(function(input, output, session) {
         tmp <- wellPanel(
           h3("Particle Swarm Optimization"),
           br(),
-          textInput(inputId = "pso_lower", label = "Min value(rho, thicknness)= ",
-                    value = "0.1"),
+          textInput(inputId = "pso_low_rho", label = "Min value rho= ",
+                    value = "1.0"),
+          textInput(inputId = "pso_low_thick", label = "Min value thickness= ",
+                    value = "1.0"),
           textInput(inputId = "pso_up_rho", label = "Max Value rho= ", value = "1000"),
           textInput(inputId = "pso_up_thick", label = "Max Value thickness= ",
                     value = "1000")
@@ -211,8 +219,10 @@ shinyServer(function(input, output, session) {
         tmp <- wellPanel(
           h3("Differential Evolution"),
           br(),
-          textInput(inputId = "de_lower", label = "Min value(rho, thicknness)= ",
-                    value = "0.1"),
+          textInput(inputId = "de_low_rho", label = "Min value rho = ",
+                    value = "1.0"),
+          textInput(inputId = "de_low_thick", label = "Min value thickness = ",
+                    value = "1.0"),
           textInput(inputId = "de_up_rho", label = "Max Value rho= ", value = "1000"),
           textInput(inputId = "de_up_thick", label = "Max Value thickness= ",
                     value = "1000")
@@ -266,11 +276,14 @@ shinyServer(function(input, output, session) {
                                    ireport = nls_nreport)
     }
     else if(automatic_method == "L-BFGS-B"){
-      lower <- isolate(as.numeric(input$lbfgs_lower))
+      lower_rho <- isolate(as.numeric(input$lbfgs_low_rho))
+      lower_thick <- isolate(as.numeric(input$lbfgs_low_thick))
       upper_rho <- isolate(as.numeric(input$lbfgs_up_rho))
       upper_thick <- isolate(as.numeric(input$lbfgs_up_thick))
-      lower <- rep(lower, 2*nlayers)
+      lower <- c(rep(lower_rho, nlayers), rep(lower_thick, nlayers))
       upper <- c(rep(upper_rho, nlayers), rep(upper_thick, nlayers))
+      print(lower)
+      print(upper)
       print("L-BFGS-B: Working...")
       current.res <- calibrate(current.ves.auto, opt.method = "L-BFGS-B",
                                obj.fn = "log_rss",
@@ -279,15 +292,16 @@ shinyServer(function(input, output, session) {
       print("L-BFGS-B: Finished")
     }
     else if(automatic_method == "Simulated Annealing"){
-      lower <- isolate(as.numeric(input$sa_lower))
+      lower_rho <- isolate(as.numeric(input$sa_low_rho))
+      lower_thick <- isolate(as.numeric(input$sa_low_thick))
       upper_rho <- isolate(as.numeric(input$sa_up_rho))
       upper_thick <- isolate(as.numeric(input$sa_up_thick))
       #print(lower)
       #print(c(upper_rho, upper_thick))
-      lower <- rep(lower, 2*nlayers)
+      lower <- c(rep(lower_rho, nlayers), rep(lower_thick, nlayers))
       upper <- c(rep(upper_rho, nlayers), rep(upper_thick, nlayers))
-      #print(lower)
-      #print(upper)
+      print(lower)
+      print(upper)
       print("Simulated Annealing: Working...")
       current.res <- calibrate(current.ves.auto, opt.method = "SA",
                                obj.fn = "log_rss",
@@ -296,10 +310,11 @@ shinyServer(function(input, output, session) {
       print("Simulated Annealing: Finished")
     }
     else if(automatic_method == "Genetic Algorithms"){
-      lower <- isolate(as.numeric(input$ga_lower))
+      lower_rho <- isolate(as.numeric(input$ga_low_rho))
+      lower_thick <- isolate(as.numeric(input$ga_low_thick))
       upper_rho <- isolate(as.numeric(input$ga_up_rho))
       upper_thick <- isolate(as.numeric(input$ga_up_thick))
-      lower <- rep(lower, 2*nlayers)
+      lower <- c(rep(lower_rho, nlayers), rep(lower_thick, nlayers))
       upper <- c(rep(upper_rho, nlayers), rep(upper_thick, nlayers))
       print("Genetic Algorithms: Working...")
       current.res <- calibrate(current.ves.auto, opt.method = "GA",
@@ -309,10 +324,11 @@ shinyServer(function(input, output, session) {
       print("Genetic Algorithms: Finished")
     }
     else if(automatic_method == "Particle Swarm Optimization"){
-      lower <- isolate(as.numeric(input$pso_lower))
+      lower_rho <- isolate(as.numeric(input$pso_low_rho))
+      lower_thick <- isolate(as.numeric(input$pso_low_thick))
       upper_rho <- isolate(as.numeric(input$pso_up_rho))
       upper_thick <- isolate(as.numeric(input$pso_up_thick))
-      lower <- rep(lower, 2*nlayers)
+      lower <- c(rep(lower_rho, nlayers), rep(lower_thick, nlayers))
       upper <- c(rep(upper_rho, nlayers), rep(upper_thick, nlayers))
       print("PSO: Working...")
       current.res <- calibrate(current.ves.auto, opt.method = "PSO",
@@ -322,10 +338,11 @@ shinyServer(function(input, output, session) {
       print("PSO: Finished")
     }
     else if(automatic_method == "Differential Evolution"){
-      lower <- isolate(as.numeric(input$de_lower))
+      lower_rho <- isolate(as.numeric(input$de_low_rho))
+      lower_thick <- isolate(as.numeric(input$de_low_thick))
       upper_rho <- isolate(as.numeric(input$de_up_rho))
       upper_thick <- isolate(as.numeric(input$de_up_thick))
-      lower <- rep(lower, 2*nlayers)
+      lower <- c(rep(lower_rho, nlayers), rep(lower_thick, nlayers))
       upper <- c(rep(upper_rho, nlayers), rep(upper_thick, nlayers))
       print("Differential Evolution: Working...")
       current.res <- calibrate(current.ves.auto, opt.method = "DE",
@@ -452,7 +469,6 @@ shinyServer(function(input, output, session) {
       p2 <- ggplot(data = df1, aes(x = calculated, y = residuals)) +
         geom_point(color = "red") +
         geom_smooth() +
-        coord_equal() +
         ggtitle("b) Residuals")
       #
       p3 <- ggplot(data = df1, aes(x = calculated, y = abs.residuals)) +
@@ -466,5 +482,4 @@ shinyServer(function(input, output, session) {
       print(ptot)
     }
   })
-
 })
