@@ -282,8 +282,8 @@ shinyServer(function(input, output, session) {
       upper_thick <- isolate(as.numeric(input$lbfgs_up_thick))
       lower <- c(rep(lower_rho, nlayers), rep(lower_thick, nlayers))
       upper <- c(rep(upper_rho, nlayers), rep(upper_thick, nlayers))
-      print(lower)
-      print(upper)
+      #print(lower)
+      #print(upper)
       print("L-BFGS-B: Working...")
       current.res <- calibrate(current.ves.auto, opt.method = "L-BFGS-B",
                                obj.fn = "log_rss",
@@ -296,12 +296,10 @@ shinyServer(function(input, output, session) {
       lower_thick <- isolate(as.numeric(input$sa_low_thick))
       upper_rho <- isolate(as.numeric(input$sa_up_rho))
       upper_thick <- isolate(as.numeric(input$sa_up_thick))
-      #print(lower)
-      #print(c(upper_rho, upper_thick))
       lower <- c(rep(lower_rho, nlayers), rep(lower_thick, nlayers))
       upper <- c(rep(upper_rho, nlayers), rep(upper_thick, nlayers))
-      print(lower)
-      print(upper)
+      #print(lower)
+      #print(upper)
       print("Simulated Annealing: Working...")
       current.res <- calibrate(current.ves.auto, opt.method = "SA",
                                obj.fn = "log_rss",
