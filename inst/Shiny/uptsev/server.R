@@ -287,11 +287,12 @@ shinyServer(function(input, output, session) {
       upper <- c(rep(upper_rho, nlayers), rep(upper_thick, nlayers))
       #print(lower)
       #print(upper)
+      print("Simulated Annealing: Working...")
       current.res <- calibrate(current.ves.auto, opt.method = "SA",
                                obj.fn = "log_rss",
                                par0 = par0,
                                lower = lower, upper = upper)
-      #print(current.res)
+      print("Simulated Annealing: Finished")
     }
     else if(automatic_method == "Genetic Algorithms"){
       lower <- isolate(as.numeric(input$ga_lower))
@@ -299,10 +300,12 @@ shinyServer(function(input, output, session) {
       upper_thick <- isolate(as.numeric(input$ga_up_thick))
       lower <- rep(lower, 2*nlayers)
       upper <- c(rep(upper_rho, nlayers), rep(upper_thick, nlayers))
+      print("Genetic Algorithms: Working...")
       current.res <- calibrate(current.ves.auto, opt.method = "GA",
                                obj.fn = "log_rss",
                                par0 = par0,
                                lower = lower, upper = upper)
+      print("Genetic Algorithms: Finished")
     }
     else if(automatic_method == "Particle Swarm Optimization"){
       lower <- isolate(as.numeric(input$pso_lower))
@@ -359,6 +362,12 @@ shinyServer(function(input, output, session) {
       #
       current.res <- calibrate.results()
       #
+      total.depth.model <- sum(current.res$thickness)
+      total.depth.ves <- max(current.ves$ab2)
+      if(total.depth.model < total.depth.ves){
+        depth.corr <- total.depth.ves - total.depth.model
+        current.res$thickness[nlayers] <- current.res$thickness[nlayers] + depth.corr
+      }
       current.ves$rhopar <- current.res$rho
       current.ves$thickpar <- current.res$thickness
       current.ves$interpreted <- TRUE
@@ -369,10 +378,11 @@ shinyServer(function(input, output, session) {
         if(is.null(current.ves))
           return(NULL)
         #print(names(current.ves.manual))
-        rho <- current.ves$rhopar
-        thick <- current.ves$thickpar
+        rho <- isolate(current.ves$rhopar)
+        thick <- isolate(current.ves$thickpar)
         spacing <- current.ves$ab2
-        meas.app.rho <- current.ves$appres
+        meas.app.rho <- isolate(current.ves$appres)
+        automatic_method <- isolate(input$automatic_method)
         cal.app.rho <- apparent_resistivities(rho, thick, filt = rves::filt$V1,
                                               spacing = spacing)
         #print(cal.app.rho$appres)
@@ -382,7 +392,7 @@ shinyServer(function(input, output, session) {
         str1 <- "<h3>Results Parameter Estimation</h3><br>"
         str2 <- paste("<b>Relative Error(%)= </b>", format(rel.err, digits = 3), "<br>", sep = " ")
         str3 <- paste("<b>Mean Squared Error= </b>", format(mse, digits = 3), "<br>", sep = " ")
-        str4 <- paste("<b>Optimization Method= </b>", input$automatic_method, "<br><br>", sep = " ")
+        str4 <- paste("<b>Optimization Method= </b>", automatic_method, "<br><br>", sep = " ")
         HTML(paste(str1, str2, str3, str4))
       })
       plot(current.ves)
