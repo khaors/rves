@@ -4,7 +4,7 @@
 \alias{calibrate}
 \title{calibrate}
 \usage{
-calibrate(ves, opt.method = c("L-BFGS-B", "SA", "GA", "PSO"),
+calibrate(ves, opt.method = c("L-BFGS-B", "SA", "GA", "PSO", "DE"),
   obj.fn = c("rss", "mnad", "mxad", "log_rss", "log_mnad", "log_mxad"),
   par0 = par0, lower = lower, upper = upper, control.par = NULL)
 }
@@ -18,6 +18,7 @@ Currently the following methods are supported:
 \item SA: Simulated Annealing (GenSA package)
 \item GA: Genetic Algorithms (GA package)
 \item PSO: Particle Swarm Optimization (pso package)
+\item DE: Differential Evoluation (DEoptim package)
 }}
 
 \item{obj.fn}{Objective function used in the parameter estimation}
@@ -36,7 +37,7 @@ This function returns a list with the following entries:
 \item par: vector with all parameters
 \item value: value of the objective function
 \item rho: Numeric vector with the real resistivities
-\item thick: Numeric vector with the layer thicknesses
+\item thickness: Numeric vector with the layer thicknesses
 \item rel.error: The value of the relative error
 }
 }

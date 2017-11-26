@@ -154,7 +154,7 @@ log_mxad_resistivity <- function(par, filter, apprho_measured, spacing){
 #' @family calibration functions
 relative_error_resitivity <- function(rho, thick, spacing, rho.measured){
   rho.calc <- apparent_resistivities(rho, thick, rves::filt$V1, spacing)
-  rel.err <- mean(abs(rho.calc$appres - rho.measured)/rho.measured)
+  rel.err <- mean(100*abs(rho.calc$appres - rho.measured)/rho.measured)
   return(rel.err)
 }
 #' @title
@@ -169,6 +169,7 @@ relative_error_resitivity <- function(rho, thick, spacing, rho.measured){
 #' \item SA: Simulated Annealing (GenSA package)
 #' \item GA: Genetic Algorithms (GA package)
 #' \item PSO: Particle Swarm Optimization (pso package)
+#' \item DE: Differential Evoluation (DEoptim package)
 #' }
 #' @param obj.fn Objective function used in the parameter estimation
 #' @param par0 A numeric vector with the Initial solution
@@ -181,18 +182,19 @@ relative_error_resitivity <- function(rho, thick, spacing, rho.measured){
 #' \item par: vector with all parameters
 #' \item value: value of the objective function
 #' \item rho: Numeric vector with the real resistivities
-#' \item thick: Numeric vector with the layer thicknesses
+#' \item thickness: Numeric vector with the layer thicknesses
 #' \item rel.error: The value of the relative error
 #' }
 #' @importFrom stats optim
 #' @importFrom GenSA GenSA
 #' @importFrom GA ga
 #' @importFrom pso psoptim
+#' @importFrom DEoptim DEoptim DEoptim.control
 #' @author
 #' Oscar Garcia-Cabrejo \email{khaors@gmail.com}
 #' @export
 #' @family calibration functions
-calibrate <- function(ves, opt.method = c("L-BFGS-B", "SA", "GA", "PSO"),
+calibrate <- function(ves, opt.method = c("L-BFGS-B", "SA", "GA", "PSO", "DE"),
                       obj.fn = c('rss', 'mnad', 'mxad', 'log_rss', 'log_mnad', 'log_mxad'),
                       par0 = par0, lower = lower, upper = upper, control.par = NULL){
   if(class(ves) != "ves"){
@@ -241,7 +243,7 @@ calibrate <- function(ves, opt.method = c("L-BFGS-B", "SA", "GA", "PSO"),
     spacing <- ves$ab2
     rel.err <- relative_error_resitivity(rho, thick, spacing, ves$appres)
     res1 <- list(par = res$par, value = res$value, rho = rho,
-                 thick = thick, rel.err = rel.err)
+                 thickness = thick, rel.err = rel.err)
   }
   else if(opt.method == "SA"){
     if(is.null(control.par)){
@@ -256,7 +258,7 @@ calibrate <- function(ves, opt.method = c("L-BFGS-B", "SA", "GA", "PSO"),
     spacing <- ves$ab2
     rel.err <- relative_error_resitivity(rho, thick, spacing, ves$appres)
     res1 <- list(par = res$par, value = res$value, rho = rho,
-                 thick = thick, rel.err = rel.err)
+                 thickness = thick, rel.err = rel.err)
   }
   else if(opt.method == "GA"){
     if(is.null(control.par)){
@@ -276,8 +278,9 @@ calibrate <- function(ves, opt.method = c("L-BFGS-B", "SA", "GA", "PSO"),
     thick <- res@solution[(nparh+1):npar]
     spacing <- ves$ab2
     rel.err <- relative_error_resitivity(rho, thick, spacing, ves$appres)
-    res1 <- list(par = res@solution, value = res@bestvalue, rho = res@solution[1:nparh],
-                 thick = res@solution[(nparh+1):npar], rel.err = rel.err)
+    res1 <- list(par = res@solution, value = abs(res@fitnessValue),
+                 rho = res@solution[1:nparh],
+                 thickness = res@solution[(nparh+1):npar], rel.err = rel.err)
   }
   else if(opt.method == "PSO"){
     if(is.null(control.par)){
@@ -294,7 +297,26 @@ calibrate <- function(ves, opt.method = c("L-BFGS-B", "SA", "GA", "PSO"),
     spacing <- ves$ab2
     rel.err <- relative_error_resitivity(rho, thick, spacing, ves$appres)
     res1 <- list(par = res.pso$par, value = res.pso$value, rho = rho,
-                 thick = thick, rel.err = rel.err)
+                 thickness = thick, rel.err = rel.err)
+  }
+  else if(opt.method == "DE"){
+    if(is.null(control.par)){
+      control.par <- DEoptim.control(strategy=1, NP=100, itermax=300, CR=0.9,
+                                     F=0.8, trace=0, storepopfrom=1, storepopfreq=1)
+    }
+    res.de <- suppressWarnings(DEoptim(par.obj.fn,
+                                       lower = lower,
+                                       upper = upper,
+                                       control = control.par,
+                                       filter = as.matrix(rves::filt$V1),
+                                       apprho_measured = ves$appres,
+                                       spacing = ves$ab2))
+    rho <- res.de$optim$bestmem[1:nparh]
+    thick <- res.de$optim$bestmem[(nparh+1):npar]
+    spacing <- ves$ab2
+    rel.err <- relative_error_resitivity(rho, thick, spacing, ves$appres)
+    res1 <- list(par = res.de$optim$bestmem, value = 1e-1, rho = rho,
+                 thickness = thick, rel.err = rel.err)
   }
   return(res1)
 }
