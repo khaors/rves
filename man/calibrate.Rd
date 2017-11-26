@@ -35,6 +35,8 @@ This function returns a list with the following entries:
 \itemize{
 \item par: vector with all parameters
 \item value: value of the objective function
+\item rho: Numeric vector with the real resistivities
+\item thick: Numeric vector with the layer thicknesses
 }
 }
 \description{
@@ -47,6 +49,7 @@ Other calibration functions: \code{\link{calibrate_nls}},
   \code{\link{log_rss_resistivity}},
   \code{\link{mnad_resistivity}},
   \code{\link{mxad_resistivity}},
+  \code{\link{relative_error_resitivity}},
   \code{\link{rss_resistivity}}
 }
 \author{
