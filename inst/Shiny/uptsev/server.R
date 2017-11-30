@@ -349,6 +349,7 @@ shinyServer(function(input, output, session) {
                                lower = lower, upper = upper)
       print("Differential Evolution: Finished")
     }
+    updateSelectInput(session, inputId = "diagnostic.type", selected = "None")
     #output$automatic_msg <- renderText({"Working on estimation...Finished"})
     #print(names(current.res))
     return(current.res)
