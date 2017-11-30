@@ -52,7 +52,8 @@ shinyServer(function(input, output, session) {
       return(NULL)
     if (ncol(d.input)>input$ncol.preview)
       d.input <- d.input[,1:input$ncol.preview]
-    ves <- ves("VES1", ab2 =d.input[,1],apprho= d.input[,2])
+    fname <- input$file1
+    ves <- ves(fname, ab2 =d.input[,1],apprho= d.input[,2])
     server.env$current.ves <- ves
     #print(ves)
     head(d.input, n=input$nrow.preview)
