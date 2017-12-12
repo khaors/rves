@@ -1,0 +1,39 @@
+navbar:
+  title: rves
+  type: default
+  left:
+  - icon: fa-home fa-lg
+    href: index.html
+  - text: Reference
+    href: reference/index.html
+  - text: Articles
+    menu:
+    - text: 'RVES Tutorial: Vertical Electrical Sounding interpretation using R'
+      href: articles/rves-tutorial.html
+  right: []
+
+reference:
+- title: All functions
+  desc: ~
+  contents:
+  - '`apparent_resistivities`'
+  - '`apparent_resistivities_simple`'
+  - '`calibrate_nls`'
+  - '`calibrate`'
+  - '`convolution`'
+  - '`filt`'
+  - '`krtrans`'
+  - '`log_mnad_resistivity`'
+  - '`log_mxad_resistivity`'
+  - '`log_rss_resistivity`'
+  - '`mnad_resistivity`'
+  - '`mxad_resistivity`'
+  - '`plot.ves`'
+  - '`print.ves`'
+  - '`relative_error_resitivity`'
+  - '`rss_resistivity`'
+  - '`rves`'
+  - '`summary.ves`'
+  - '`uptsev_gui`'
+  - '`ves`'
+
