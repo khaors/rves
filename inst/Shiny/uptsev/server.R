@@ -73,6 +73,7 @@ shinyServer(function(input, output, session) {
     rho <- isolate(as.numeric(unlist(strsplit(input$manual_res,","))))
     thick <- isolate(as.numeric(unlist(strsplit(input$manual_thick,","))))
     if(nlayers == 1 || length(rho) != nlayers || length(thick) != nlayers){
+      current.ves.manual$interpreted <- FALSE
       server.env$current.ves.manual <- current.ves.manual
       return(current.ves.manual)
     }
@@ -97,7 +98,6 @@ shinyServer(function(input, output, session) {
       if(length(rho) != length(thick)){
         return(NULL)
       }
-
       p <- NULL
       #
       if(server.env$first){
@@ -112,6 +112,8 @@ shinyServer(function(input, output, session) {
       output$manual_results <- renderUI({
         current.ves.manual <- server.env$current.ves.manual
         if(is.null(current.ves.manual))
+          return(NULL)
+        if(isolate(input$manual_nlayers) == 1)
           return(NULL)
         #print(names(current.ves.manual))
         rho <- current.ves.manual$rhopar
