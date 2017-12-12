@@ -72,12 +72,10 @@ shinyServer(function(input, output, session) {
     nlayers <- isolate(as.numeric(input$manual_nlayers))
     rho <- isolate(as.numeric(unlist(strsplit(input$manual_res,","))))
     thick <- isolate(as.numeric(unlist(strsplit(input$manual_thick,","))))
-    if(nlayers == 1)
-      return(NULL)
-    if(length(rho) != nlayers)
-      return(NULL)
-    if(length(thick) != nlayers)
-      return(NULL)
+    if(nlayers == 1 || length(rho) != nlayers || length(thick) != nlayers){
+      server.env$current.ves.manual <- current.ves.manual
+      return(current.ves.manual)
+    }
     current.ves.manual$rhopar <- rho
     current.ves.manual$thickpar <- thick
     current.ves.manual$interpreted <- TRUE
@@ -90,6 +88,16 @@ shinyServer(function(input, output, session) {
       nlayers <- isolate(as.numeric(input$manual_nlayers))
       rho <- isolate(as.numeric(unlist(strsplit(input$manual_res,","))))
       thick <- isolate(as.numeric(unlist(strsplit(input$manual_thick,","))))
+      if(nlayers != length(rho)){
+        return(NULL)
+      }
+      if(nlayers != length(thick)){
+        return(NULL)
+      }
+      if(length(rho) != length(thick)){
+        return(NULL)
+      }
+
       p <- NULL
       #
       if(server.env$first){

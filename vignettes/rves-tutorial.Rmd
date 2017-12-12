@@ -21,10 +21,10 @@ library(rves)
 
 Importance of subsurface investigations. Specially for groundwater.
 
-The Vertical Electrical Sounding (VES) is one of the oldest resistivity methods and its main advantages include 
+The Vertical Electrical Sounding (VES) is one of the oldest resistivity methods and its main advantages include: 
 
-- low cost due to its minimal requirements for equipment and personal
-- large investigation depth as required in some specific problems such as groundwater exploration
+- low cost due to its minimal requirements for equipment and personal.
+- large investigation depth as required in some specific problems such as groundwater exploration.
 
 This method is based on the measurements of the electrical apparent resistivity of the geological medium when the distance between the electrical source and the measurement nodes is increased. From this information the true resistivities and thicknesses of the geological model are estimated.
 

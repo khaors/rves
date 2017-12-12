@@ -2,7 +2,7 @@ Package: rves
 Type: Package
 Title: R package for the interpretation of Vertical Electric Soundings
 Version: 0.1.0
-Authors@R: person("Oscar", "J.", "Garcia-Cabrejo", role = c("aut", "cre"), email = "khaors@gmail.com")
+Authors@R: person("Oscar", "Garcia-Cabrejo", role = c("aut", "cre"), email = "khaors@gmail.com")
 Maintainer: Oscar Garcia-Cabrejo <khaors@gmail.com>
 Description: This package includes functions for analyzing the Vertical Electric Soundings commonly used in Groundwater Exploration.
 Depends:
