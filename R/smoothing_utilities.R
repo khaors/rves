@@ -1,5 +1,5 @@
 #' @title
-#' smoothing.ves
+#' smoothing_ves
 #' @description
 #' Function to smooth the measurements of the apparent resistivity of a VES
 #' @param ves A Vertical Electric Sounding objet
@@ -19,7 +19,8 @@
 #' Oscar Garcia-Cabrejo \email{khaors@gmail.com}
 #' @family filter functions
 #' @export
-smoothing.ves <- function(ves, method = c("smooth.spline", "kernel.regression"), ...){
+#' @importFrom stats smooth.spline
+smoothing_ves <- function(ves, method = c("smooth.spline", "kernel.regression"), ...){
   if(class(ves) != "ves"){
     stop('ERROR: A ves object is required as input')
   }
