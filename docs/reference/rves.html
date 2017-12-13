@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>rves: R package for the interpretation of Vertical Electric Soundings — rves • rves</title>
+<title>rves: Interpretation of VErtical Electrical Sounding using R — rves • rves</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -87,11 +87,12 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>rves: R package for the interpretation of Vertical Electric Soundings</h1>
+    <h1>rves: Interpretation of VErtical Electrical Sounding using R</h1>
     </div>
 
     
-    <p>This package includes several functions used in the inversion of the VES.</p>
+    <p>rves: Interpretation of VErtical Electrical Sounding using R</p>
+<p>This package includes several functions used in the inversion of the VES.</p>
     
 
         
@@ -100,6 +101,17 @@
     
     <p>This section includes all the functions required for the estimation of the thicknesses and real resitivities from the VES data. The functions included here are:</p>
 <p>rss_resisitivity, log_rss_resistivity, mnad_resistivity, log_mnad_resistivity, mxad_resistivity, log_mxad_resistivity, calibrate</p>
+    <p>The calibration functions includes functions to calibrate, calculate model fit, and objective
+ functions.</p>
+<p>The functions in this section are:</p>
+<p>sum_squared_residuals, mean_average_deviation, nash_sutcliffe, log_nash_sutcliffe,
+ mass_balance_error, calibrate, uncertainty_quantification</p>
+    
+    <h2 class="hasAnchor" id="smoothing-functions"><a class="anchor" href="#smoothing-functions"></a>smoothing functions</h2>
+
+    
+    <p>This section includes all the functions required for the smoothing of the VES data. The functions included here are:</p>
+<p>smoothing_ves</p>
     
     <h2 class="hasAnchor" id="base-functions"><a class="anchor" href="#base-functions"></a>base functions</h2>
 
@@ -120,6 +132,8 @@ The functions included in this section are:</p>
     <ul class="nav nav-pills nav-stacked">
       
       <li><a href="#calibration-functions">calibration functions</a></li>
+
+      <li><a href="#smoothing-functions">smoothing functions</a></li>
 
       <li><a href="#base-functions">base functions</a></li>
 
