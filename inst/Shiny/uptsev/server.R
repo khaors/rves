@@ -454,7 +454,7 @@ shinyServer(function(input, output, session) {
       return(NULL)
     if(!current.ves$interpreted)
       return(NULL)
-    print(input$diagnostic.type)
+    #print(input$diagnostic.type)
     if(input$diagnostic.type == "None")
       return(NULL)
     else if(input$diagnostic.type == "Model Diagnostic"){
