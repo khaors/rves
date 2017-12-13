@@ -31,8 +31,7 @@ This method is based on the measurements of the electrical apparent resistivity 
 # Methodology
 
 ## VES: Basic Concepts
-
-The apparent resistivity is defined as:
+Let $A,B$ be the current electrodes (positive and negative respectively) located on the ground surface and $M,N$ are the sensors used to measure the potential. The apparent resistivity of an Earth material is defined as:
 
 $$
 \rho_{app,k} = k \frac{U_{MN}}{I_{AB}}
@@ -47,6 +46,14 @@ where $r$ is the distance between the electrodes.
 
 The values of the apparent resistivity $\rho_{app,k}$ change as the electrode separation $AB/2$ is increased.  
 
+## Layered Earth
+
+$$
+U(x)=\frac{I \rho_{1}}{2 \pi} \frac{1}{x} \left( 1 + 2x \int_{0}^{+\infty} K(\lambda) J_{0}(\lambda x)d\lambda \right)
+$$
+where $\rho_{1}$ is the resistivity of the first layer, $J_{0}$ is the Bessel function of order zero , and $K(\lambda)$ is a function that depends on $\lambda$ and the resisitivities and thicknesses of all layers and the resistivity of the substratum. The integral in the previous equation can be interpreted as potential disturbance due to the layered structure of the Earth and this must be numerically evaluated.   
+
+
 ## Parameter Estimation
 
 # Examples
@@ -54,3 +61,37 @@ The values of the apparent resistivity $\rho_{app,k}$ change as the electrode se
 ## VES 1
 
 
+```{r load_library,echo=TRUE}
+library(rves)
+```
+
+```{r load_data,echo=TRUE}
+data("ves_data1")
+```
+
+```{r define_ves,echo=TRUE}
+ab2 <- ves_data1$ab2
+apprho <- ves_data1$apprho
+sev1a <- ves(id= "Sounding 1", ab2 = ab2, apprho = apprho)
+```
+
+```{r plot_sev1a, fig.height=4,fig.width=6,fig.align='center'}
+p1 <- plot(sev1a)
+```
+
+```{r initial_sol, echo= TRUE}
+rho <- c(40,70,30, 20)
+thick <- c(2,10,50,500)
+sev1a$rhopar <- rho
+sev1a$thickpar <- thick
+sev1a$interpreted <- TRUE
+```
+
+```{r plot_sev1a1, fig.height=4, fig.width=6,fig.align='center'}
+p2 <- plot(sev1a)
+```
+
+```{r calculate_appres,echo=TRUE}
+res <- apparent_resistivities(rho, thick, filt=filt$V1, ab2)
+print(res$appres)
+```

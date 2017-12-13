@@ -4,7 +4,8 @@
 \alias{smoothing_ves}
 \title{smoothing_ves}
 \usage{
-smoothing_ves(ves, method = c("smooth.spline", "kernel.regression"), ...)
+smoothing_ves(ves, method = c("smooth.spline", "kernel.regression"),
+  bw = 0.1, ...)
 }
 \arguments{
 \item{ves}{A Vertical Electric Sounding objet}
@@ -14,6 +15,8 @@ smoothing_ves(ves, method = c("smooth.spline", "kernel.regression"), ...)
 \item smooth.spline
 \item kernel.regression
 }}
+
+\item{bw}{Bandwidth}
 
 \item{...}{Additional parameters required for the smoothing method}
 }
