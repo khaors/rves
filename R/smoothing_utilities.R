@@ -18,8 +18,8 @@
 #' @author
 #' Oscar Garcia-Cabrejo \email{khaors@gmail.com}
 #' @family filter functions
-#' @export
 #' @importFrom stats smooth.spline
+#' @export
 smoothing_ves <- function(ves, method = c("smooth.spline", "kernel.regression"), ...){
   if(class(ves) != "ves"){
     stop('ERROR: A ves object is required as input')
