@@ -1,3 +1,12 @@
+#' @section smoothing functions:
+#'
+#' This section includes all the functions required for the smoothing of the VES data. The functions included here are:
+#'
+#' smoothing_ves
+#'
+#' @docType package
+#' @name rves
+NULL
 #' @title
 #' smoothing_ves
 #' @description
@@ -17,7 +26,7 @@
 #' }
 #' @author
 #' Oscar Garcia-Cabrejo \email{khaors@gmail.com}
-#' @family filter functions
+#' @family smoothing functions
 #' @importFrom stats smooth.spline
 #' @export
 smoothing_ves <- function(ves, method = c("smooth.spline", "kernel.regression"), ...){
