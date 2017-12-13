@@ -59,6 +59,44 @@ shinyServer(function(input, output, session) {
     head(d.input, n=input$nrow.preview)
   })
   ########################################################################################
+  #                               Filter VES Tab
+  ########################################################################################
+  filter.ves <- function(){
+    current.ves <- server.env$current.ves
+    if(is.null(current.ves))
+      return(NULL)
+    filterMethod <- isolate(input$filterMethod)
+    res <- NULL
+    if(filterMethod == "None")
+      return(NULL)
+    else if(filterMethod == "smooth.spline"){
+      res <- smoothing_ves(current.ves, method = filterMethod)
+    }
+    else if(filterMethod == "kernel.regression"){
+      bw <- isolate(as.numeric(input$kernel_bw))
+      res <- smoothing_ves(current.ves, method = filterMethod, bw = bw)
+    }
+    #
+    current.ves$ab2 <- res$ab2
+    current.ves$appres <- res$apprho
+    server.env$current.ves <- current.ves
+    return(current.ves)
+  }
+  observeEvent(input$filterRun, {
+    output$filterResultsPlot <- renderPlot({
+      current.ves <- server.env$current.ves
+      if(is.null(current.ves))
+        return(NULL)
+      ab2.original <- current.ves$ab2
+      appres.original <- current.ves$appres
+      current.ves <- filter.ves()
+      p1 <- plot(current.ves)
+      original.df <- data.frame(ab2 = ab2.original, appres = appres.original)
+      p1 <- p1 + geom_point(aes(x = ab2, y = appres), data = original.df)
+      print(p1)
+    })
+  })
+  ########################################################################################
   #                           Manual Inversion Tab
   ########################################################################################
   output$manual_run <- renderUI({

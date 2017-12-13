@@ -33,6 +33,7 @@ dbSidebar <- dashboardSidebar(
   sidebarMenu(
     menuItem("Home", tabName = "home", icon = icon("home")),
     menuItem("Data", tabName = "data", icon = icon("table")),
+    menuItem("Filter Data", tabName = "filter", icon = icon("filter")),
     menuItem("Graphical Inversion", tabName = "manual", icon = icon("hand-spock-o")),
     menuItem("Automatic Inversion", tabName = "automatic", icon = icon("fighter-jet")),
     #menuItem("Reports", tabName = "reports", icon = icon("cogs")),
@@ -93,7 +94,7 @@ homeTab <- tabItem(
       br(),br(),
       "3. Use the Automatic Inversion Tab to estimate the real resistivities and thicknesses using ",
       "different optimization techniques. The convential approach is based on linear inverse theory ",
-      "and is called Nonlinear Least-Squares method. There other methods to find the resitivities and ",
+      "and is called Nonlinear Least-Squares method. There are other methods to find the resitivities and ",
       "thicknesses based on optimization theory. These methods include Simulated Annealing, Genetic ",
       "Algorithms, Particle Swarm Optimization, Differential Evoluation, among others",
       br(),br(),
@@ -140,7 +141,43 @@ dataTab <- tabItem(
   #downloadLink('downloadSave', 'Download binary')
 )
 #########################################################################################
-#                                    Manual Inversion Tab
+#                                    Filter Tab
+#########################################################################################
+filterTab <- tabItem(
+  tabName = "filter",
+  h3("VES Filtering"),
+  br(),
+  fluidRow(
+    tags$em("On this tab you can apply different smoothing techniques to the measured
+            resitivity data.")
+  ),
+  br(),
+  br(),
+  sidebarLayout(
+    sidebarPanel(
+      selectInput(inputId = "filterMethod", label = "Filter Method ",
+                  choices = c("None", "smooth.spline", "kernel.regression"),
+                  selected = "None"),
+      br(),
+      conditionalPanel(
+        condition = "input.filterMethod == 'kernel.regression'",
+        textInput(inputId = "kernel_bw", label = "Bandwidth ", value = "0.1")
+      ),
+      br(),
+      actionButton(inputId = "filterRun", label = "Apply Filter", icon = icon("bullseye"))
+      #br(),
+      #actionButton(inputId = "filterPlot", label = "Plot")
+    ),
+    mainPanel(
+      plotOutput(outputId = "filterResultsPlot"),
+      br(),
+      tableOutput(outputId = "filterResultsTable")
+    )
+  )
+)
+
+#########################################################################################
+#                                    Graphical Inversion Tab
 #########################################################################################
 manualTab <- tabItem(
   tabName = "manual",
@@ -153,7 +190,6 @@ manualTab <- tabItem(
             by hand/eye to help the students to get familiar with the interpretation of VES.
             Some fitness measures of the specified model are presented below the plot.")
   ),
-
   br(),
   br(),
   sidebarLayout(
@@ -295,6 +331,7 @@ userInterface <- dashboardPage(
     tabItems(
       homeTab ,
       dataTab,
+      filterTab,
       manualTab,
       automaticTab, #,reportsTab
       diagnosticTab
