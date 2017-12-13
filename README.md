@@ -9,7 +9,7 @@ This package contains a set of function used in the interpretation of Vertical E
 
 ## Installation 
 
-The rves package is not available on CRAN and therefore it must be installed from GITHUB using:
+The rves package is not available on CRAN and therefore it must be installed from github using:
 
 ```r
 devtools::install_github("khaors/rves")
