@@ -88,7 +88,7 @@
 <div id="ves-basic-concepts" class="section level2">
 <h2 class="hasAnchor">
 <a href="#ves-basic-concepts" class="anchor"></a>VES: Basic Concepts</h2>
-<p>The apparent resistivity is defined as:</p>
+<p>Let <span class="math inline">\(A,B\)</span> be the current electrodes (positive and negative respectively) located on the ground surface and <span class="math inline">\(M,N\)</span> are the sensors used to measure the potential. The apparent resistivity of an Earth material is defined as:</p>
 <p><span class="math display">\[
 \rho_{app,k} = k \frac{U_{MN}}{I_{AB}}
 \]</span> where <span class="math inline">\(k\)</span> is the so called geometric factor of the electrode array, <span class="math inline">\(U_{MN}\)</span> is the voltage between the electrodes <span class="math inline">\(M\)</span> and <span class="math inline">\(N\)</span> and <span class="math inline">\(I_{AB}\)</span> is the electric current applied between the measurement electrodes <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span>.</p>
@@ -96,6 +96,13 @@
 k=\frac{2 \pi}{\frac{1}{r_{AM}} - \frac{1}{r_{BM}} - \frac{1}{r_{AN}} + \frac{1}{r_{BN}} }
 \]</span> where <span class="math inline">\(r\)</span> is the distance between the electrodes.</p>
 <p>The values of the apparent resistivity <span class="math inline">\(\rho_{app,k}\)</span> change as the electrode separation <span class="math inline">\(AB/2\)</span> is increased.</p>
+</div>
+<div id="layered-earth" class="section level2">
+<h2 class="hasAnchor">
+<a href="#layered-earth" class="anchor"></a>Layered Earth</h2>
+<p><span class="math display">\[
+U(x)=\frac{I \rho_{1}}{2 \pi} \frac{1}{x} \left( 1 + 2x \int_{0}^{+\infty} K(\lambda) J_{0}(\lambda x)d\lambda \right)
+\]</span> where <span class="math inline">\(\rho_{1}\)</span> is the resistivity of the first layer, <span class="math inline">\(J_{0}\)</span> is the Bessel function of order zero , and <span class="math inline">\(K(\lambda)\)</span> is a function that depends on <span class="math inline">\(\lambda\)</span> and the resisitivities and thicknesses of all layers and the resistivity of the substratum. The integral in the previous equation can be interpreted as potential disturbance due to the layered structure of the Earth and this must be numerically evaluated.</p>
 </div>
 <div id="parameter-estimation" class="section level2">
 <h2 class="hasAnchor">
@@ -109,25 +116,24 @@ k=\frac{2 \pi}{\frac{1}{r_{AM}} - \frac{1}{r_{BM}} - \frac{1}{r_{AN}} + \frac{1}
 <h2 class="hasAnchor">
 <a href="#ves-1" class="anchor"></a>VES 1</h2>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(rves)</code></pre></div>
-<!-- ```{r load_data,echo=TRUE} -->
-<!-- data(sev1) -->
-<!-- ``` -->
-<!-- ```{r define_ves,echo=TRUE} -->
-<!-- sev1a <- ves(id= "Sounding 1", ab2 = sev1$ab2, apprho = sev1$apprho) -->
-<!-- ``` -->
-<!-- ```{r plot_sev1a, fig.height=4,fig.width=4,fig.align='center'} -->
-<!-- plot(sev1a) -->
-<!-- ``` -->
-<!-- ```{r initial_sol, echo= TRUE} -->
-<!-- rho <- c(100,300,150, 200) -->
-<!-- thick <- c(2,10,50,500) -->
-<!-- sev1a$rhopar <- rho  -->
-<!-- sev1a$thickpar <- thick -->
-<!-- sev1a$interpreted <- TRUE -->
-<!-- ``` -->
-<!-- ```{r plot_sev1a1, fig.height=4, fig.width=4,fig.align='center'} -->
-<!-- plot(sev1a) -->
-<!-- ``` -->
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(<span class="st">"ves_data1"</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ab2 &lt;-<span class="st"> </span>ves_data1<span class="op">$</span>ab2
+apprho &lt;-<span class="st"> </span>ves_data1<span class="op">$</span>apprho
+sev1a &lt;-<span class="st"> </span><span class="kw"><a href="../reference/ves.html">ves</a></span>(<span class="dt">id=</span> <span class="st">"Sounding 1"</span>, <span class="dt">ab2 =</span> ab2, <span class="dt">apprho =</span> apprho)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p1 &lt;-<span class="st"> </span><span class="kw">plot</span>(sev1a)</code></pre></div>
+<p><img src="rves-tutorial_files/figure-html/plot_sev1a-1.png" width="576" style="display: block; margin: auto;"></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rho &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">40</span>,<span class="dv">70</span>,<span class="dv">30</span>, <span class="dv">20</span>)
+thick &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">2</span>,<span class="dv">10</span>,<span class="dv">50</span>,<span class="dv">500</span>)
+sev1a<span class="op">$</span>rhopar &lt;-<span class="st"> </span>rho
+sev1a<span class="op">$</span>thickpar &lt;-<span class="st"> </span>thick
+sev1a<span class="op">$</span>interpreted &lt;-<span class="st"> </span><span class="ot">TRUE</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p2 &lt;-<span class="st"> </span><span class="kw">plot</span>(sev1a)</code></pre></div>
+<p><img src="rves-tutorial_files/figure-html/plot_sev1a1-1.png" width="576" style="display: block; margin: auto;"></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">res &lt;-<span class="st"> </span><span class="kw"><a href="../reference/apparent_resistivities.html">apparent_resistivities</a></span>(rho, thick, <span class="dt">filt=</span>filt<span class="op">$</span>V1, ab2)
+<span class="kw">print</span>(res<span class="op">$</span>appres)
+<span class="co">#&gt;  [1] 45.03442 50.79032 55.28891 57.89512 57.49175 54.80907 50.75936</span>
+<span class="co">#&gt;  [8] 46.97001 41.22785 36.61319 34.31048 30.31195 28.43154 26.55114</span>
+<span class="co">#&gt; [15] 25.11512 22.97268 22.21597 21.45926</span></code></pre></div>
 </div>
 </div>
 </div>
@@ -142,6 +148,7 @@ k=\frac{2 \pi}{\frac{1}{r_{AM}} - \frac{1}{r_{BM}} - \frac{1}{r_{AN}} + \frac{1}
       <li>
 <a href="#methodology">Methodology</a><ul class="nav nav-pills nav-stacked">
 <li><a href="#ves-basic-concepts">VES: Basic Concepts</a></li>
+      <li><a href="#layered-earth">Layered Earth</a></li>
       <li><a href="#parameter-estimation">Parameter Estimation</a></li>
       </ul>
 </li>
