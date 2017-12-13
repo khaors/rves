@@ -17,6 +17,7 @@ NULL
 #' \item smooth.spline
 #' \item kernel.regression
 #' }
+#' @param bw Bandwidth
 #' @param ... Additional parameters required for the smoothing method
 #' @return
 #' This function returns a list with the following entries:
@@ -29,19 +30,29 @@ NULL
 #' @family smoothing functions
 #' @importFrom stats smooth.spline
 #' @export
-smoothing_ves <- function(ves, method = c("smooth.spline", "kernel.regression"), ...){
+smoothing_ves <- function(ves, method = c("smooth.spline", "kernel.regression"),
+                          bw = 0.1, ...){
   if(class(ves) != "ves"){
     stop('ERROR: A ves object is required as input')
   }
   ab2 <- ves$ab2
   appres <- ves$appres
+  #print(appres)
   #
   res <- NULL
   if(method == "smooth.spline"){
-    res <- smooth.spline(log10(ab2), log10(appres))
+    tmp <- smooth.spline(log10(ab2), log10(appres))
+    ab2.s <- 10^tmp$x
+    rho.s <- 10^tmp$y
+    res <- list(ab2 = ab2.s, apprho = rho.s)
   }
   else if(method == "kernel.regression"){
-
+    lab2 <- log10(ab2)
+    lapprho <- log10(appres)
+    #bw <- regCVBwSelC(lab2, lapprho, deg = 1, EpaK)
+    #print(bw)
+    tmp <- locCuadSmootherC(lab2, lapprho, lab2, bw = bw, EpaK)
+    res <- list(ab2 = 10^tmp$x, apprho = 10^tmp$beta0)
   }
   return(res)
 }
