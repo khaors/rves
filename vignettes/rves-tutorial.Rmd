@@ -95,3 +95,43 @@ p2 <- plot(sev1a)
 res <- apparent_resistivities(rho, thick, filt=filt$V1, ab2)
 print(res$appres)
 ```
+
+```{r calculate_error,echo=TRUE}
+rerr <- 100*abs(res$appres-apprho)/res$appres
+print(rerr)
+print(mean(rerr))
+```
+
+```{r calculate_rho_thick_nls, echo=TRUE}
+par0 <- c(rho, thick)
+res.nls <- calibrate_nls(sev1a, par0, iterations = 10, ireport = 5)
+```
+
+```{r assign_results_nls,echo=TRUE}
+sev1a$rhopar <- res.nls$rho
+sev1a$thickpar <- res.nls$thickness
+sev1a$interpreted <- TRUE
+```
+
+```{r plot_earth_model_nls,fig.height=4, fig.width=6,fig.align='center'}
+p1 <- plot(sev1a, main = "Nonlinear Least Squares")
+```
+
+```{r calibrate_lbfgs, echo=TRUE}
+res.lbfgs <- calibrate(sev1a, opt.method = "L-BFGS-B", obj.fn = "rss", 
+                       par0 = par0, lower = c(rep(5,4), rep(5,4)), 
+                       upper = c(rep(100,4),rep(501,4)))
+```
+
+```{r assign_results_lbfgsb, echo=TRUE}
+sev1a$rhopar <- res.lbfgs$rho
+sev1a$thickpar <- res.lbfgs$thickness
+sev1a$interpreted <- TRUE
+```
+
+```{r plot_earth_model_lbfgsb,fig.height=4, fig.width=6,fig.align='center'}
+p2 <- plot(sev1a, main = "L-BFGS-B")
+```
+
+
+

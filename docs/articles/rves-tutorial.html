@@ -65,7 +65,7 @@
       <h1>RVES Tutorial: Vertical Electrical Sounding interpretation using R</h1>
                         <h4 class="author">Oscar Garcia-Cabrejo</h4>
             
-            <h4 class="date">2017-12-13</h4>
+            <h4 class="date">2017-12-15</h4>
           </div>
 
     
@@ -134,6 +134,31 @@ sev1a<span class="op">$</span>interpreted &lt;-<span class="st"> </span><span cl
 <span class="co">#&gt;  [1] 45.03442 50.79032 55.28891 57.89512 57.49175 54.80907 50.75936</span>
 <span class="co">#&gt;  [8] 46.97001 41.22785 36.61319 34.31048 30.31195 28.43154 26.55114</span>
 <span class="co">#&gt; [15] 25.11512 22.97268 22.21597 21.45926</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rerr &lt;-<span class="st"> </span><span class="dv">100</span><span class="op">*</span><span class="kw">abs</span>(res<span class="op">$</span>appres<span class="op">-</span>apprho)<span class="op">/</span>res<span class="op">$</span>appres
+<span class="kw">print</span>(rerr)
+<span class="co">#&gt;  [1]  7.095863  1.201653  4.085640  9.594723  7.111025 11.952279 14.757161</span>
+<span class="co">#&gt;  [8] 26.399793 18.124039  1.265088 10.960138 11.025177 23.254249 13.939657</span>
+<span class="co">#&gt; [15] 12.244097  6.279988  4.032997 10.528123</span>
+<span class="kw">print</span>(<span class="kw">mean</span>(rerr))
+<span class="co">#&gt; [1] 10.76954</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">par0 &lt;-<span class="st"> </span><span class="kw">c</span>(rho, thick)
+res.nls &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calibrate_nls.html">calibrate_nls</a></span>(sev1a, par0, <span class="dt">iterations =</span> <span class="dv">10</span>, <span class="dt">ireport =</span> <span class="dv">5</span>)
+<span class="co">#&gt; iteration, RSS, Rel Error =  0 17.92395 10.10434 </span>
+<span class="co">#&gt; iteration, RSS, Rel Error =  5 4.657908 4.95162 </span>
+<span class="co">#&gt; iteration, RSS, Rel Error =  9 3.95511 4.878283</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sev1a<span class="op">$</span>rhopar &lt;-<span class="st"> </span>res.nls<span class="op">$</span>rho
+sev1a<span class="op">$</span>thickpar &lt;-<span class="st"> </span>res.nls<span class="op">$</span>thickness
+sev1a<span class="op">$</span>interpreted &lt;-<span class="st"> </span><span class="ot">TRUE</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p1 &lt;-<span class="st"> </span><span class="kw">plot</span>(sev1a, <span class="dt">main =</span> <span class="st">"Nonlinear Least Squares"</span>)</code></pre></div>
+<p><img src="rves-tutorial_files/figure-html/plot_earth_model_nls-1.png" width="576" style="display: block; margin: auto;"></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">res.lbfgs &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calibrate.html">calibrate</a></span>(sev1a, <span class="dt">opt.method =</span> <span class="st">"L-BFGS-B"</span>, <span class="dt">obj.fn =</span> <span class="st">"rss"</span>, 
+                       <span class="dt">par0 =</span> par0, <span class="dt">lower =</span> <span class="kw">c</span>(<span class="kw">rep</span>(<span class="dv">5</span>,<span class="dv">4</span>), <span class="kw">rep</span>(<span class="dv">5</span>,<span class="dv">4</span>)), 
+                       <span class="dt">upper =</span> <span class="kw">c</span>(<span class="kw">rep</span>(<span class="dv">100</span>,<span class="dv">4</span>),<span class="kw">rep</span>(<span class="dv">501</span>,<span class="dv">4</span>)))</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sev1a<span class="op">$</span>rhopar &lt;-<span class="st"> </span>res.lbfgs<span class="op">$</span>rho
+sev1a<span class="op">$</span>thickpar &lt;-<span class="st"> </span>res.lbfgs<span class="op">$</span>thickness
+sev1a<span class="op">$</span>interpreted &lt;-<span class="st"> </span><span class="ot">TRUE</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p2 &lt;-<span class="st"> </span><span class="kw">plot</span>(sev1a, <span class="dt">main =</span> <span class="st">"L-BFGS-B"</span>)</code></pre></div>
+<p><img src="rves-tutorial_files/figure-html/plot_earth_model_lbfgsb-1.png" width="576" style="display: block; margin: auto;"></p>
 </div>
 </div>
 </div>
