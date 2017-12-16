@@ -84,16 +84,18 @@ print.ves <- function(x, ...){
 #' apparent resistivity vs electrode spacing and the thickness and real resisitivity of the
 #' layers are included.
 #' @param x A VES object
+#' @param main Title of the plot
 #' @param ... Additional parameters to be passed to the plot function
 #' @importFrom ggplot2 geom_point geom_line scale_x_log10 scale_y_log10 xlab ylab ggtitle
 #' @importFrom ggplot2 theme_bw geom_path ggplot aes
 #' @importFrom gridExtra grid.arrange
 #' @importFrom pracma logseq
 #' @export
-plot.ves <- function(x, ...){
+plot.ves <- function(x, main = NULL, ...){
   if(class(x) != 'ves'){
     stop('A VES object is required as input')
   }
+  args <- list(...)
   ves <- x
   ves.df <- data.frame(ab2 = ves$ab2, appres = ves$appres)
   pbase <- NULL
@@ -105,13 +107,19 @@ plot.ves <- function(x, ...){
   yrng <- range(ves$appres)
   log10yrng <- abs(diff(log10(yrng)))
   #print(log10yrng)
+  if(!is.null(main)){
+    subtitle <- paste(",", main)
+  }
+  else{
+    subtitle <- ""
+  }
   if(!ves$interpreted){
     pbase <- ggplot() + geom_point(aes(x = ab2, y = appres), data = ves.df,
                                    col = "red", size = 2) +
       scale_x_log10(breaks = breaks, minor_breaks = minor_breaks) +
       ylab( expression(paste("Apparent Resitivity ", Omega, phantom() %.% phantom(), "m"))) +
       xlab('AB2(m)') +
-      ggtitle(paste("Profile: ", ves$id)) +
+      ggtitle(paste("Profile: ", ves$id, subtitle)) +
       theme_bw()
     if(log10yrng < 1){
       pbase <- pbase + scale_y_log10(breaks = minor_breaks)
@@ -153,7 +161,7 @@ plot.ves <- function(x, ...){
       scale_x_log10(breaks = breaks, minor_breaks = minor_breaks) +
       ylab( expression(paste("Apparent Resitivity ", Omega, phantom() %.% phantom(), "m"))) +
       xlab('AB2(m)') +
-      ggtitle(paste("Profile: ", ves$id)) +
+      ggtitle(paste("Profile: ", ves$id, subtitle)) +
       theme_bw()
     if(log10yrng < 1){
       pbase <- pbase + scale_y_log10(breaks = minor_breaks)
@@ -161,7 +169,7 @@ plot.ves <- function(x, ...){
     else{
       pbase <- pbase + scale_y_log10(breaks = breaks, minor_breaks = minor_breaks)
     }
-    print(pbase)
+    #print(pbase)
   }
   return(pbase)
 }

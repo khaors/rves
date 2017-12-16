@@ -4,10 +4,12 @@
 \alias{plot.ves}
 \title{plot.ves}
 \usage{
-\method{plot}{ves}(x, ...)
+\method{plot}{ves}(x, main = NULL, ...)
 }
 \arguments{
 \item{x}{A VES object}
+
+\item{main}{Title of the plot}
 
 \item{...}{Additional parameters to be passed to the plot function}
 }
