@@ -29,6 +29,7 @@ NULL
 #' Oscar Garcia-Cabrejo \email{khaors@gmail.com}
 #' @family smoothing functions
 #' @importFrom stats smooth.spline
+#' @importFrom locpol locCuadSmootherC EpaK
 #' @export
 smoothing_ves <- function(ves, method = c("smooth.spline", "kernel.regression"),
                           bw = 0.1, ...){
