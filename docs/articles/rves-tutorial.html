@@ -148,14 +148,18 @@ res.nls &lt;-<span class="st"> </span><span class="kw"><a href="../reference/cal
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sev1a<span class="op">$</span>rhopar &lt;-<span class="st"> </span>res.nls<span class="op">$</span>rho
 sev1a<span class="op">$</span>thickpar &lt;-<span class="st"> </span>res.nls<span class="op">$</span>thickness
 sev1a<span class="op">$</span>interpreted &lt;-<span class="st"> </span><span class="ot">TRUE</span></code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p1 &lt;-<span class="st"> </span><span class="kw">plot</span>(sev1a, <span class="dt">main =</span> <span class="st">"Nonlinear Least Squares"</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p1 &lt;-<span class="st"> </span><span class="kw">plot</span>(sev1a, <span class="dt">main =</span> <span class="st">"Nonlinear Least Squares"</span>)
+<span class="kw">print</span>(p1)</code></pre></div>
+<p><img src="rves-tutorial_files/figure-html/plot_earth_model_nls-1.png" width="576" style="display: block; margin: auto;"></p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">res.lbfgs &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calibrate.html">calibrate</a></span>(sev1a, <span class="dt">opt.method =</span> <span class="st">"L-BFGS-B"</span>, <span class="dt">obj.fn =</span> <span class="st">"rss"</span>, 
                        <span class="dt">par0 =</span> par0, <span class="dt">lower =</span> <span class="kw">c</span>(<span class="kw">rep</span>(<span class="dv">5</span>,<span class="dv">4</span>), <span class="kw">rep</span>(<span class="dv">5</span>,<span class="dv">4</span>)), 
                        <span class="dt">upper =</span> <span class="kw">c</span>(<span class="kw">rep</span>(<span class="dv">100</span>,<span class="dv">4</span>),<span class="kw">rep</span>(<span class="dv">501</span>,<span class="dv">4</span>)))</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sev1a<span class="op">$</span>rhopar &lt;-<span class="st"> </span>res.lbfgs<span class="op">$</span>rho
 sev1a<span class="op">$</span>thickpar &lt;-<span class="st"> </span>res.lbfgs<span class="op">$</span>thickness
 sev1a<span class="op">$</span>interpreted &lt;-<span class="st"> </span><span class="ot">TRUE</span></code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p2 &lt;-<span class="st"> </span><span class="kw">plot</span>(sev1a, <span class="dt">main =</span> <span class="st">"L-BFGS-B"</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p2 &lt;-<span class="st"> </span><span class="kw">plot</span>(sev1a, <span class="dt">main =</span> <span class="st">"L-BFGS-B"</span>)
+<span class="kw">print</span>(p2)</code></pre></div>
+<p><img src="rves-tutorial_files/figure-html/plot_earth_model_lbfgsb-1.png" width="576" style="display: block; margin: auto;"></p>
 </div>
 </div>
 </div>
