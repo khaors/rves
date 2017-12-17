@@ -1,4 +1,4 @@
-# rves
+# rves: Interpretation of Vertical Electrical Sounding profiles using R
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/rves)](https://cran.r-project.org/package=rves)
 [![Travis-CI Build Status](https://travis-ci.org/khaors/rves.svg?branch=master)](https://travis-ci.org/khaors/rves) 
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/khaors/rves?branch=master&svg=true)](https://ci.appveyor.com/project/khaors/rves)
@@ -6,7 +6,7 @@
 [![HitCount](http://hits.dwyl.io/khaors/rves.svg)](http://hits.dwyl.io/khaors/rves)
 [![bitHound Overall Score](https://www.bithound.io/github/khaors/rves/badges/score.svg)](https://www.bithound.io/github/khaors/rves)
 
-Interpretation of Vertical Electrical Sounding profiles using R
+
 
 This package contains a set of function used in the interpretation of Vertical Electrical Sounding profiles. 
 

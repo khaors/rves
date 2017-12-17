@@ -2,7 +2,7 @@
 #'
 #' This section includes all the functions required for the estimation of the thicknesses and real resitivities from the VES data. The functions included here are:
 #'
-#' rss_resisitivity, log_rss_resistivity, mnad_resistivity, log_mnad_resistivity, mxad_resistivity, log_mxad_resistivity, calibrate
+#' rss_resisitivity, log_rss_resistivity, mnad_resistivity, log_mnad_resistivity, mxad_resistivity, log_mxad_resistivity, calibrate, calibrate_nls, calibrate_svd
 #'
 #' @docType package
 #' @name rves
@@ -413,5 +413,105 @@ calibrate_nls <- function(ves, par0, iterations = 100, ireport = 10){
   res <- list(par = cpar, value = current.error, rel.error = current.error1,
               cal.error = cal.error, rho = cpar[1:nparh],
               thickness = cpar[(nparh+1):npar], hessian = t(J)%*%J)
+  return(res)
+}
+#' @title
+#' calibrate_svd
+#' @description
+#' Function to estimate the layer parameters using the approach proposed by Meju (1992)
+#' @param ves A vertical electrical sounding object
+#' @param par0 A numeric vector with the initial values of resistivities and thicknesses
+#' @param iterations An integer specifying the maximum number of iterations
+#' @param ireport An integer specifying the report interval
+#' @return
+#' This function returns a list with the following entries:
+#' \itemize{
+#' \item par: A numeric vector with the values of the layer resistivities and thicknesses
+#' \item value: The value or the RSS (Residual sum of squares)
+#' \item rel.error: The value of the relative error (in percentage)
+#' \item cal.error: A matrix with the RSS and relative error at each iteration
+#' }
+#' @author
+#' Oscar Garcia-Cabrejo \email{khaors@gmail.com}
+#' @family Calibration functions
+#' @importFrom numDeriv jacobian
+#' @importFrom pracma inv
+#' @export
+calibrate_svd <- function(ves, par0, iterations = 100, ireport = 10){
+  if(class(ves) != "ves"){
+    stop('ERROR: A VES object is required as input')
+  }
+  cal.error <- matrix(0.0, nrow = iterations, ncol = 2)
+  spacing <- ves$ab2
+  measured <- ves$appres
+  npar <- length(par0)
+  nparh <- npar/2
+  niter <- iterations
+  iter <- 0
+  cpar <- par0
+  cpar1 <- as.matrix(cpar, npar, 1)
+  ks <- seq(from = 1,to = 10,by = 1)
+  qk <- vector('numeric', length = 10)
+  current.error1 <- 100
+  while(iter < niter){
+    # Data difference
+    cres <- apparent_resistivities_simple(cpar, rves::filt$V1, spacing)
+    rel.err <- mean(100*abs(cres-measured)/measured)
+    if(rel.err < 10.0 & iter < 1){
+      break
+    }
+    d <- as.matrix((cres-measured), length(measured), 1)
+    # Calculate jacobian matrix
+    J <- jacobian(apparent_resistivities_simple, cpar, filt=rves::filt$V1, spacing=spacing)
+    # Calculate SVD of Jacobian Matrix
+    Jsvd <- svd(J)
+    # Get the eigenvalues of the Jacobian matrix
+    qvalues <- Jsvd$d
+    #
+    if(min(qvalues)<1.e-5){
+      p <- which.min(qvalues)
+      qvalues[p] <- 1e-5
+    }
+    # Define the search range for the optimun q
+    ql <- 10*max(qvalues)
+    qs <- 0.1*min(qvalues)
+    qk <- ((100*qs-ql)+(ql-qs)*ks^2)/99.0
+    beta <- qk^2
+    # calculate parameter correction
+    #x <- solve(t(J)%*%J+beta[ik]*pracma::eye(npar),t(J)%*%d)
+    rel.err1 <- vector('numeric', length = 11)
+    rel.err1[1] <- rel.err
+    for(ii in 1:10){
+      for(ik in (11-ii):1){
+        J <- jacobian(apparent_resistivities_simple, cpar, filt=rves::filt$V1,
+                      spacing=spacing)
+        Jsvd <- svd(J)
+        corrected.eigenvalues <- diag(Jsvd$d + beta[ik])
+        x <- Jsvd$v%*%pracma::inv(corrected.eigenvalues)%*%t(Jsvd$u)%*%d
+        oldpar <- cpar
+        cpar <- cpar - x
+        cres1 <- apparent_resistivities_simple(cpar, rves::filt$V1, spacing)
+        rel.err1[ii+1] <- mean(100*abs(cres1-measured)/measured)
+        #print(rel.err1[ii+1])
+        if(rel.err1[ii] > rel.err || rel.err1[ii+1] > rel.err1[ii]){
+          cpar <- oldpar
+          break
+        }
+        else{
+          cpar <- cpar
+          current.error1 <- rel.err1[ii+1]
+          current.error <- sum((cres1-measured)^2)
+        }
+      }
+    }
+    if(mod(iter, ireport) == 0 | iter == (niter-1)){
+      cat("iteration, RSS, Rel Error = ", c(iter,current.error,current.error1), "\n")
+    }
+    iter <- iter + 1
+  }
+  current.error <- 100.0
+  res <- list(par = cpar, value = current.error, rel.error = current.error1,
+              cal.error = cal.error, rho = cpar[1:nparh],
+              thickness = cpar[(nparh+1):npar])
   return(res)
 }

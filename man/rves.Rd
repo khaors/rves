@@ -24,7 +24,7 @@ This package includes several functions used in the inversion of the VES.
 
 This section includes all the functions required for the estimation of the thicknesses and real resitivities from the VES data. The functions included here are:
 
-rss_resisitivity, log_rss_resistivity, mnad_resistivity, log_mnad_resistivity, mxad_resistivity, log_mxad_resistivity, calibrate
+rss_resisitivity, log_rss_resistivity, mnad_resistivity, log_mnad_resistivity, mxad_resistivity, log_mxad_resistivity, calibrate, calibrate_nls, calibrate_svd
 
 
  The calibration functions includes functions to calibrate, calculate model fit, and objective
