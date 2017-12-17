@@ -115,6 +115,7 @@ sev1a$interpreted <- TRUE
 
 ```{r plot_earth_model_nls,fig.height=4, fig.width=6,fig.align='center'}
 p1 <- plot(sev1a, main = "Nonlinear Least Squares")
+print(p1)
 ```
 
 ```{r calibrate_lbfgs, echo=TRUE}
@@ -131,6 +132,7 @@ sev1a$interpreted <- TRUE
 
 ```{r plot_earth_model_lbfgsb,fig.height=4, fig.width=6,fig.align='center'}
 p2 <- plot(sev1a, main = "L-BFGS-B")
+print(p2)
 ```
 
 
