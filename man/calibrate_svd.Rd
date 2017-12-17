@@ -27,6 +27,10 @@ This function returns a list with the following entries:
 \description{
 Function to estimate the layer parameters using the approach proposed by Meju (1992)
 }
+\references{
+Meju, M. An effective ridge regression procedure for resistivity data inversion.
+Computers and Geosciences, 18(2-3), 99-119, 1992.
+}
 \author{
 Oscar Garcia-Cabrejo \email{khaors@gmail.com}
 }

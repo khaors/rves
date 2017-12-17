@@ -434,6 +434,8 @@ calibrate_nls <- function(ves, par0, iterations = 100, ireport = 10){
 #' @author
 #' Oscar Garcia-Cabrejo \email{khaors@gmail.com}
 #' @family Calibration functions
+#' @references Meju, M. An effective ridge regression procedure for resistivity data inversion.
+#' Computers and Geosciences, 18(2-3), 99-119, 1992.
 #' @importFrom numDeriv jacobian
 #' @importFrom pracma inv
 #' @export
