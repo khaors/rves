@@ -65,7 +65,7 @@
       <h1>RVES Tutorial: Vertical Electrical Sounding interpretation using R</h1>
                         <h4 class="author">Oscar Garcia-Cabrejo</h4>
             
-            <h4 class="date">2017-12-15</h4>
+            <h4 class="date">2017-12-17</h4>
           </div>
 
     
@@ -128,7 +128,6 @@ sev1a<span class="op">$</span>rhopar &lt;-<span class="st"> </span>rho
 sev1a<span class="op">$</span>thickpar &lt;-<span class="st"> </span>thick
 sev1a<span class="op">$</span>interpreted &lt;-<span class="st"> </span><span class="ot">TRUE</span></code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p2 &lt;-<span class="st"> </span><span class="kw">plot</span>(sev1a)</code></pre></div>
-<p><img src="rves-tutorial_files/figure-html/plot_sev1a1-1.png" width="576" style="display: block; margin: auto;"></p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">res &lt;-<span class="st"> </span><span class="kw"><a href="../reference/apparent_resistivities.html">apparent_resistivities</a></span>(rho, thick, <span class="dt">filt=</span>filt<span class="op">$</span>V1, ab2)
 <span class="kw">print</span>(res<span class="op">$</span>appres)
 <span class="co">#&gt;  [1] 45.03442 50.79032 55.28891 57.89512 57.49175 54.80907 50.75936</span>
@@ -150,7 +149,6 @@ res.nls &lt;-<span class="st"> </span><span class="kw"><a href="../reference/cal
 sev1a<span class="op">$</span>thickpar &lt;-<span class="st"> </span>res.nls<span class="op">$</span>thickness
 sev1a<span class="op">$</span>interpreted &lt;-<span class="st"> </span><span class="ot">TRUE</span></code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p1 &lt;-<span class="st"> </span><span class="kw">plot</span>(sev1a, <span class="dt">main =</span> <span class="st">"Nonlinear Least Squares"</span>)</code></pre></div>
-<p><img src="rves-tutorial_files/figure-html/plot_earth_model_nls-1.png" width="576" style="display: block; margin: auto;"></p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">res.lbfgs &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calibrate.html">calibrate</a></span>(sev1a, <span class="dt">opt.method =</span> <span class="st">"L-BFGS-B"</span>, <span class="dt">obj.fn =</span> <span class="st">"rss"</span>, 
                        <span class="dt">par0 =</span> par0, <span class="dt">lower =</span> <span class="kw">c</span>(<span class="kw">rep</span>(<span class="dv">5</span>,<span class="dv">4</span>), <span class="kw">rep</span>(<span class="dv">5</span>,<span class="dv">4</span>)), 
                        <span class="dt">upper =</span> <span class="kw">c</span>(<span class="kw">rep</span>(<span class="dv">100</span>,<span class="dv">4</span>),<span class="kw">rep</span>(<span class="dv">501</span>,<span class="dv">4</span>)))</code></pre></div>
@@ -158,7 +156,6 @@ sev1a<span class="op">$</span>interpreted &lt;-<span class="st"> </span><span cl
 sev1a<span class="op">$</span>thickpar &lt;-<span class="st"> </span>res.lbfgs<span class="op">$</span>thickness
 sev1a<span class="op">$</span>interpreted &lt;-<span class="st"> </span><span class="ot">TRUE</span></code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p2 &lt;-<span class="st"> </span><span class="kw">plot</span>(sev1a, <span class="dt">main =</span> <span class="st">"L-BFGS-B"</span>)</code></pre></div>
-<p><img src="rves-tutorial_files/figure-html/plot_earth_model_lbfgsb-1.png" width="576" style="display: block; margin: auto;"></p>
 </div>
 </div>
 </div>
