@@ -65,7 +65,7 @@
       <h1>RVES Tutorial: Vertical Electrical Sounding interpretation using R</h1>
                         <h4 class="author">Oscar Garcia-Cabrejo</h4>
             
-            <h4 class="date">2017-12-17</h4>
+            <h4 class="date">2017-12-18</h4>
           </div>
 
     
@@ -131,7 +131,8 @@ r&amp;=\log{(1/\lambda)}
 T(r)=\int\limits_{-\infty}^{+\infty}\rho_{\text{app}}(s)J_{1}(1/\exp{(r-s)})ds
 \]</span> which is a convolution integral that can be easily solved in the frequency domain: <span class="math display">\[
 T(\omega)=G(\omega) H(\omega)
-\]</span> where <span class="math inline">\(T(\omega)\)</span> is the Fourier transform of the resistivity transform, <span class="math inline">\(G(\omega)=\mathcal{F}(\rho_{\text{app}}(x))\)</span> is the Fourier transform of the apparent resistivity data, and <span class="math inline">\(H(\omega)=\mathcal{F}(J_{1}(1/\exp{(x)}))\)</span> is the Fourier transform of the Bessel function of order 1. In the Geophysics literature, this Fourier transform is called the Transform of the linear filter. This filter can be obtained from the ratio of the Fourier transform of <span class="math inline">\(T(\lambda)\)</span> and the Fourier transform of the <span class="math inline">\(\rho_{\text{app}}(x)\)</span></p>
+\]</span> where <span class="math inline">\(T(\omega)\)</span> is the Fourier transform of the resistivity transform <span class="math inline">\(T(\lambda)\)</span>, <span class="math inline">\(G(\omega)=\mathcal{F}[\rho_{\text{app}}(x)]\)</span> is the Fourier transform of the apparent resistivity data, and <span class="math inline">\(H(\omega)=\mathcal{F}(J_{1}(1/\exp{(x)}))\)</span> is the Fourier transform of the Bessel function of order 1. In the Geophysics literature, this Fourier transform is the Transform of the linear filter and it can be obtained from the ratio of the Fourier transform of <span class="math inline">\(T(\lambda)\)</span> and the Fourier transform of the <span class="math inline">\(\rho_{\text{app}}(x)\)</span>.</p>
+<p>In practical problems, <span class="math inline">\(T(\lambda)\)</span> can be easily calculated using some kind of recurrence relationship, and if the transform of the linear filter <span class="math inline">\(H(\omega)\)</span> is available then it is possible to calculate <span class="math inline">\(G(\omega)\)</span> and therefore the apparent resistivity curve <span class="math inline">\(\rho_{\text{app}}(x)\)</span>.</p>
 </div>
 <div id="parameter-estimation" class="section level2">
 <h2 class="hasAnchor">
@@ -144,51 +145,64 @@ T(\omega)=G(\omega) H(\omega)
 <div id="ves-1" class="section level2">
 <h2 class="hasAnchor">
 <a href="#ves-1" class="anchor"></a>VES 1</h2>
+<p>The first step in the interpretation of a VES is to load the <strong>rves</strong> package:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(rves)</code></pre></div>
+<p>For this example, the VES ves_data1 included in the package is used to test the different functions included in <strong>rves</strong>:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(<span class="st">"ves_data1"</span>)</code></pre></div>
+<p>The electrode spacing and the apparent resistivity values are defined:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ab2 &lt;-<span class="st"> </span>ves_data1<span class="op">$</span>ab2
-apprho &lt;-<span class="st"> </span>ves_data1<span class="op">$</span>apprho
-sev1a &lt;-<span class="st"> </span><span class="kw"><a href="../reference/ves.html">ves</a></span>(<span class="dt">id=</span> <span class="st">"Sounding 1"</span>, <span class="dt">ab2 =</span> ab2, <span class="dt">apprho =</span> apprho)</code></pre></div>
+apprho &lt;-<span class="st"> </span>ves_data1<span class="op">$</span>apprho</code></pre></div>
+<p>and these are used to define the VES object inside R:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sev1a &lt;-<span class="st"> </span><span class="kw"><a href="../reference/ves.html">ves</a></span>(<span class="dt">id=</span> <span class="st">"Sounding 1"</span>, <span class="dt">ab2 =</span> ab2, <span class="dt">apprho =</span> apprho)</code></pre></div>
+<p>The plot of the VES used as example can be seen in the following plot:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p1 &lt;-<span class="st"> </span><span class="kw">plot</span>(sev1a)</code></pre></div>
 <p><img src="rves-tutorial_files/figure-html/plot_sev1a-1.png" width="576" style="display: block; margin: auto;"></p>
+<p>An initial model (true resistivities and thicknesses) is obtained from visual inspection of the previous plot:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rho &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">40</span>,<span class="dv">70</span>,<span class="dv">30</span>, <span class="dv">20</span>)
 thick &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">2</span>,<span class="dv">10</span>,<span class="dv">50</span>,<span class="dv">500</span>)
 sev1a<span class="op">$</span>rhopar &lt;-<span class="st"> </span>rho
 sev1a<span class="op">$</span>thickpar &lt;-<span class="st"> </span>thick
 sev1a<span class="op">$</span>interpreted &lt;-<span class="st"> </span><span class="ot">TRUE</span></code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p2 &lt;-<span class="st"> </span><span class="kw">plot</span>(sev1a)</code></pre></div>
+<p>and this initial model is plotted:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p2 &lt;-<span class="st"> </span><span class="kw">plot</span>(sev1a)
+<span class="kw">print</span>(p2)</code></pre></div>
+<p><img src="rves-tutorial_files/figure-html/plot_sev1a1-1.png" width="576" style="display: block; margin: auto;"> As seen in the previous plot, the proposed model (blue line) is not a good explanation of the measurements (red points), which is also corroborated by the relative error:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">res &lt;-<span class="st"> </span><span class="kw"><a href="../reference/apparent_resistivities.html">apparent_resistivities</a></span>(rho, thick, <span class="dt">filt=</span>filt<span class="op">$</span>V1, ab2)
-<span class="kw">print</span>(res<span class="op">$</span>appres)
-<span class="co">#&gt;  [1] 45.03442 50.79032 55.28891 57.89512 57.49175 54.80907 50.75936</span>
-<span class="co">#&gt;  [8] 46.97001 41.22785 36.61319 34.31048 30.31195 28.43154 26.55114</span>
-<span class="co">#&gt; [15] 25.11512 22.97268 22.21597 21.45926</span></code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rerr &lt;-<span class="st"> </span><span class="dv">100</span><span class="op">*</span><span class="kw">abs</span>(res<span class="op">$</span>appres<span class="op">-</span>apprho)<span class="op">/</span>res<span class="op">$</span>appres
+rerr &lt;-<span class="st"> </span><span class="dv">100</span><span class="op">*</span><span class="kw">abs</span>(res<span class="op">$</span>appres<span class="op">-</span>apprho)<span class="op">/</span>res<span class="op">$</span>appres
 <span class="kw">print</span>(rerr)
 <span class="co">#&gt;  [1]  7.095863  1.201653  4.085640  9.594723  7.111025 11.952279 14.757161</span>
 <span class="co">#&gt;  [8] 26.399793 18.124039  1.265088 10.960138 11.025177 23.254249 13.939657</span>
 <span class="co">#&gt; [15] 12.244097  6.279988  4.032997 10.528123</span>
 <span class="kw">print</span>(<span class="kw">mean</span>(rerr))
 <span class="co">#&gt; [1] 10.76954</span></code></pre></div>
+<p>The relative error is still larger than <span class="math inline">\(10\%\)</span> and therefore a proper estimation method is required. The first method to be used in the parameter estimation of the Earth model is the nonlinear least squares, which is a fast method and a small number of iterations is required:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">par0 &lt;-<span class="st"> </span><span class="kw">c</span>(rho, thick)
 res.nls &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calibrate_nls.html">calibrate_nls</a></span>(sev1a, par0, <span class="dt">iterations =</span> <span class="dv">10</span>, <span class="dt">ireport =</span> <span class="dv">5</span>)
 <span class="co">#&gt; iteration, RSS, Rel Error =  0 17.92395 10.10434 </span>
 <span class="co">#&gt; iteration, RSS, Rel Error =  5 4.657908 4.95162 </span>
 <span class="co">#&gt; iteration, RSS, Rel Error =  9 3.95511 4.878283</span></code></pre></div>
+<p>After <span class="math inline">\(10\)</span> iterations the relative error is of <span class="math inline">\(4.87\%\)</span> which can be considered as a good model. Now these estimated parameters are assigned to the VES object:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sev1a<span class="op">$</span>rhopar &lt;-<span class="st"> </span>res.nls<span class="op">$</span>rho
 sev1a<span class="op">$</span>thickpar &lt;-<span class="st"> </span>res.nls<span class="op">$</span>thickness
 sev1a<span class="op">$</span>interpreted &lt;-<span class="st"> </span><span class="ot">TRUE</span></code></pre></div>
+<p>and the results are plotted:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p1 &lt;-<span class="st"> </span><span class="kw">plot</span>(sev1a, <span class="dt">main =</span> <span class="st">"Nonlinear Least Squares"</span>)
 <span class="kw">print</span>(p1)</code></pre></div>
 <p><img src="rves-tutorial_files/figure-html/plot_earth_model_nls-1.png" width="576" style="display: block; margin: auto;"></p>
+<p>The estimated model (blue line) is closer to the apparent resitivity measurements (red points) and now this model can be considered as a good representation of the geological structure.</p>
+<p>It is always a good practice to use another method for the estimation of the parameters of the Earth model. The Quasi-Newton method with limited memory is a method that use derivatives and the limits of the search region can be specified (lower and upper arguments of the <em>calibrate</em> function):</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">res.lbfgs &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calibrate.html">calibrate</a></span>(sev1a, <span class="dt">opt.method =</span> <span class="st">"L-BFGS-B"</span>, <span class="dt">obj.fn =</span> <span class="st">"rss"</span>, 
                        <span class="dt">par0 =</span> par0, <span class="dt">lower =</span> <span class="kw">c</span>(<span class="kw">rep</span>(<span class="dv">5</span>,<span class="dv">4</span>), <span class="kw">rep</span>(<span class="dv">5</span>,<span class="dv">4</span>)), 
                        <span class="dt">upper =</span> <span class="kw">c</span>(<span class="kw">rep</span>(<span class="dv">100</span>,<span class="dv">4</span>),<span class="kw">rep</span>(<span class="dv">501</span>,<span class="dv">4</span>)))</code></pre></div>
+<p>The relative error in this case is equal to 4.45 % which is a small improvement with respect to the nonlinear squares case. Again, the estimated parameters are assigned to the VES object:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sev1a<span class="op">$</span>rhopar &lt;-<span class="st"> </span>res.lbfgs<span class="op">$</span>rho
 sev1a<span class="op">$</span>thickpar &lt;-<span class="st"> </span>res.lbfgs<span class="op">$</span>thickness
 sev1a<span class="op">$</span>interpreted &lt;-<span class="st"> </span><span class="ot">TRUE</span></code></pre></div>
+<p>and the results are plotted:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p2 &lt;-<span class="st"> </span><span class="kw">plot</span>(sev1a, <span class="dt">main =</span> <span class="st">"L-BFGS-B"</span>)
 <span class="kw">print</span>(p2)</code></pre></div>
 <p><img src="rves-tutorial_files/figure-html/plot_earth_model_lbfgsb-1.png" width="576" style="display: block; margin: auto;"></p>
+<p>The model estimated using Quasi-Newton method is similar to the model estimated using non-linear squares as seen in the plot, but the main difference is that the third layer has a smaller thickness and resistivity when compared to the nonlinear squares result. This result highlights the fact of the non-uniqueness of solution of the inverse problem.</p>
 </div>
 </div>
 </div>
