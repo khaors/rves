@@ -98,8 +98,9 @@ which is a convolution integral that can be easily solved in the frequency domai
 $$
 T(\omega)=G(\omega) H(\omega)
 $$
-where $T(\omega)$ is the Fourier transform of the resistivity transform, $G(\omega)=\mathcal{F}(\rho_{\text{app}}(x))$ is the Fourier transform of the apparent resistivity data, and $H(\omega)=\mathcal{F}(J_{1}(1/\exp{(x)}))$ is the Fourier transform of the Bessel function of order 1. In the Geophysics literature, this Fourier transform is called the Transform of the linear filter. This filter can be obtained from the ratio of the Fourier transform of $T(\lambda)$ and 
-the Fourier transform of the $\rho_{\text{app}}(x)$
+where $T(\omega)$ is the Fourier transform of the resistivity transform $T(\lambda)$, $G(\omega)=\mathcal{F}[\rho_{\text{app}}(x)]$ is the Fourier transform of the apparent resistivity data, and $H(\omega)=\mathcal{F}(J_{1}(1/\exp{(x)}))$ is the Fourier transform of the Bessel function of order 1. In the Geophysics literature, this Fourier transform is the Transform of the linear filter and it can be obtained from the ratio of the Fourier transform of $T(\lambda)$ and the Fourier transform of the $\rho_{\text{app}}(x)$. 
+
+In practical problems, $T(\lambda)$ can be easily calculated using some kind of recurrence relationship, and if the transform of the linear filter $H(\omega)$ is available then it is possible to calculate $G(\omega)$ and therefore the apparent resistivity curve $\rho_{\text{app}}(x)$.
 
 ## Parameter Estimation
 
@@ -107,25 +108,30 @@ the Fourier transform of the $\rho_{\text{app}}(x)$
 
 ## VES 1
 
-
+The first step in the interpretation of a VES is to load the __rves__ package: 
 ```{r load_library,echo=TRUE}
 library(rves)
 ```
-
+For this example, the VES ves\_data1 included in the package is used to test the different functions included in __rves__:
 ```{r load_data,echo=TRUE}
 data("ves_data1")
 ```
-
-```{r define_ves,echo=TRUE}
+The electrode spacing and the apparent resistivity values are defined:
+```{r define_ves1,echo=TRUE}
 ab2 <- ves_data1$ab2
 apprho <- ves_data1$apprho
+```
+and these are used to define the VES object inside R:
+```{r define_ves2,echo=TRUE}
 sev1a <- ves(id= "Sounding 1", ab2 = ab2, apprho = apprho)
 ```
-
+The plot of the VES used as example can be seen in the following plot:
 ```{r plot_sev1a, fig.height=4,fig.width=6,fig.align='center'}
 p1 <- plot(sev1a)
 ```
 
+
+An initial model (true resistivities and thicknesses) is obtained from visual inspection of the previous plot:
 ```{r initial_sol, echo= TRUE}
 rho <- c(40,70,30, 20)
 thick <- c(2,10,50,500)
@@ -133,43 +139,50 @@ sev1a$rhopar <- rho
 sev1a$thickpar <- thick
 sev1a$interpreted <- TRUE
 ```
-
+and this initial model is plotted:
 ```{r plot_sev1a1, fig.height=4, fig.width=6,fig.align='center'}
 p2 <- plot(sev1a)
+print(p2)
 ```
-
-```{r calculate_appres,echo=TRUE}
-res <- apparent_resistivities(rho, thick, filt=filt$V1, ab2)
-print(res$appres)
-```
+As seen in the previous plot, the proposed model (blue line) is not a good explanation of the measurements (red points), which is also corroborated by the relative error: 
 
 ```{r calculate_error,echo=TRUE}
+res <- apparent_resistivities(rho, thick, filt=filt$V1, ab2)
 rerr <- 100*abs(res$appres-apprho)/res$appres
 print(rerr)
 print(mean(rerr))
 ```
-
+The relative error is still larger than $10\%$ and therefore a proper estimation method is required. The first method to be used in the parameter estimation of the Earth model is the nonlinear least squares, which is a fast method and a small number of iterations is required:
 ```{r calculate_rho_thick_nls, echo=TRUE}
 par0 <- c(rho, thick)
 res.nls <- calibrate_nls(sev1a, par0, iterations = 10, ireport = 5)
 ```
-
+After $10$ iterations the relative error is of $4.87\%$ which can be considered as a good model. Now these estimated parameters are assigned to the VES object:
 ```{r assign_results_nls,echo=TRUE}
 sev1a$rhopar <- res.nls$rho
 sev1a$thickpar <- res.nls$thickness
 sev1a$interpreted <- TRUE
 ```
-
+and the results are plotted:
 ```{r plot_earth_model_nls,fig.height=4, fig.width=6,fig.align='center'}
 p1 <- plot(sev1a, main = "Nonlinear Least Squares")
 print(p1)
 ```
+
+The estimated model (blue line) is closer to the apparent resitivity measurements (red points) and now this model can be considered as a good representation of the geological structure.
+
+It is always a good practice to use another method for the estimation of the parameters of the Earth model. The Quasi-Newton method with limited memory is a method that use derivatives and the limits of the search region can be specified (lower and upper arguments of the _calibrate_ function):
 
 ```{r calibrate_lbfgs, echo=TRUE}
 res.lbfgs <- calibrate(sev1a, opt.method = "L-BFGS-B", obj.fn = "rss", 
                        par0 = par0, lower = c(rep(5,4), rep(5,4)), 
                        upper = c(rep(100,4),rep(501,4)))
 ```
+```{r error_lbfgs,echo=FALSE,eval=TRUE}
+relerr <- format(res.lbfgs$rel.err, digits = 3)
+```
+
+The relative error in this case is equal to `r relerr` \% which is a small improvement with respect to the nonlinear squares case. Again, the estimated parameters are assigned to the VES object:
 
 ```{r assign_results_lbfgsb, echo=TRUE}
 sev1a$rhopar <- res.lbfgs$rho
@@ -177,10 +190,12 @@ sev1a$thickpar <- res.lbfgs$thickness
 sev1a$interpreted <- TRUE
 ```
 
+and the results are plotted: 
+
 ```{r plot_earth_model_lbfgsb,fig.height=4, fig.width=6,fig.align='center'}
 p2 <- plot(sev1a, main = "L-BFGS-B")
 print(p2)
 ```
 
-
+The model estimated using Quasi-Newton method is similar to the model estimated using non-linear squares as seen in the plot, but the main difference is that the third layer has a smaller thickness and resistivity when compared to the nonlinear squares result. This result highlights the fact of the non-uniqueness of solution of the inverse problem.
 
