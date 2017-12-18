@@ -75,12 +75,12 @@
 <h1 class="hasAnchor">
 <a href="#introduction" class="anchor"></a>Introduction</h1>
 <p>Importance of subsurface investigations. Specially for groundwater.</p>
-<p>The Vertical Electrical Sounding (VES) is one of the oldest resistivity methods and its main advantages include:</p>
+<p>The Vertical Electrical Sounding (VES) is one of the oldest resistivity methods, and it is based on the measurements of the electrical apparent resistivity of the geological medium when the distance between the electrical source and the measurement nodes is increased. The main advantages of the VES include:</p>
 <ul>
 <li>low cost due to its minimal requirements for equipment and personal.</li>
 <li>large investigation depth as required in some specific problems such as groundwater exploration.</li>
 </ul>
-<p>This method is based on the measurements of the electrical apparent resistivity of the geological medium when the distance between the electrical source and the measurement nodes is increased. From this information the true resistivities and thicknesses of the geological model are estimated.</p>
+<p>From the information usually acquired during a VES (apparent resisitivities vs electrode spacing), the true resistivities and thicknesses of the layers present in the subsurface are estimated, which in turns can help to the Geophysicist in the definition of a simple layered geological model of the area. When several VES are located along a given section, then the lateral variations of the layers can be interpreted yielding to an improved description of the geological structure.</p>
 </div>
 <div id="methodology" class="section level1">
 <h1 class="hasAnchor">
@@ -97,12 +97,41 @@ k=\frac{2 \pi}{\frac{1}{r_{AM}} - \frac{1}{r_{BM}} - \frac{1}{r_{AN}} + \frac{1}
 \]</span> where <span class="math inline">\(r\)</span> is the distance between the electrodes.</p>
 <p>The values of the apparent resistivity <span class="math inline">\(\rho_{app,k}\)</span> change as the electrode separation <span class="math inline">\(AB/2\)</span> is increased.</p>
 </div>
-<div id="layered-earth" class="section level2">
+<div id="forward-model" class="section level2">
 <h2 class="hasAnchor">
-<a href="#layered-earth" class="anchor"></a>Layered Earth</h2>
+<a href="#forward-model" class="anchor"></a>Forward Model</h2>
+<p>An essential part of the estimation of the real resistivitis and thicknesses of the layer in the area where the VES was obtained is the ability to calculate the apparent resistivity values from the knowledge of the number of layers, their true resistities and thicknesses. These parameters can be estimated matching the apparent resistivity curve to the measured apparent resistivities. The most efficient procedure to calculate this apparent resistivity curve is the methodology of the linear filter originally proposed by Gosh(1971) . This approach is divided in two stages:</p>
+<ul>
+<li>Resistivity Transform Calculation</li>
+</ul>
+<p>The electric potential of a horizontally layered Earth is given by:</p>
 <p><span class="math display">\[
 U(x)=\frac{I \rho_{1}}{2 \pi} \frac{1}{x} \left( 1 + 2x \int_{0}^{+\infty} K(\lambda) J_{0}(\lambda x)d\lambda \right)
-\]</span> where <span class="math inline">\(\rho_{1}\)</span> is the resistivity of the first layer, <span class="math inline">\(J_{0}\)</span> is the Bessel function of order zero , and <span class="math inline">\(K(\lambda)\)</span> is a function that depends on <span class="math inline">\(\lambda\)</span> and the resisitivities and thicknesses of all layers and the resistivity of the substratum. The integral in the previous equation can be interpreted as potential disturbance due to the layered structure of the Earth and this must be numerically evaluated.</p>
+\]</span> where <span class="math inline">\(\rho_{1}\)</span> is the resistivity of the first layer, <span class="math inline">\(J_{0}\)</span> is the Bessel function of order zero , and <span class="math inline">\(K(\lambda)\)</span> is the Kernel function that depends on <span class="math inline">\(\lambda\)</span> and the resisitivities and thicknesses of all layers and the resistivity of the substratum. The previous equation can be simplied to: <span class="math display">\[
+U(x)=\frac{I \rho_{1}}{2 \pi} \int\limits_{0}^{\infty} T(\lambda) J_{0}(\lambda x) d\lambda
+\]</span> where <span class="math inline">\(T(\lambda)\)</span> is called the resistivity transform which is defined as: <span class="math display">\[
+T(\lambda)=\rho_{1}\left(I+2K(\lambda)\right)
+\]</span></p>
+<ul>
+<li>Apparent Resistivity Calculation</li>
+</ul>
+<p>The apparent resistivity of a Sclumberger array can be obtained from the Ohm’s Law and the expression of the electric potential showed in the previous section: <span class="math display">\[
+\rho_{\text{app}}(x)=-\frac{2\pi}{I}x^{2} \left( \frac{\partial U}{\partial r} \right)
+\]</span> which can be expressed as: <span class="math display">\[
+\rho_{\text{app}}(x)=x^{2}\int\limits_{0}^{\infty}T(\lambda)J_{1}(\lambda x) \lambda d\lambda
+\]</span> where <span class="math inline">\(T(\lambda)\)</span> is the resistivity transform, <span class="math inline">\(J_{1}(\lambda x)\)</span> is the Bessel function of order 1.</p>
+<p>An expression of the resistivity transform <span class="math inline">\(T(\lambda)\)</span> is given by: <span class="math display">\[
+T(\lambda)=\int\limits_{0}^{\infty} \left[ \rho_{\text{app}}(x) J_{1}(\lambda x)/x \right]dx
+\]</span> which can be obtained by applying the Hankel’s inversion of the Fourier-Bessel integral of the apparent resistivity function for a Schlumberger array. Using the following variables: <span class="math display">\[
+\begin{aligned}
+s&amp;=\log{x}\\
+r&amp;=\log{(1/\lambda)}
+\end{aligned}
+\]</span> then the expression of the resistivity tranform is given by: <span class="math display">\[
+T(r)=\int\limits_{-\infty}^{+\infty}\rho_{\text{app}}(s)J_{1}(1/\exp{(r-s)})ds
+\]</span> which is a convolution integral that can be easily solved in the frequency domain: <span class="math display">\[
+T(\omega)=G(\omega) H(\omega)
+\]</span> where <span class="math inline">\(T(\omega)\)</span> is the Fourier transform of the resistivity transform, <span class="math inline">\(G(\omega)=\mathcal{F}(\rho_{\text{app}}(x))\)</span> is the Fourier transform of the apparent resistivity data, and <span class="math inline">\(H(\omega)=\mathcal{F}(J_{1}(1/\exp{(x)}))\)</span> is the Fourier transform of the Bessel function of order 1. In the Geophysics literature, this Fourier transform is called the Transform of the linear filter. This filter can be obtained from the ratio of the Fourier transform of <span class="math inline">\(T(\lambda)\)</span> and the Fourier transform of the <span class="math inline">\(\rho_{\text{app}}(x)\)</span></p>
 </div>
 <div id="parameter-estimation" class="section level2">
 <h2 class="hasAnchor">
@@ -174,7 +203,7 @@ sev1a<span class="op">$</span>interpreted &lt;-<span class="st"> </span><span cl
       <li>
 <a href="#methodology">Methodology</a><ul class="nav nav-pills nav-stacked">
 <li><a href="#ves-basic-concepts">VES: Basic Concepts</a></li>
-      <li><a href="#layered-earth">Layered Earth</a></li>
+      <li><a href="#forward-model">Forward Model</a></li>
       <li><a href="#parameter-estimation">Parameter Estimation</a></li>
       </ul>
 </li>

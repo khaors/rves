@@ -21,16 +21,17 @@ library(rves)
 
 Importance of subsurface investigations. Specially for groundwater.
 
-The Vertical Electrical Sounding (VES) is one of the oldest resistivity methods and its main advantages include: 
+The Vertical Electrical Sounding (VES) is one of the oldest resistivity methods, and it is based on the measurements of the electrical apparent resistivity of the geological medium when the distance between the electrical source and the measurement nodes is increased. The main advantages of the VES include: 
 
 - low cost due to its minimal requirements for equipment and personal.
 - large investigation depth as required in some specific problems such as groundwater exploration.
 
-This method is based on the measurements of the electrical apparent resistivity of the geological medium when the distance between the electrical source and the measurement nodes is increased. From this information the true resistivities and thicknesses of the geological model are estimated.
+From the information usually acquired during a VES (apparent resisitivities vs electrode spacing),  the true resistivities and thicknesses of the layers present in the subsurface are estimated, which in turns can help to the Geophysicist in the definition of a simple layered geological model of the area. When several VES are located along a given section, then the lateral variations of the layers can be interpreted yielding to an improved description of the geological structure.
 
 # Methodology
 
 ## VES: Basic Concepts
+
 Let $A,B$ be the current electrodes (positive and negative respectively) located on the ground surface and $M,N$ are the sensors used to measure the potential. The apparent resistivity of an Earth material is defined as:
 
 $$
@@ -46,13 +47,59 @@ where $r$ is the distance between the electrodes.
 
 The values of the apparent resistivity $\rho_{app,k}$ change as the electrode separation $AB/2$ is increased.  
 
-## Layered Earth
+## Forward Model
+
+An essential part of the estimation of the real resistivitis and thicknesses of the layer in the area where the VES was obtained is the ability to calculate the apparent resistivity values from the knowledge of the number of layers, their true resistities and thicknesses. These parameters can be estimated matching the apparent resistivity curve to the measured apparent resistivities. The most efficient procedure to calculate this apparent resistivity curve is the methodology of the linear filter originally proposed by Gosh(1971) \footnote{Gosh. Filter. Journal}. This approach is divided in two stages:
+
+* Resistivity Transform Calculation
+
+The electric potential of a horizontally layered Earth is given by: 
 
 $$
 U(x)=\frac{I \rho_{1}}{2 \pi} \frac{1}{x} \left( 1 + 2x \int_{0}^{+\infty} K(\lambda) J_{0}(\lambda x)d\lambda \right)
 $$
-where $\rho_{1}$ is the resistivity of the first layer, $J_{0}$ is the Bessel function of order zero , and $K(\lambda)$ is a function that depends on $\lambda$ and the resisitivities and thicknesses of all layers and the resistivity of the substratum. The integral in the previous equation can be interpreted as potential disturbance due to the layered structure of the Earth and this must be numerically evaluated.   
+where $\rho_{1}$ is the resistivity of the first layer, $J_{0}$ is the Bessel function of order zero , and $K(\lambda)$ is the Kernel function that depends on $\lambda$ and the resisitivities and thicknesses of all layers and the resistivity of the substratum. The previous equation can be simplied to:
+$$
+U(x)=\frac{I \rho_{1}}{2 \pi} \int\limits_{0}^{\infty} T(\lambda) J_{0}(\lambda x) d\lambda
+$$
+where $T(\lambda)$ is called the resistivity transform which is defined as:
+$$
+T(\lambda)=\rho_{1}\left(I+2K(\lambda)\right)
+$$
 
+* Apparent Resistivity Calculation
+
+The apparent resistivity of a Sclumberger array can be obtained from the Ohm's Law and the expression of the electric potential showed in the previous section:
+$$
+\rho_{\text{app}}(x)=-\frac{2\pi}{I}x^{2} \left( \frac{\partial U}{\partial r} \right)
+$$
+which can be expressed as:
+$$
+\rho_{\text{app}}(x)=x^{2}\int\limits_{0}^{\infty}T(\lambda)J_{1}(\lambda x) \lambda d\lambda
+$$
+where $T(\lambda)$ is the resistivity transform, $J_{1}(\lambda x)$ is the Bessel function of order 1.
+
+An expression of the resistivity transform $T(\lambda)$ is given by:
+$$
+T(\lambda)=\int\limits_{0}^{\infty} \left[ \rho_{\text{app}}(x) J_{1}(\lambda x)/x \right]dx
+$$
+which can be obtained by applying the Hankel's inversion of the Fourier-Bessel integral of the apparent resistivity function for a Schlumberger array. Using the following variables:
+$$
+\begin{aligned}
+s&=\log{x}\\
+r&=\log{(1/\lambda)}
+\end{aligned}
+$$
+then the expression of the resistivity tranform is given by:
+$$
+T(r)=\int\limits_{-\infty}^{+\infty}\rho_{\text{app}}(s)J_{1}(1/\exp{(r-s)})ds
+$$
+which is a convolution integral that can be easily solved in the frequency domain:
+$$
+T(\omega)=G(\omega) H(\omega)
+$$
+where $T(\omega)$ is the Fourier transform of the resistivity transform, $G(\omega)=\mathcal{F}(\rho_{\text{app}}(x))$ is the Fourier transform of the apparent resistivity data, and $H(\omega)=\mathcal{F}(J_{1}(1/\exp{(x)}))$ is the Fourier transform of the Bessel function of order 1. In the Geophysics literature, this Fourier transform is called the Transform of the linear filter. This filter can be obtained from the ratio of the Fourier transform of $T(\lambda)$ and 
+the Fourier transform of the $\rho_{\text{app}}(x)$
 
 ## Parameter Estimation
 
