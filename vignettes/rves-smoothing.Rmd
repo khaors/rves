@@ -1,0 +1,166 @@
+---
+title: "VES Smoothing using the rves package"
+author: "Oscar Garcia-Cabrejo"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+library(rves)
+library(ggplot2)
+```
+
+# Introduction
+
+Importance of VES for subsurface investigations. Specially for groundwater.
+
+VES measurements of apparent resistivity and node spacing. Values of apparent resistivity sometimes include noise which is an obstacle for a proper parameter estimation.
+
+Noise in VES can be reduced using smoothing techniques. Definition of smoothing. Techniques for smoothing.
+
+
+# Basic Concepts
+
+## Smoothing via splines
+
+## Smoothing via Kernel Regression
+
+## Smoothing via Wavelets
+
+
+# Example
+
+## VES 1
+
+The first step in the interpretation of a VES is to load the __rves__ package: 
+```{r load_library,echo=TRUE}
+library(rves)
+```
+For this example, the VES ves\_data1 included in the package is used to test the different functions included in __rves__:
+```{r load_data,echo=TRUE}
+data("ves_data1")
+```
+The electrode spacing and the apparent resistivity values are defined:
+```{r define_ves1,echo=TRUE}
+ab2 <- ves_data1$ab2
+apprho <- ves_data1$apprho
+```
+and these are used to define the VES object inside R:
+```{r define_ves2,echo=TRUE}
+sev1a <- ves(id= "Sounding 1", ab2 = ab2, apprho = apprho)
+```
+The plot of the VES used as example can be seen in the following plot:
+```{r plot_sev1a, fig.height=4,fig.width=6,fig.align='center'}
+p1 <- plot(sev1a)
+print(p1)
+```
+
+
+### Smoothing via splines
+
+```{r smoothspline,echo=TRUE}
+res.ss <- smoothing_ves(sev1a, method = "smooth.spline")
+```
+
+```{r smoothspline_organize,echo=TRUE}
+ab2.def <- rep(res.ss$ab2, 2)
+apprho.def <- vector('numeric', length = 36)
+apprho.def[1:18] <- res.ss$apprho
+print(length(sev1a$appres))
+apprho.def[19:36] <- sev1a$appres
+meas.type <- vector('character', length = 36)
+meas.type[1:18] <- rep("smooth.spline", 18)
+meas.type[19:36] <- rep("raw", 18)
+res.ss.df <- data.frame(ab2 = ab2.def, apprho = apprho.def, 
+                        type = as.factor(meas.type))
+```
+
+```{r plot_smoothspline,fig.width=6,fig.height=4,fig.align='center'}
+p.ss <- ggplot() + geom_point(aes(x = ab2, y = apprho, color = type), 
+                              data = res.ss.df) +
+  scale_x_log10() + 
+  scale_y_log10() + 
+  ggtitle('Comparison')
+print(p.ss)  
+```
+
+```{r smoothspline_vesdef,echo=TRUE}
+sev1ss <- ves(id = "Sounding 1-Smoothing Spline", ab2 = res.ss$ab2, 
+              apprho = res.ss$apprho)
+```
+
+```{r initial_sol, echo= TRUE}
+rho <- c(40,70,30, 20)
+thick <- c(2,10,50,500)
+par0 <- c(rho, thick)
+```
+
+```{r estimate_smoothspline, echo=TRUE}
+res.ss.nls <- calibrate_nls(sev1ss, par0, iterations = 10, ireport = 5)
+```
+
+```{r assign_results_ss_nls,echo=TRUE}
+sev1ss$rhopar <- res.ss.nls$rho
+sev1ss$thickpar <- res.ss.nls$thickness
+sev1ss$interpreted <- TRUE
+```
+
+```{r plot_sevss,fig.width=6,fig.height=4,fig.align='center'}
+p3 <- plot(sev1ss)
+print(p3)
+```
+
+### Kernel Regression
+
+```{r kernelregression,echo=TRUE}
+res.kr <- smoothing_ves(sev1a, method = "kernel.regression", bw = 0.5)
+```
+
+```{r kernelregression_organize,echo=TRUE}
+ab2.def <- rep(res.kr$ab2, 2)
+apprho.def <- vector('numeric', length = 36)
+apprho.def[1:18] <- res.kr$apprho
+apprho.def[19:36] <- sev1a$appres
+meas.type <- vector('character', length = 36)
+meas.type[1:18] <- rep("kernel.regression", 18)
+meas.type[19:36] <- rep("raw", 18)
+res.kr.df <- data.frame(ab2 = ab2.def, apprho = apprho.def, 
+                        type = as.factor(meas.type))
+```
+
+```{r plot_kernelregression,fig.width=6,fig.height=4,fig.align='center'}
+p.kr <- ggplot() + geom_point(aes(x = ab2, y = apprho, color = type), 
+                              data = res.kr.df) +
+  scale_x_log10() + 
+  scale_y_log10() + 
+  ggtitle('Comparison')
+print(p.kr)  
+```
+
+```{r kr_vesdef,echo=TRUE}
+sev1kr <- ves(id = "Sounding 1-Kernel Regression", ab2 = res.kr$ab2, 
+              apprho = res.kr$apprho)
+```
+
+```{r estimate_kr, echo=TRUE}
+res.kr.nls <- calibrate_nls(sev1kr, par0, iterations = 10, ireport = 5)
+```
+
+```{r assign_results_kr_nls,echo=TRUE}
+sev1kr$rhopar <- res.kr.nls$rho
+sev1kr$thickpar <- res.kr.nls$thickness
+sev1kr$interpreted <- TRUE
+```
+
+```{r plot_sevkr,fig.width=6,fig.height=4,fig.align='center'}
+p4 <- plot(sev1kr)
+print(p4)
+```
