@@ -116,7 +116,7 @@ apprho &lt;-<span class="st"> </span>ves_data1<span class="op">$</span>apprho</c
 <p>and these are used to define the VES object inside R:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sev1a &lt;-<span class="st"> </span><span class="kw"><a href="../reference/ves.html">ves</a></span>(<span class="dt">id=</span> <span class="st">"Sounding 1"</span>, <span class="dt">ab2 =</span> ab2, <span class="dt">apprho =</span> apprho)</code></pre></div>
 <p>The plot of the VES used as example can be seen in the following plot:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p1 &lt;-<span class="st"> </span><span class="kw">plot</span>(sev1a)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p1 &lt;-<span class="st"> </span><span class="kw">plot</span>(sev1a, <span class="dt">type =</span> <span class="st">"ves"</span>)</code></pre></div>
 <p><img src="rves-smoothing_files/figure-html/plot_sev1a-1.png" width="576" style="display: block; margin: auto;"></p>
 <div id="smoothing-via-splines-1" class="section level3">
 <h3 class="hasAnchor">
@@ -154,6 +154,8 @@ par0 &lt;-<span class="st"> </span><span class="kw">c</span>(rho, thick)</code><
 sev1ss<span class="op">$</span>thickpar &lt;-<span class="st"> </span>res.ss.nls<span class="op">$</span>thickness
 sev1ss<span class="op">$</span>interpreted &lt;-<span class="st"> </span><span class="ot">TRUE</span></code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p3 &lt;-<span class="st"> </span><span class="kw">plot</span>(sev1ss)
+<span class="co">#&gt; Warning in if (type == "ves") {: the condition has length &gt; 1 and only the</span>
+<span class="co">#&gt; first element will be used</span>
 <span class="kw">print</span>(p3)</code></pre></div>
 <p><img src="rves-smoothing_files/figure-html/plot_sevss-1.png" width="576" style="display: block; margin: auto;"></p>
 </div>
@@ -188,6 +190,8 @@ res.kr.df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span
 sev1kr<span class="op">$</span>thickpar &lt;-<span class="st"> </span>res.kr.nls<span class="op">$</span>thickness
 sev1kr<span class="op">$</span>interpreted &lt;-<span class="st"> </span><span class="ot">TRUE</span></code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p4 &lt;-<span class="st"> </span><span class="kw">plot</span>(sev1kr)
+<span class="co">#&gt; Warning in if (type == "ves") {: the condition has length &gt; 1 and only the</span>
+<span class="co">#&gt; first element will be used</span>
 <span class="kw">print</span>(p4)</code></pre></div>
 <p><img src="rves-smoothing_files/figure-html/plot_sevkr-1.png" width="576" style="display: block; margin: auto;"></p>
 </div>

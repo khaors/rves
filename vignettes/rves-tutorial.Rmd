@@ -141,7 +141,7 @@ sev1a$interpreted <- TRUE
 ```
 and this initial model is plotted:
 ```{r plot_sev1a1, fig.height=4, fig.width=6,fig.align='center'}
-p2 <- plot(sev1a)
+p2 <- plot(sev1a,type="ves")
 print(p2)
 ```
 As seen in the previous plot, the proposed model (blue line) is not a good explanation of the measurements (red points), which is also corroborated by the relative error: 
@@ -165,7 +165,7 @@ sev1a$interpreted <- TRUE
 ```
 and the results are plotted:
 ```{r plot_earth_model_nls,fig.height=4, fig.width=6,fig.align='center'}
-p1 <- plot(sev1a, main = "Nonlinear Least Squares")
+p1 <- plot(sev1a, main = "Nonlinear Least Squares", type = "ves")
 print(p1)
 ```
 
@@ -193,7 +193,7 @@ sev1a$interpreted <- TRUE
 and the results are plotted: 
 
 ```{r plot_earth_model_lbfgsb,fig.height=4, fig.width=6,fig.align='center'}
-p2 <- plot(sev1a, main = "L-BFGS-B")
+p2 <- plot(sev1a, main = "L-BFGS-B", type = "ves")
 print(p2)
 ```
 

@@ -158,7 +158,9 @@ apprho &lt;-<span class="st"> </span>ves_data1<span class="op">$</span>apprho</c
 <p>and these are used to define the VES object inside R:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sev1a &lt;-<span class="st"> </span><span class="kw"><a href="../reference/ves.html">ves</a></span>(<span class="dt">id=</span> <span class="st">"Sounding 1"</span>, <span class="dt">ab2 =</span> ab2, <span class="dt">apprho =</span> apprho)</code></pre></div>
 <p>The plot of the VES used as example can be seen in the following plot:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p1 &lt;-<span class="st"> </span><span class="kw">plot</span>(sev1a)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p1 &lt;-<span class="st"> </span><span class="kw">plot</span>(sev1a)
+<span class="co">#&gt; Warning in if (type == "ves") {: the condition has length &gt; 1 and only the</span>
+<span class="co">#&gt; first element will be used</span></code></pre></div>
 <p><img src="rves-tutorial_files/figure-html/plot_sev1a-1.png" width="576" style="display: block; margin: auto;"></p>
 <p>An initial model (true resistivities and thicknesses) is obtained from visual inspection of the previous plot:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rho &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">40</span>,<span class="dv">70</span>,<span class="dv">30</span>, <span class="dv">20</span>)
@@ -167,7 +169,7 @@ sev1a<span class="op">$</span>rhopar &lt;-<span class="st"> </span>rho
 sev1a<span class="op">$</span>thickpar &lt;-<span class="st"> </span>thick
 sev1a<span class="op">$</span>interpreted &lt;-<span class="st"> </span><span class="ot">TRUE</span></code></pre></div>
 <p>and this initial model is plotted:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p2 &lt;-<span class="st"> </span><span class="kw">plot</span>(sev1a)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p2 &lt;-<span class="st"> </span><span class="kw">plot</span>(sev1a,<span class="dt">type=</span><span class="st">"ves"</span>)
 <span class="kw">print</span>(p2)</code></pre></div>
 <p><img src="rves-tutorial_files/figure-html/plot_sev1a1-1.png" width="576" style="display: block; margin: auto;"> As seen in the previous plot, the proposed model (blue line) is not a good explanation of the measurements (red points), which is also corroborated by the relative error:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">res &lt;-<span class="st"> </span><span class="kw"><a href="../reference/apparent_resistivities.html">apparent_resistivities</a></span>(rho, thick, <span class="dt">filt=</span>filt<span class="op">$</span>V1, ab2)
@@ -189,7 +191,7 @@ res.nls &lt;-<span class="st"> </span><span class="kw"><a href="../reference/cal
 sev1a<span class="op">$</span>thickpar &lt;-<span class="st"> </span>res.nls<span class="op">$</span>thickness
 sev1a<span class="op">$</span>interpreted &lt;-<span class="st"> </span><span class="ot">TRUE</span></code></pre></div>
 <p>and the results are plotted:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p1 &lt;-<span class="st"> </span><span class="kw">plot</span>(sev1a, <span class="dt">main =</span> <span class="st">"Nonlinear Least Squares"</span>)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p1 &lt;-<span class="st"> </span><span class="kw">plot</span>(sev1a, <span class="dt">main =</span> <span class="st">"Nonlinear Least Squares"</span>, <span class="dt">type =</span> <span class="st">"ves"</span>)
 <span class="kw">print</span>(p1)</code></pre></div>
 <p><img src="rves-tutorial_files/figure-html/plot_earth_model_nls-1.png" width="576" style="display: block; margin: auto;"></p>
 <p>The estimated model (blue line) is closer to the apparent resitivity measurements (red points) and now this model can be considered as a good representation of the geological structure.</p>
@@ -202,7 +204,7 @@ sev1a<span class="op">$</span>interpreted &lt;-<span class="st"> </span><span cl
 sev1a<span class="op">$</span>thickpar &lt;-<span class="st"> </span>res.lbfgs<span class="op">$</span>thickness
 sev1a<span class="op">$</span>interpreted &lt;-<span class="st"> </span><span class="ot">TRUE</span></code></pre></div>
 <p>and the results are plotted:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p2 &lt;-<span class="st"> </span><span class="kw">plot</span>(sev1a, <span class="dt">main =</span> <span class="st">"L-BFGS-B"</span>)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p2 &lt;-<span class="st"> </span><span class="kw">plot</span>(sev1a, <span class="dt">main =</span> <span class="st">"L-BFGS-B"</span>, <span class="dt">type =</span> <span class="st">"ves"</span>)
 <span class="kw">print</span>(p2)</code></pre></div>
 <p><img src="rves-tutorial_files/figure-html/plot_earth_model_lbfgsb-1.png" width="576" style="display: block; margin: auto;"></p>
 <p>The model estimated using Quasi-Newton method is similar to the model estimated using non-linear squares as seen in the plot, but the main difference is that the third layer has a smaller thickness and resistivity when compared to the nonlinear squares result. This result highlights the fact of the non-uniqueness of solution of the inverse problem.</p>
