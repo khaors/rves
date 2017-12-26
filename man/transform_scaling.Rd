@@ -28,7 +28,7 @@ where $S$ is the so called scaling factor defined as:
 \deqn{
 S = \frac{\rho_{\text{app}}^{i}}{ \rho_{\text{app}}^{i-1} }
 }
-and \eqn{\rho_{\text{app}}^{i}} and \eqn{\rho_{\text{app}}^{i-1}} are the apparent resistivities of the $i-$th and $(i-1)$-th layers respectively.
+and \eqn{\rho_{\text{app}}^{i}} and \eqn{\rho_{\text{app}}^{i-1}} are the apparent resistivities of the \eqn{i-}th and \eqn{(i-1)}-th layers respectively.
 }
 \references{
 Meju, M.  Simple effective resistivity-depth transformations
