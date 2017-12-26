@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>rves: Interpretation of VErtical Electrical Sounding using R — rves • rves</title>
+<title>logseq — logseq • rves</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -90,67 +90,49 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>rves: Interpretation of VErtical Electrical Sounding using R</h1>
+    <h1>logseq</h1>
     </div>
 
     
-    <p>rves: Interpretation of VErtical Electrical Sounding using R</p>
-<p>This package includes several functions used in the inversion of the VES.</p>
+    <p>Function to generate sequences with logarithmic increments</p>
     
 
-        
-    <h2 class="hasAnchor" id="calibration-functions"><a class="anchor" href="#calibration-functions"></a>calibration functions</h2>
+    <pre class="usage"><span class='fu'>logseq</span>(<span class='kw'>from</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>to</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='no'>n</span>)</pre>
+    
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>from</th>
+      <td><p>Initial point of the sequence</p></td>
+    </tr>
+    <tr>
+      <th>to</th>
+      <td><p>Final point of the sequence</p></td>
+    </tr>
+    <tr>
+      <th>n</th>
+      <td><p>Number of points</p></td>
+    </tr>
+    </table>
+    
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    
-    <p>This section includes all the functions required for the estimation of the thicknesses and real resitivities from the VES data. The functions included here are:</p>
-<p>rss_resisitivity, log_rss_resistivity, mnad_resistivity, log_mnad_resistivity, mxad_resistivity, log_mxad_resistivity, calibrate, calibrate_nls, calibrate_svd</p>
-    <p>The calibration functions includes functions to calibrate, calculate model fit, and objective
- functions.</p>
-<p>The functions in this section are:</p>
-<p>sum_squared_residuals, mean_average_deviation, nash_sutcliffe, log_nash_sutcliffe,
- mass_balance_error, calibrate, uncertainty_quantification</p>
-    
-    <h2 class="hasAnchor" id="smoothing-functions"><a class="anchor" href="#smoothing-functions"></a>smoothing functions</h2>
-
-    
-    <p>This section includes all the functions required for the smoothing of the VES data. The functions included here are:</p>
-<p>smoothing_ves</p>
-    
-    <h2 class="hasAnchor" id="transformation-functions"><a class="anchor" href="#transformation-functions"></a>Transformation functions</h2>
-
-    
-    <p>This section includes functions used to calculate the resistivity-depth transformations, The results of these functions can be used for exploratory purposes or to define an initial solution of the automatic inversion procedures. .</p>
-<p>the functions included in this section are:</p>
-<p>transform_direct, transform_scaling</p>
-    
-    <h2 class="hasAnchor" id="base-functions"><a class="anchor" href="#base-functions"></a>base functions</h2>
-
-    
-    <p>This section includes a description of the main</p>
-    
-    <h2 class="hasAnchor" id="utilities-functions"><a class="anchor" href="#utilities-functions"></a>utilities functions</h2>
-
-    
-    <p>This section includes all the functions required in other sections of this package.
-The functions included in this section are:</p>
-<p>convolution, krtrans, apparent_resistivities, apparent_resistivities_simple</p>
+    <p>This function returns a numeric vector with the generated sequence.</p>
     
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
+      <li><a href="#arguments">Arguments</a></li>
       
-      <li><a href="#calibration-functions">calibration functions</a></li>
-
-      <li><a href="#smoothing-functions">smoothing functions</a></li>
-
-      <li><a href="#transformation-functions">Transformation functions</a></li>
-
-      <li><a href="#base-functions">base functions</a></li>
-
-      <li><a href="#utilities-functions">utilities functions</a></li>
+      <li><a href="#value">Value</a></li>
           </ul>
+
+    <h2>Author</h2>
+    
+Oscar Garcia-Cabrejo <a href='mailto:khaors@gmail.com'>khaors@gmail.com</a>
 
   </div>
 </div>

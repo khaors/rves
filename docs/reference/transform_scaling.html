@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>rves: Interpretation of VErtical Electrical Sounding using R — rves • rves</title>
+<title>transform_scaling — transform_scaling • rves</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -90,67 +90,73 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>rves: Interpretation of VErtical Electrical Sounding using R</h1>
+    <h1>transform_scaling</h1>
     </div>
 
     
-    <p>rves: Interpretation of VErtical Electrical Sounding using R</p>
-<p>This package includes several functions used in the inversion of the VES.</p>
+    <p>Function to</p>
     
 
-        
-    <h2 class="hasAnchor" id="calibration-functions"><a class="anchor" href="#calibration-functions"></a>calibration functions</h2>
+    <pre class="usage"><span class='fu'>transform_scaling</span>(<span class='no'>ves</span>)</pre>
+    
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>ves</th>
+      <td><p>A VES object</p></td>
+    </tr>
+    </table>
+    
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>This function returns a list with the following entries:</p><ul>
+<li><p>depth: Depth</p></li>
+<li><p>real.res: Real resisitivity</p></li>
+</ul>
 
     
-    <p>This section includes all the functions required for the estimation of the thicknesses and real resitivities from the VES data. The functions included here are:</p>
-<p>rss_resisitivity, log_rss_resistivity, mnad_resistivity, log_mnad_resistivity, mxad_resistivity, log_mxad_resistivity, calibrate, calibrate_nls, calibrate_svd</p>
-    <p>The calibration functions includes functions to calibrate, calculate model fit, and objective
- functions.</p>
-<p>The functions in this section are:</p>
-<p>sum_squared_residuals, mean_average_deviation, nash_sutcliffe, log_nash_sutcliffe,
- mass_balance_error, calibrate, uncertainty_quantification</p>
-    
-    <h2 class="hasAnchor" id="smoothing-functions"><a class="anchor" href="#smoothing-functions"></a>smoothing functions</h2>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
+    <p>The conversion from apparent to effective resistivities using the scaling approach is based on the use of the following expression:
+$$
+\rho_{\text{eff}}^{i}=S \cdot \rho_{\text{app}}^{i}
+$$
+where $S$ is the so called scaling factor defined as:
+$$
+S = \frac{\rho_{\text{app}}^{i}}{ \rho_{\text{app}}^{i-1} }
+$$
+and \(\rho_{\text{app}}^{i}\) and \(\rho_{\text{app}}^{i-1}\) are the apparent resistivities of the $i-$th and $(i-1)$-th layers respectively.</p>
     
-    <p>This section includes all the functions required for the smoothing of the VES data. The functions included here are:</p>
-<p>smoothing_ves</p>
-    
-    <h2 class="hasAnchor" id="transformation-functions"><a class="anchor" href="#transformation-functions"></a>Transformation functions</h2>
+    <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
 
+    <p>Meju, M.  Simple effective resistivity-depth transformations
+for infield or real-time data processing. Computers and Geosciences,
+21(8), 985-992, 1995.</p>
     
-    <p>This section includes functions used to calculate the resistivity-depth transformations, The results of these functions can be used for exploratory purposes or to define an initial solution of the automatic inversion procedures. .</p>
-<p>the functions included in this section are:</p>
-<p>transform_direct, transform_scaling</p>
-    
-    <h2 class="hasAnchor" id="base-functions"><a class="anchor" href="#base-functions"></a>base functions</h2>
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    
-    <p>This section includes a description of the main</p>
-    
-    <h2 class="hasAnchor" id="utilities-functions"><a class="anchor" href="#utilities-functions"></a>utilities functions</h2>
-
-    
-    <p>This section includes all the functions required in other sections of this package.
-The functions included in this section are:</p>
-<p>convolution, krtrans, apparent_resistivities, apparent_resistivities_simple</p>
+    <p>Other transformation functions: <code><a href='transform_direct.html'>transform_direct</a></code></p>
     
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
+      <li><a href="#arguments">Arguments</a></li>
       
-      <li><a href="#calibration-functions">calibration functions</a></li>
+      <li><a href="#value">Value</a></li>
 
-      <li><a href="#smoothing-functions">smoothing functions</a></li>
+      <li><a href="#details">Details</a></li>
 
-      <li><a href="#transformation-functions">Transformation functions</a></li>
+      <li><a href="#references">References</a></li>
 
-      <li><a href="#base-functions">base functions</a></li>
-
-      <li><a href="#utilities-functions">utilities functions</a></li>
+      <li><a href="#see-also">See also</a></li>
           </ul>
+
+    <h2>Author</h2>
+    
+Oscar Garcia-Cabrejo <a href='mailto:khaors@gmail.com'>khaors@gmail.com</a>
 
   </div>
 </div>

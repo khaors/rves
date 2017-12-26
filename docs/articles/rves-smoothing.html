@@ -68,7 +68,7 @@
       <h1>VES Smoothing using the rves package</h1>
                         <h4 class="author">Oscar Garcia-Cabrejo</h4>
             
-            <h4 class="date">2017-12-18</h4>
+            <h4 class="date">2017-12-26</h4>
           </div>
 
     
@@ -87,6 +87,9 @@
 <div id="smoothing-via-splines" class="section level2">
 <h2 class="hasAnchor">
 <a href="#smoothing-via-splines" class="anchor"></a>Smoothing via splines</h2>
+<p>Let <span class="math inline">\(\{x_{i},\rho_{\text{app},i}:i=1,\ldots.n\}\)</span> be a set of measurements of electrode spacing <span class="math inline">\(x\)</span> and apparent resistivity <span class="math inline">\(\rho_{\text{app}}\)</span> in what is called a VES (Vertical Electrical Sounding). It is assumed that the measurements of apparent resistivity are described by a model <span class="math inline">\(\rho_{\text{app},i}=\hat{\rho_{\text{app}},i} + \epsilon_{i}\)</span> where <span class="math inline">\(\epsilon_{i}\)</span> are a set of independent, zero mean with constant variance random variables, and <span class="math inline">\(\hat{\rho}_{\text{app},i}\)</span> is a cubic smoothing spline that approximates the measurements <span class="math inline">\(\rho_{\text{app},i}\)</span>. The function <span class="math inline">\(\hat{\rho}_{\text{app},i}\)</span> can be estimated as the minimum of: <span class="math display">\[
+\sum\limits_{i=1}^{n}[\rho_{\text{app},i}-\hat{\rho}_{\text{app},i}]^{2} + \lambda \int \hat{\rho}_{\text{app}}^{''}(x)^{2}dx
+\]</span> where <span class="math inline">\(\lambda\)</span> is the smoothing parameter, and the function <span class="math inline">\(\hat{\rho}_{\text{app},i}\)</span> is assumed as continuous with at least second order derivative. The previous equation aims at defining a function that approximates the measured values (first term) while minimizing the roughness of the estimated function (second term). This tradeoff is controlled by the <span class="math inline">\(\lambda\)</span> parameter that is called the smoothing parameter. If <span class="math inline">\(\lambda \ge 0\)</span></p>
 </div>
 <div id="smoothing-via-kernel-regression" class="section level2">
 <h2 class="hasAnchor">
@@ -115,8 +118,6 @@ apprho &lt;-<span class="st"> </span>ves_data1<span class="op">$</span>apprho</c
 <p>The plot of the VES used as example can be seen in the following plot:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p1 &lt;-<span class="st"> </span><span class="kw">plot</span>(sev1a)</code></pre></div>
 <p><img src="rves-smoothing_files/figure-html/plot_sev1a-1.png" width="576" style="display: block; margin: auto;"></p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(p1)</code></pre></div>
-<p><img src="rves-smoothing_files/figure-html/plot_sev1a-2.png" width="576" style="display: block; margin: auto;"></p>
 <div id="smoothing-via-splines-1" class="section level3">
 <h3 class="hasAnchor">
 <a href="#smoothing-via-splines-1" class="anchor"></a>Smoothing via splines</h3>
@@ -136,7 +137,8 @@ res.ss.df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span
                               <span class="dt">data =</span> res.ss.df) <span class="op">+</span>
 <span class="st">  </span><span class="kw">scale_x_log10</span>() <span class="op">+</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">scale_y_log10</span>() <span class="op">+</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">'Comparison'</span>)
+<span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">'Comparison'</span>) <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">theme_bw</span>()
 <span class="kw">print</span>(p.ss)  </code></pre></div>
 <p><img src="rves-smoothing_files/figure-html/plot_smoothspline-1.png" width="576" style="display: block; margin: auto;"></p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sev1ss &lt;-<span class="st"> </span><span class="kw"><a href="../reference/ves.html">ves</a></span>(<span class="dt">id =</span> <span class="st">"Sounding 1-Smoothing Spline"</span>, <span class="dt">ab2 =</span> res.ss<span class="op">$</span>ab2, 
@@ -172,7 +174,8 @@ res.kr.df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span
                               <span class="dt">data =</span> res.kr.df) <span class="op">+</span>
 <span class="st">  </span><span class="kw">scale_x_log10</span>() <span class="op">+</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">scale_y_log10</span>() <span class="op">+</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">'Comparison'</span>)
+<span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">'Comparison'</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">theme_bw</span>()
 <span class="kw">print</span>(p.kr)  </code></pre></div>
 <p><img src="rves-smoothing_files/figure-html/plot_kernelregression-1.png" width="576" style="display: block; margin: auto;"></p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sev1kr &lt;-<span class="st"> </span><span class="kw"><a href="../reference/ves.html">ves</a></span>(<span class="dt">id =</span> <span class="st">"Sounding 1-Kernel Regression"</span>, <span class="dt">ab2 =</span> res.kr<span class="op">$</span>ab2, 
@@ -187,6 +190,38 @@ sev1kr<span class="op">$</span>interpreted &lt;-<span class="st"> </span><span c
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p4 &lt;-<span class="st"> </span><span class="kw">plot</span>(sev1kr)
 <span class="kw">print</span>(p4)</code></pre></div>
 <p><img src="rves-smoothing_files/figure-html/plot_sevkr-1.png" width="576" style="display: block; margin: auto;"></p>
+</div>
+<div id="wavelet-smoothing" class="section level3">
+<h3 class="hasAnchor">
+<a href="#wavelet-smoothing" class="anchor"></a>Wavelet Smoothing</h3>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#library(wavethresh)</span>
+<span class="co">#print(names(sev1a))</span>
+<span class="co">#ab2.out &lt;- pumpingtest::logseq(min(log10(sev1a$ab2)), max(log10(sev1a$ab2)), 32)</span>
+<span class="co">#apprho.approx &lt;- approx(log10(sev1a$ab2),log10(sev1a$appres),</span>
+<span class="co">#                        xout = log10(ab2.out), method = 'linear')</span>
+<span class="co">#waveletwmap &lt;- wd(apprho.approx$y, family="DaubLeAsymm", filter.number=10)</span>
+<span class="co">#softthreshwmap &lt;- threshold(waveletwmap, type="soft", policy="universal")</span>
+<span class="co">#hardthreshwmap &lt;- threshold(waveletwmap, type="hard", policy="universal")</span>
+<span class="co">#s.soft &lt;- wr(softthreshwmap)</span>
+<span class="co">#s.hard &lt;- wr(hardthreshwmap)</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#plot(sev1a$ab2, sev1a$appres, type = "p", log = 'xy', main = 'Wavelet Smoothing', </span>
+<span class="co">#     pch = 16)</span>
+<span class="co">#points(ab2.out, 10^s.soft, col = 'red')</span>
+<span class="co">#points(ab2.out, 10^s.hard, col = 'blue')</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#soft &lt;- pracma::interp1(ab2.out, s.soft, xi = c(3.1, sev1a$ab2[2:17], 299.9))</span>
+<span class="co">#hard &lt;- pracma::interp1(ab2.out, s.hard, xi = c(3.1, sev1a$ab2[2:17], 299.9))</span>
+<span class="co">#ws.df &lt;- data.frame(ab2 = sev1a$ab2, raw = sev1a$appres, soft = 10^soft, </span>
+<span class="co">#                    hard = 10^hard)</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#p1 &lt;- ggplot() + geom_point(aes(x = ab2, y = raw), data = ws.df) + </span>
+<span class="co">#  geom_point(aes(x = ab2, y = soft), data = ws.df, col = "blue") +</span>
+<span class="co">#  geom_point(aes(x = ab2, y = hard), data = ws.df, col = "red") +</span>
+<span class="co">#  theme_bw() + </span>
+<span class="co">#  ggtitle("Wavelet Smoothing") +</span>
+<span class="co">#  scale_x_log10() + </span>
+<span class="co">#  scale_y_log10() +</span>
+<span class="co">#  ylab('Apparent Resistivity') +</span>
+<span class="co">#  xlab("AB2(m)")</span>
+<span class="co">#print(p1)</span></code></pre></div>
 </div>
 </div>
 </div>
