@@ -26,6 +26,10 @@ The rves package does not require compilations and once installed it can be dire
 library(rves)
 ```
 
+## Package Documentation
+
+The package documentation can be accesed [here](https://khaors.github.io/rves/) 
+
 ## Shiny App
 
 This package includes a shiny app called _uptse-v_ designed to help in the interpretation of the Vertical Electric Soundings. This app can be called using:
