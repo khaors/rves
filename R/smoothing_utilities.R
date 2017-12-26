@@ -28,16 +28,20 @@ NULL
 #' @author
 #' Oscar Garcia-Cabrejo \email{khaors@gmail.com}
 #' @family smoothing functions
-#' @importFrom stats smooth.spline
+#' @importFrom stats smooth.spline approx
 #' @importFrom locpol locCuadSmootherC EpaK
+#' @importFrom wavethresh wd wr threshold
+#' @importFrom pracma interp1
 #' @export
-smoothing_ves <- function(ves, method = c("smooth.spline", "kernel.regression"),
+smoothing_ves <- function(ves, method = c("smooth.spline", "kernel.regression",
+                                          "wavelet"),
                           bw = 0.1, ...){
   if(class(ves) != "ves"){
     stop('ERROR: A ves object is required as input')
   }
   ab2 <- ves$ab2
   appres <- ves$appres
+  ndat <- length(ab2)
   #print(appres)
   #
   res <- NULL
@@ -50,10 +54,37 @@ smoothing_ves <- function(ves, method = c("smooth.spline", "kernel.regression"),
   else if(method == "kernel.regression"){
     lab2 <- log10(ab2)
     lapprho <- log10(appres)
-    #bw <- regCVBwSelC(lab2, lapprho, deg = 1, EpaK)
-    #print(bw)
     tmp <- locCuadSmootherC(lab2, lapprho, lab2, bw = bw, EpaK)
     res <- list(ab2 = 10^tmp$x, apprho = 10^tmp$beta0)
   }
+  else if(method == "wavelet"){
+    ab2.out <- logseq(min(log10(ab2)), max(log10(ab2)), 32)
+    apprho.approx <- approx(log10(ab2),log10(appres),
+                            xout = log10(ab2.out), method = 'linear')
+    waveletwmap <- wd(apprho.approx$y, family="DaubLeAsymm", filter.number=10)
+    softthreshwmap <- threshold(waveletwmap, type="soft", policy="universal")
+    hardthreshwmap <- threshold(waveletwmap, type="hard", policy="universal")
+    s.soft <- wr(softthreshwmap)
+    s.hard <- wr(hardthreshwmap)
+    xout <- c(1.01*ab2[1],ab2[2:(ndat-1)],0.99*ab2[ndat])
+    soft <- interp1(ab2.out, s.soft, xi = xout)
+    hard <- interp1(ab2.out, s.hard, xi = xout)
+    res <- list(ab2 = ab2, apprho = 10^soft)
+  }
   return(res)
+}
+#' @title
+#' logseq
+#' @description
+#' Function to generate sequences with logarithmic increments
+#' @param from Initial point of the sequence
+#' @param to Final point of the sequence
+#' @param n Number of points
+#' @return
+#' This function returns a numeric vector with the generated sequence.
+#' @author
+#' Oscar Garcia-Cabrejo \email{khaors@gmail.com}
+#' @export
+logseq <- function( from = 1, to = 1, n) {
+  exp(log(10)*seq(from, to, length.out = n))
 }

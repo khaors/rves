@@ -31,6 +31,13 @@ Noise in VES can be reduced using smoothing techniques. Definition of smoothing.
 
 ## Smoothing via splines
 
+Let $\{x_{i},\rho_{\text{app},i}:i=1,\ldots.n\}$ be a set of measurements of electrode spacing $x$ and apparent resistivity $\rho_{\text{app}}$ in what is called a VES (Vertical Electrical Sounding). It is assumed that the measurements of apparent resistivity are described by a model $\rho_{\text{app},i}=\hat{\rho_{\text{app}},i} + \epsilon_{i}$ where $\epsilon_{i}$ are a set of independent, zero mean with constant variance random variables, and $\hat{\rho}_{\text{app},i}$ is a cubic smoothing spline that approximates the measurements  $\rho_{\text{app},i}$. The function $\hat{\rho}_{\text{app},i}$ can be estimated as the minimum of:
+$$
+\sum\limits_{i=1}^{n}[\rho_{\text{app},i}-\hat{\rho}_{\text{app},i}]^{2} + \lambda \int \hat{\rho}_{\text{app}}^{''}(x)^{2}dx
+$$
+where $\lambda$ is the smoothing parameter, and the function $\hat{\rho}_{\text{app},i}$ is assumed as continuous with at least second order derivative. The previous equation aims at defining a function that approximates the measured values (first term) while minimizing the roughness of the estimated function (second term). This tradeoff is controlled by the $\lambda$ parameter that is called the smoothing parameter. If $\lambda \ge 0$  
+
+
 ## Smoothing via Kernel Regression
 
 ## Smoothing via Wavelets
@@ -60,7 +67,6 @@ sev1a <- ves(id= "Sounding 1", ab2 = ab2, apprho = apprho)
 The plot of the VES used as example can be seen in the following plot:
 ```{r plot_sev1a, fig.height=4,fig.width=6,fig.align='center'}
 p1 <- plot(sev1a)
-print(p1)
 ```
 
 
@@ -88,7 +94,8 @@ p.ss <- ggplot() + geom_point(aes(x = ab2, y = apprho, color = type),
                               data = res.ss.df) +
   scale_x_log10() + 
   scale_y_log10() + 
-  ggtitle('Comparison')
+  ggtitle('Comparison') + 
+  theme_bw()
 print(p.ss)  
 ```
 
@@ -141,7 +148,8 @@ p.kr <- ggplot() + geom_point(aes(x = ab2, y = apprho, color = type),
                               data = res.kr.df) +
   scale_x_log10() + 
   scale_y_log10() + 
-  ggtitle('Comparison')
+  ggtitle('Comparison') +
+  theme_bw()
 print(p.kr)  
 ```
 
@@ -163,4 +171,47 @@ sev1kr$interpreted <- TRUE
 ```{r plot_sevkr,fig.width=6,fig.height=4,fig.align='center'}
 p4 <- plot(sev1kr)
 print(p4)
+```
+
+### Wavelet Smoothing
+
+
+```{r wave,echo=TRUE}
+#library(wavethresh)
+#print(names(sev1a))
+#ab2.out <- pumpingtest::logseq(min(log10(sev1a$ab2)), max(log10(sev1a$ab2)), 32)
+#apprho.approx <- approx(log10(sev1a$ab2),log10(sev1a$appres),
+#                        xout = log10(ab2.out), method = 'linear')
+#waveletwmap <- wd(apprho.approx$y, family="DaubLeAsymm", filter.number=10)
+#softthreshwmap <- threshold(waveletwmap, type="soft", policy="universal")
+#hardthreshwmap <- threshold(waveletwmap, type="hard", policy="universal")
+#s.soft <- wr(softthreshwmap)
+#s.hard <- wr(hardthreshwmap)
+```
+
+```{r wave1,fig.height=4,fig.width=6,fig.align='center'}
+#plot(sev1a$ab2, sev1a$appres, type = "p", log = 'xy', main = 'Wavelet Smoothing', 
+#     pch = 16)
+#points(ab2.out, 10^s.soft, col = 'red')
+#points(ab2.out, 10^s.hard, col = 'blue')
+```
+
+```{r wave2,echo=TRUE}
+#soft <- pracma::interp1(ab2.out, s.soft, xi = c(3.1, sev1a$ab2[2:17], 299.9))
+#hard <- pracma::interp1(ab2.out, s.hard, xi = c(3.1, sev1a$ab2[2:17], 299.9))
+#ws.df <- data.frame(ab2 = sev1a$ab2, raw = sev1a$appres, soft = 10^soft, 
+#                    hard = 10^hard)
+```
+
+```{r wave3,fig.height=4,fig.width=6,fig.align='center'}
+#p1 <- ggplot() + geom_point(aes(x = ab2, y = raw), data = ws.df) + 
+#  geom_point(aes(x = ab2, y = soft), data = ws.df, col = "blue") +
+#  geom_point(aes(x = ab2, y = hard), data = ws.df, col = "red") +
+#  theme_bw() + 
+#  ggtitle("Wavelet Smoothing") +
+#  scale_x_log10() + 
+#  scale_y_log10() +
+#  ylab('Apparent Resistivity') +
+#  xlab("AB2(m)")
+#print(p1)
 ```
