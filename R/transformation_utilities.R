@@ -71,7 +71,7 @@ transform_direct <- function(ves, k = 2.3, alpha = 0.15){
 #' \deqn{
 #' S = \frac{\rho_{\text{app}}^{i}}{ \rho_{\text{app}}^{i-1} }
 #' }
-#' and \eqn{\rho_{\text{app}}^{i}} and \eqn{\rho_{\text{app}}^{i-1}} are the apparent resistivities of the $i-$th and $(i-1)$-th layers respectively.
+#' and \eqn{\rho_{\text{app}}^{i}} and \eqn{\rho_{\text{app}}^{i-1}} are the apparent resistivities of the \eqn{i-}th and \eqn{(i-1)}-th layers respectively.
 #' @author
 #' Oscar Garcia-Cabrejo \email{khaors@gmail.com}
 #' @family transformation functions
