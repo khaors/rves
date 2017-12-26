@@ -25,11 +25,16 @@ ves <- function(id = character(0), ab2 = NULL, apprho = NULL){
   if(class(ab2) != 'numeric' | class(apprho) != 'numeric'){
     stop('A numeric vector is required as input')
   }
-  res <- list(id = id, ab2 = ab2, appres = apprho,
+  res <- list(id = id,
+              ab2 = ab2,
+              appres = apprho,
               interpreted = FALSE,
               rhopar = NULL,
               thickpar = NULL,
-              fit.parameters = NULL)
+              fit.parameters = NULL,
+              depth = NULL,
+              true.res.direct = NULL,
+              true.res.scaling = NULL)
   class(res) <- 'ves'
   invisible(res)
   return(res)
@@ -85,13 +90,43 @@ print.ves <- function(x, ...){
 #' layers are included.
 #' @param x A VES object
 #' @param main Title of the plot
+#' @param type A character string specifying the plot type. Currently only ves (measurements and
+#' earth model) and transformation (resistivity-depth transformation) are supported.
+#' @param trans.type A character string specifying the transformation type. Only direct and scaling
+#' are currently supported.
+#' @param ... Additional parameters to be passed to the plot function
+#' @export
+plot.ves <- function(x, main = NULL, type = c("ves","transformation"),
+                     trans.type = c("direct", "scaling"), ...){
+  if(class(x) != 'ves'){
+    stop('A VES object is required as input')
+  }
+  pres <- NULL
+  if(type == "ves"){
+    pres <- plot_ves(x, main, ...)
+  }
+  else if(type == "transformation"){
+    pres <- plot_transformation(x, trans.type = trans.type)
+  }
+  return(pres)
+}
+#' @title
+#' plot_ves
+#' @description
+#' Function to plot the Vertical Electric Sounding data. This function can create two different
+#' types of plots: resistivity and interpretation. The resistivity plot includes the
+#' apparent resistivity vs electrode spacing. In the interpretation plot, the values of the
+#' apparent resistivity vs electrode spacing and the thickness and real resisitivity of the
+#' layers are included.
+#' @param x A VES object
+#' @param main Title of the plot
 #' @param ... Additional parameters to be passed to the plot function
 #' @importFrom ggplot2 geom_point geom_line scale_x_log10 scale_y_log10 xlab ylab ggtitle
 #' @importFrom ggplot2 theme_bw geom_path ggplot aes
 #' @importFrom gridExtra grid.arrange
 #' @importFrom pracma logseq
 #' @export
-plot.ves <- function(x, main = NULL, ...){
+plot_ves <- function(x, main = NULL, ...){
   if(class(x) != 'ves'){
     stop('A VES object is required as input')
   }
@@ -169,8 +204,87 @@ plot.ves <- function(x, main = NULL, ...){
     else{
       pbase <- pbase + scale_y_log10(breaks = breaks, minor_breaks = minor_breaks)
     }
-    #print(pbase)
   }
   return(pbase)
 }
-
+#' @title
+#' plot_transformation
+#' @description
+#' Function to plot the resistivity-depth transformation from a given VES.
+#' @param x A VES object
+#' @param trans.type A character string with the type of transformation to apply. Currently only direct and
+#' scaling transformation are defined.
+#' @return
+#' This function returns a ggplot2 object.
+#' @author
+#' Oscar Garcia-Cabrejo \email{khaors@gmail.com}
+#' @export
+#' @importFrom ggplot2 geom_point geom_line scale_x_log10 scale_y_log10 xlab ylab ggtitle xlim ylim
+plot_transformation <- function(x, trans.type = c("direct", "scaling")){
+  if(class(x) != 'ves'){
+    stop('A VES object is required as input')
+  }
+  # Calculate transformations
+  res <- NULL
+  ves <- x
+  res.trans <- NULL
+  if(trans.type == "direct"){
+    res.trans <- transform_direct(ves)
+  }
+  else if(trans.type == "scaling"){
+    res.trans <- transform_scaling(ves)
+  }
+  else{
+    stop("ERROR: Unknown transformation.")
+  }
+  # Extract results
+  breaks <- 10^(-10:10)
+  minor_breaks <- rep(1:9, 21)*(10^rep(-10:10, each=9))
+  depth <- res.trans$depth
+  real.res <- res.trans$real.res
+  res.trans.df <- data.frame(depth = depth, real.res = real.res)
+  #
+  current.title <- paste0("Resistivity-Depth Transformation(",
+                          trans.type,"): Profile ", ves$id)
+  #
+  model.par.df <- NULL
+  p <- ggplot() + xlab("Depth(m)") +
+    ylab( expression(paste("Effective Resitivity ",
+                           Omega, phantom() %.% phantom(), "m")) ) +
+    ggtitle(current.title)
+  ymn <- 0.8*min(ves$appres)
+  ymx <- 1.5*max(ves$appres)
+  if(ves$interpreted){
+    rho <- ves$rhopar
+    thick <- ves$thickpar
+    spacing <- ves$ab2
+    nlayers <- length(rho)
+    thick[nlayers] <- 1.1*max(depth)
+    depth1 <- cumsum(thick)
+    pos_layers <- vector('numeric', length = (nlayers+1))
+    pos_layers[1] <- 0.1
+    pos_layers[2:(nlayers+1)] <- depth1
+    pos_layers1 <- vector('numeric', length = (nlayers*2))
+    rho_layers <- vector('numeric', length = (nlayers*2))
+    for(ilay in 1:nlayers){
+      begin_pos <- (2*ilay-1)
+      end_pos <- (2*ilay)
+      pos_layers1[begin_pos:end_pos] <- c(pos_layers[ilay], pos_layers[ilay+1])
+      rho_layers[begin_pos:end_pos] <- rep(rho[ilay], 2)
+    }
+    model.par.df <- data.frame(depth = pos_layers1, res = rho_layers)
+    ymn <- 0.8*min(ves$appres, ves$rhopar)
+    ymx <- 1.5*max(ves$appres, ves$rhopar)
+    p <- p + geom_path(aes(x = depth, y = res), data = model.par.df,
+                              col = "green")
+  }
+  #
+  x.range <- c(0.1,max(depth))
+  y.range <- c(ymn, ymx)
+  p <- p + geom_point(aes(x = depth, y = real.res), data = res.trans.df, color = "blue") +
+    theme_bw() +
+    scale_x_log10(breaks = breaks, minor_breaks = minor_breaks) +
+    scale_y_log10(breaks = breaks, minor_breaks = minor_breaks)
+  #
+  return(p)
+}
