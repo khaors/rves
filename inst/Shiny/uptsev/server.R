@@ -90,7 +90,7 @@ shinyServer(function(input, output, session) {
       ab2.original <- current.ves$ab2
       appres.original <- current.ves$appres
       current.ves <- filter.ves()
-      p1 <- plot(current.ves)
+      p1 <- plot(current.ves, type = "ves")
       original.df <- data.frame(ab2 = ab2.original, appres = appres.original)
       p1 <- p1 + geom_point(aes(x = ab2, y = appres), data = original.df)
       print(p1)
@@ -139,12 +139,12 @@ shinyServer(function(input, output, session) {
       p <- NULL
       #
       if(server.env$first){
-        p <- plot(server.env$current.ves)
+        p <- plot(server.env$current.ves, type = "ves")
         server.env$first <- FALSE
       }
       else{
         tmp <- manual.model.results()
-        p <- plot(tmp)
+        p <- plot(tmp, type = "ves")
       }
       #
       output$manual_results <- renderUI({
@@ -408,7 +408,7 @@ shinyServer(function(input, output, session) {
     output$automatic_plot <- renderPlot({
       current.ves <- server.env$current.ves
       current.ves$interpreted <- FALSE
-      plot(current.ves)
+      plot(current.ves, type = "ves")
     })
   })
   #
@@ -465,7 +465,7 @@ shinyServer(function(input, output, session) {
         str4 <- paste("<b>Optimization Method= </b>", automatic_method, "<br><br>", sep = " ")
         HTML(paste(str1, str2, str3, str4))
       })
-      plot(current.ves)
+      plot(current.ves, type = "ves")
     }) #renderPlot
     #
     output$automatic_table <- renderTable({
