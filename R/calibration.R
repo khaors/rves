@@ -571,7 +571,7 @@ calibration_ilsqp <- function(ves, iterations = 100, ireport = 10){
     new.par0 <- c(new.rho, new.thick)
     #print(new.par0)
     res.old.layer <- res.current.layer
-    res.current.layer <- calibrate_nls(sev1, par0 = new.par0,
+    res.current.layer <- calibrate_nls(ves, par0 = new.par0,
                                        iterations = iterations,
                                        ireport = ireport)
     #print(res.current.layer)
