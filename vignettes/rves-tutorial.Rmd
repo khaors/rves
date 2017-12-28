@@ -100,9 +100,11 @@ T(\omega)=G(\omega) H(\omega)
 $$
 where $T(\omega)$ is the Fourier transform of the resistivity transform $T(\lambda)$, $G(\omega)=\mathcal{F}[\rho_{\text{app}}(x)]$ is the Fourier transform of the apparent resistivity data, and $H(\omega)=\mathcal{F}(J_{1}(1/\exp{(x)}))$ is the Fourier transform of the Bessel function of order 1. In the Geophysics literature, this Fourier transform is the Transform of the linear filter and it can be obtained from the ratio of the Fourier transform of $T(\lambda)$ and the Fourier transform of the $\rho_{\text{app}}(x)$. 
 
-In practical problems, $T(\lambda)$ can be easily calculated using some kind of recurrence relationship, and if the transform of the linear filter $H(\omega)$ is available then it is possible to calculate $G(\omega)$ and therefore the apparent resistivity curve $\rho_{\text{app}}(x)$.
+In practical problems, $T(\lambda)$ can be easily calculated using some kind of recurrence relationship, and if the transform of the linear filter $H(\omega)$ is available then it is possible to calculate $G(\omega)$ and therefore the apparent resistivity curve $\rho_{\text{app}}(x)$. In other words, this defines a procedure to solve the forward problem of a electrical sounding. 
 
 ## Parameter Estimation
+
+In the previous section, the problem of calculating the apparent resistivity curve $\rho_{\text{app}}(x)$ from a given set of real resistivities $\rho_{\text{real},i}$ and layer thicknesses $h_{i}$ was solved using the ratio of two Fourier transforms. This is a required tool in order to solve a more interesing problem: from the measurements of the apparent resistivity 
 
 # Examples
 

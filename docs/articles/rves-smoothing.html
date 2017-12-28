@@ -68,7 +68,7 @@
       <h1>VES Smoothing using the rves package</h1>
                         <h4 class="author">Oscar Garcia-Cabrejo</h4>
             
-            <h4 class="date">2017-12-26</h4>
+            <h4 class="date">2017-12-27</h4>
           </div>
 
     
@@ -87,13 +87,41 @@
 <div id="smoothing-via-splines" class="section level2">
 <h2 class="hasAnchor">
 <a href="#smoothing-via-splines" class="anchor"></a>Smoothing via splines</h2>
-<p>Let <span class="math inline">\(\{x_{i},\rho_{\text{app},i}:i=1,\ldots.n\}\)</span> be a set of measurements of electrode spacing <span class="math inline">\(x\)</span> and apparent resistivity <span class="math inline">\(\rho_{\text{app}}\)</span> in what is called a VES (Vertical Electrical Sounding). It is assumed that the measurements of apparent resistivity are described by a model <span class="math inline">\(\rho_{\text{app},i}=\hat{\rho_{\text{app}},i} + \epsilon_{i}\)</span> where <span class="math inline">\(\epsilon_{i}\)</span> are a set of independent, zero mean with constant variance random variables, and <span class="math inline">\(\hat{\rho}_{\text{app},i}\)</span> is a cubic smoothing spline that approximates the measurements <span class="math inline">\(\rho_{\text{app},i}\)</span>. The function <span class="math inline">\(\hat{\rho}_{\text{app},i}\)</span> can be estimated as the minimum of: <span class="math display">\[
+<p>Let <span class="math inline">\(\{x_{i},\rho_{\text{app},i}:i=1,\ldots.n\}\)</span> be a set of measurements of electrode spacing <span class="math inline">\(x\)</span> and apparent resistivity <span class="math inline">\(\rho_{\text{app}}\)</span> in what is called a VES (Vertical Electrical Sounding). It is assumed that the measurements of apparent resistivity are described by a model <span class="math inline">\(\rho_{\text{app},i}=\hat{\rho}_{\text{app},i} + \epsilon_{i}\)</span> where <span class="math inline">\(\epsilon_{i}\)</span> are a set of independent random variables with zero mean and constant variance, and <span class="math inline">\(\hat{\rho}_{\text{app},i}\)</span> is a cubic smoothing spline that approximates the measurements <span class="math inline">\(\rho_{\text{app},i}\)</span>. This cubic spline is a third order polynomial defined as: <span class="math display">\[
+\hat{\rho}_{\text{app},i}(x) = a_{i}(x-x_{i})^{3}+b_{i}(x-x_{i})^{2} + c_{i}(x-x_{i}) + d_{i}
+\]</span> where <span class="math inline">\(a_{i},b_{i},c_{i}\)</span> and <span class="math inline">\(d_{i}\)</span> are fixed coefficients that can be estimated from the measured data. The coefficients of the function <span class="math inline">\(\hat{\rho}_{\text{app},i}\)</span> can be estimated as the minimum of: <span class="math display">\[
 \sum\limits_{i=1}^{n}[\rho_{\text{app},i}-\hat{\rho}_{\text{app},i}]^{2} + \lambda \int \hat{\rho}_{\text{app}}^{''}(x)^{2}dx
-\]</span> where <span class="math inline">\(\lambda\)</span> is the smoothing parameter, and the function <span class="math inline">\(\hat{\rho}_{\text{app},i}\)</span> is assumed as continuous with at least second order derivative. The previous equation aims at defining a function that approximates the measured values (first term) while minimizing the roughness of the estimated function (second term). This tradeoff is controlled by the <span class="math inline">\(\lambda\)</span> parameter that is called the smoothing parameter. If <span class="math inline">\(\lambda \ge 0\)</span></p>
+\]</span> where <span class="math inline">\(\lambda\)</span> is the smoothing parameter, and the function <span class="math inline">\(\hat{\rho}_{\text{app},i}\)</span> is assumed as continuous with at least second order derivative. The previous equation aims at defining a function that approximates the measured values (first term) while minimizing the roughness of the estimated function (second term). This tradeoff is controlled by the <span class="math inline">\(\lambda\)</span> parameter that is called the smoothing parameter. If <span class="math inline">\(\lambda \rightarrow 0\)</span> then there is no smoothing and the spline interpolation is obtained. If <span class="math inline">\(\lambda \rightarrow \infty\)</span> then all the weight is given to the roughness penalty and a least-squares estimate is obtained.</p>
 </div>
 <div id="smoothing-via-kernel-regression" class="section level2">
 <h2 class="hasAnchor">
 <a href="#smoothing-via-kernel-regression" class="anchor"></a>Smoothing via Kernel Regression</h2>
+<p>Another approach to smooth the VES data is to use local polynomial regressions. In this approach, the function that approximates the apparent resistivity measurements is a polynomial of order <span class="math inline">\(p\)</span> defined as: <span class="math display">\[
+\hat{\rho}_{\text{app},i}(x) = a_{0} + a_{1}(x-x_{i})+\frac{a_{2}}{2!}(x-x_{i})^{2} + \ldots + \frac{a_{p}}{p!}(x-x_{i})^{p}
+\]</span> where the <span class="math inline">\((a_{i},i=0,\ldots,p)\)</span> are fixed coefficients that are estimated by minimizing: <span class="math display">\[
+\sum_{i=1}^{n}w_{i}(x)[\rho_{\text{app}}(x_{i})-\hat{\rho}_{\text{app},i}(x)]^{2}
+\]</span></p>
+<p>The coefficientes <span class="math inline">\(a_{i}\)</span> can be estimated using weighted linear least-squares: <span class="math display">\[
+\boldsymbol{a}=(\boldsymbol{X}_{X}^{T} \boldsymbol{W}_{X} \boldsymbol{X}_{X})^{-1} \boldsymbol{X}_{X}^{T}\boldsymbol{W}_{X}\boldsymbol{Y}
+\]</span> where the matrix <span class="math inline">\(\boldsymbol{X}_{X}\)</span> is defined as: <span class="math display">\[
+\boldsymbol{X}_{X}=\left[
+\begin{array}{cccc}
+1&amp; (x-x_{1})&amp; \cdots&amp; \frac{(x-x_{1})^{p}}{p!}\\
+1&amp; (x-x_{2})&amp; \cdots&amp; \frac{(x-x_{2})^{p}}{p!}\\
+\vdots&amp; \vdots&amp; \cdots&amp; \vdots\\
+1&amp; (x-x_{n})&amp; \cdots&amp; \frac{(x-x_{n})^{p}}{p!}\\
+\end{array}
+\right]
+\]</span> and the weight matrix is given by: <span class="math display">\[
+\boldsymbol{W}_{X}=\left[
+\begin{array}{cccc}
+w(x_{1})&amp; 0&amp; \cdots &amp; 0 \\
+0&amp; w(x_{2})&amp; \cdots &amp; 0 \\
+\vdots&amp; \vdots&amp; \vdots&amp; \vdots \\
+0&amp; 0&amp; \cdots &amp; w(x_{n})
+\end{array}
+\right]
+\]</span></p>
 </div>
 <div id="smoothing-via-wavelets" class="section level2">
 <h2 class="hasAnchor">
@@ -153,9 +181,7 @@ par0 &lt;-<span class="st"> </span><span class="kw">c</span>(rho, thick)</code><
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sev1ss<span class="op">$</span>rhopar &lt;-<span class="st"> </span>res.ss.nls<span class="op">$</span>rho
 sev1ss<span class="op">$</span>thickpar &lt;-<span class="st"> </span>res.ss.nls<span class="op">$</span>thickness
 sev1ss<span class="op">$</span>interpreted &lt;-<span class="st"> </span><span class="ot">TRUE</span></code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p3 &lt;-<span class="st"> </span><span class="kw">plot</span>(sev1ss)
-<span class="co">#&gt; Warning in if (type == "ves") {: the condition has length &gt; 1 and only the</span>
-<span class="co">#&gt; first element will be used</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p3 &lt;-<span class="st"> </span><span class="kw">plot</span>(sev1ss, <span class="dt">type =</span> <span class="st">"ves"</span>)
 <span class="kw">print</span>(p3)</code></pre></div>
 <p><img src="rves-smoothing_files/figure-html/plot_sevss-1.png" width="576" style="display: block; margin: auto;"></p>
 </div>
@@ -179,7 +205,7 @@ res.kr.df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span
 <span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">'Comparison'</span>) <span class="op">+</span>
 <span class="st">  </span><span class="kw">theme_bw</span>()
 <span class="kw">print</span>(p.kr)  </code></pre></div>
-<p><img src="rves-smoothing_files/figure-html/plot_kernelregression-1.png" width="576" style="display: block; margin: auto;"></p>
+<p><img src="rves-smoothing_files/figure-html/plot_kernelregression-1.png" width="672" style="display: block; margin: auto;"></p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sev1kr &lt;-<span class="st"> </span><span class="kw"><a href="../reference/ves.html">ves</a></span>(<span class="dt">id =</span> <span class="st">"Sounding 1-Kernel Regression"</span>, <span class="dt">ab2 =</span> res.kr<span class="op">$</span>ab2, 
               <span class="dt">apprho =</span> res.kr<span class="op">$</span>apprho)</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">res.kr.nls &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calibrate_nls.html">calibrate_nls</a></span>(sev1kr, par0, <span class="dt">iterations =</span> <span class="dv">10</span>, <span class="dt">ireport =</span> <span class="dv">5</span>)
@@ -189,9 +215,7 @@ res.kr.df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sev1kr<span class="op">$</span>rhopar &lt;-<span class="st"> </span>res.kr.nls<span class="op">$</span>rho
 sev1kr<span class="op">$</span>thickpar &lt;-<span class="st"> </span>res.kr.nls<span class="op">$</span>thickness
 sev1kr<span class="op">$</span>interpreted &lt;-<span class="st"> </span><span class="ot">TRUE</span></code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p4 &lt;-<span class="st"> </span><span class="kw">plot</span>(sev1kr)
-<span class="co">#&gt; Warning in if (type == "ves") {: the condition has length &gt; 1 and only the</span>
-<span class="co">#&gt; first element will be used</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p4 &lt;-<span class="st"> </span><span class="kw">plot</span>(sev1kr, <span class="dt">type =</span> <span class="st">"ves"</span>)
 <span class="kw">print</span>(p4)</code></pre></div>
 <p><img src="rves-smoothing_files/figure-html/plot_sevkr-1.png" width="576" style="display: block; margin: auto;"></p>
 </div>

@@ -68,7 +68,7 @@
       <h1>RVES Tutorial: Vertical Electrical Sounding interpretation using R</h1>
                         <h4 class="author">Oscar Garcia-Cabrejo</h4>
             
-            <h4 class="date">2017-12-26</h4>
+            <h4 class="date">2017-12-27</h4>
           </div>
 
     
@@ -135,11 +135,12 @@ T(r)=\int\limits_{-\infty}^{+\infty}\rho_{\text{app}}(s)J_{1}(1/\exp{(r-s)})ds
 \]</span> which is a convolution integral that can be easily solved in the frequency domain: <span class="math display">\[
 T(\omega)=G(\omega) H(\omega)
 \]</span> where <span class="math inline">\(T(\omega)\)</span> is the Fourier transform of the resistivity transform <span class="math inline">\(T(\lambda)\)</span>, <span class="math inline">\(G(\omega)=\mathcal{F}[\rho_{\text{app}}(x)]\)</span> is the Fourier transform of the apparent resistivity data, and <span class="math inline">\(H(\omega)=\mathcal{F}(J_{1}(1/\exp{(x)}))\)</span> is the Fourier transform of the Bessel function of order 1. In the Geophysics literature, this Fourier transform is the Transform of the linear filter and it can be obtained from the ratio of the Fourier transform of <span class="math inline">\(T(\lambda)\)</span> and the Fourier transform of the <span class="math inline">\(\rho_{\text{app}}(x)\)</span>.</p>
-<p>In practical problems, <span class="math inline">\(T(\lambda)\)</span> can be easily calculated using some kind of recurrence relationship, and if the transform of the linear filter <span class="math inline">\(H(\omega)\)</span> is available then it is possible to calculate <span class="math inline">\(G(\omega)\)</span> and therefore the apparent resistivity curve <span class="math inline">\(\rho_{\text{app}}(x)\)</span>.</p>
+<p>In practical problems, <span class="math inline">\(T(\lambda)\)</span> can be easily calculated using some kind of recurrence relationship, and if the transform of the linear filter <span class="math inline">\(H(\omega)\)</span> is available then it is possible to calculate <span class="math inline">\(G(\omega)\)</span> and therefore the apparent resistivity curve <span class="math inline">\(\rho_{\text{app}}(x)\)</span>. In other words, this defines a procedure to solve the forward problem of a electrical sounding.</p>
 </div>
 <div id="parameter-estimation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#parameter-estimation" class="anchor"></a>Parameter Estimation</h2>
+<p>In the previous section, the problem of calculating the apparent resistivity curve <span class="math inline">\(\rho_{\text{app}}(x)\)</span> from a given set of real resistivities <span class="math inline">\(\rho_{\text{real},i}\)</span> and layer thicknesses <span class="math inline">\(h_{i}\)</span> was solved using the ratio of two Fourier transforms. This is a required tool in order to solve a more interesing problem: from the measurements of the apparent resistivity</p>
 </div>
 </div>
 <div id="examples" class="section level1">

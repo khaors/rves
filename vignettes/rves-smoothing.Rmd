@@ -31,14 +31,54 @@ Noise in VES can be reduced using smoothing techniques. Definition of smoothing.
 
 ## Smoothing via splines
 
-Let $\{x_{i},\rho_{\text{app},i}:i=1,\ldots.n\}$ be a set of measurements of electrode spacing $x$ and apparent resistivity $\rho_{\text{app}}$ in what is called a VES (Vertical Electrical Sounding). It is assumed that the measurements of apparent resistivity are described by a model $\rho_{\text{app},i}=\hat{\rho_{\text{app}},i} + \epsilon_{i}$ where $\epsilon_{i}$ are a set of independent, zero mean with constant variance random variables, and $\hat{\rho}_{\text{app},i}$ is a cubic smoothing spline that approximates the measurements  $\rho_{\text{app},i}$. The function $\hat{\rho}_{\text{app},i}$ can be estimated as the minimum of:
+Let $\{x_{i},\rho_{\text{app},i}:i=1,\ldots.n\}$ be a set of measurements of electrode spacing $x$ and apparent resistivity $\rho_{\text{app}}$ in what is called a VES (Vertical Electrical Sounding). It is assumed that the measurements of apparent resistivity are described by a model $\rho_{\text{app},i}=\hat{\rho}_{\text{app},i} + \epsilon_{i}$ where $\epsilon_{i}$ are a set of independent random variables with  zero mean and constant variance, and $\hat{\rho}_{\text{app},i}$ is a cubic smoothing spline that approximates the measurements  $\rho_{\text{app},i}$. This cubic spline is a third order polynomial defined as:
+$$
+\hat{\rho}_{\text{app},i}(x) = a_{i}(x-x_{i})^{3}+b_{i}(x-x_{i})^{2} + c_{i}(x-x_{i}) + d_{i}
+$$
+where $a_{i},b_{i},c_{i}$ and $d_{i}$ are fixed coefficients that can be estimated from the measured data. The coefficients of the function $\hat{\rho}_{\text{app},i}$ can be estimated as the minimum of:
 $$
 \sum\limits_{i=1}^{n}[\rho_{\text{app},i}-\hat{\rho}_{\text{app},i}]^{2} + \lambda \int \hat{\rho}_{\text{app}}^{''}(x)^{2}dx
 $$
-where $\lambda$ is the smoothing parameter, and the function $\hat{\rho}_{\text{app},i}$ is assumed as continuous with at least second order derivative. The previous equation aims at defining a function that approximates the measured values (first term) while minimizing the roughness of the estimated function (second term). This tradeoff is controlled by the $\lambda$ parameter that is called the smoothing parameter. If $\lambda \ge 0$  
+where $\lambda$ is the smoothing parameter, and the function $\hat{\rho}_{\text{app},i}$ is assumed as continuous with at least second order derivative. The previous equation aims at defining a function that approximates the measured values (first term) while minimizing the roughness of the estimated function (second term). This tradeoff is controlled by the $\lambda$ parameter that is called the smoothing parameter. If $\lambda \rightarrow 0$ then there is no smoothing and the spline interpolation is obtained. If $\lambda \rightarrow \infty$ then all the weight is given to the roughness penalty and a least-squares estimate is obtained.    
 
 
 ## Smoothing via Kernel Regression
+Another approach to smooth the VES data is to use local polynomial regressions. In this approach, the function that approximates the apparent resistivity measurements is a polynomial of order $p$ defined as:
+$$
+\hat{\rho}_{\text{app},i}(x) = a_{0} + a_{1}(x-x_{i})+\frac{a_{2}}{2!}(x-x_{i})^{2} + \ldots + \frac{a_{p}}{p!}(x-x_{i})^{p}
+$$
+where the $(a_{i},i=0,\ldots,p)$ are fixed coefficients that are estimated by minimizing:
+$$
+\sum_{i=1}^{n}w_{i}(x)[\rho_{\text{app}}(x_{i})-\hat{\rho}_{\text{app},i}(x)]^{2}
+$$
+
+The coefficientes $a_{i}$ can be  estimated using weighted linear least-squares:
+$$
+\boldsymbol{a}=(\boldsymbol{X}_{X}^{T} \boldsymbol{W}_{X} \boldsymbol{X}_{X})^{-1} \boldsymbol{X}_{X}^{T}\boldsymbol{W}_{X}\boldsymbol{Y}
+$$
+where the matrix $\boldsymbol{X}_{X}$ is defined as:
+$$
+\boldsymbol{X}_{X}=\left[
+\begin{array}{cccc}
+1& (x-x_{1})& \cdots& \frac{(x-x_{1})^{p}}{p!}\\
+1& (x-x_{2})& \cdots& \frac{(x-x_{2})^{p}}{p!}\\
+\vdots& \vdots& \cdots& \vdots\\
+1& (x-x_{n})& \cdots& \frac{(x-x_{n})^{p}}{p!}\\
+\end{array}
+\right]
+$$
+and the weight matrix is given by:
+$$
+\boldsymbol{W}_{X}=\left[
+\begin{array}{cccc}
+w(x_{1})& 0& \cdots & 0 \\
+0& w(x_{2})& \cdots & 0 \\
+\vdots& \vdots& \vdots& \vdots \\
+0& 0& \cdots & w(x_{n})
+\end{array}
+\right]
+$$
+
 
 ## Smoothing via Wavelets
 
@@ -121,7 +161,7 @@ sev1ss$interpreted <- TRUE
 ```
 
 ```{r plot_sevss,fig.width=6,fig.height=4,fig.align='center'}
-p3 <- plot(sev1ss)
+p3 <- plot(sev1ss, type = "ves")
 print(p3)
 ```
 
@@ -143,7 +183,7 @@ res.kr.df <- data.frame(ab2 = ab2.def, apprho = apprho.def,
                         type = as.factor(meas.type))
 ```
 
-```{r plot_kernelregression,fig.width=6,fig.height=4,fig.align='center'}
+```{r plot_kernelregression,fig.width=7,fig.height=4,fig.align='center'}
 p.kr <- ggplot() + geom_point(aes(x = ab2, y = apprho, color = type), 
                               data = res.kr.df) +
   scale_x_log10() + 
@@ -169,7 +209,7 @@ sev1kr$interpreted <- TRUE
 ```
 
 ```{r plot_sevkr,fig.width=6,fig.height=4,fig.align='center'}
-p4 <- plot(sev1kr)
+p4 <- plot(sev1kr, type = "ves")
 print(p4)
 ```
 
