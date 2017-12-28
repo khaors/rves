@@ -201,3 +201,21 @@ print(p2)
 
 The model estimated using Quasi-Newton method is similar to the model estimated using non-linear squares as seen in the plot, but the main difference is that the third layer has a smaller thickness and resistivity when compared to the nonlinear squares result. This result highlights the fact of the non-uniqueness of solution of the inverse problem.
 
+
+```{r calibrate_svd,echo=TRUE}
+res.svd <- calibrate_svd(sev1a, par0 = par0, iterations = 10, ireport = 5)
+rel.err.svd <- format(res.svd$rel.error, digits = 3)
+```
+
+
+```{r calibrate_svd1,echo=TRUE}
+sev1a$rhopar <- res.svd$rho
+sev1a$thickpar <- res.svd$thickness
+sev1a$interpreted <- TRUE
+```
+
+```{r plot_earth_model_svd,fig.height=4, fig.width=6,fig.align='center'}
+p3 <- plot(sev1a, main = "SVD", type = "ves")
+print(p3)
+```
+

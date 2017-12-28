@@ -448,6 +448,9 @@ calibrate_svd <- function(ves, par0, iterations = 100, ireport = 10){
   measured <- ves$appres
   npar <- length(par0)
   nparh <- npar/2
+  if(nparh <= 2){
+    stop('ERROR: the number of layers used is small. Increase the number of layers')
+  }
   niter <- iterations
   iter <- 0
   cpar <- par0
@@ -516,4 +519,69 @@ calibrate_svd <- function(ves, par0, iterations = 100, ireport = 10){
               cal.error = cal.error, rho = cpar[1:nparh],
               thickness = cpar[(nparh+1):npar])
   return(res)
+}
+#' @title
+#' calibration_ilsqp
+#' @description
+#' Function to estimate the layer parameters (real resistivities and thicknesses) from
+#' a VES measurements using the ILPSQ (Iterative Least-Squares Procedure) with Singular
+#' Value Decomposition proposed by Muiuane and Pedersen (1999).
+#' @param ves A VES object
+#' @param iterations An integer specifying the maximum number of iterations
+#' @param ireport An integer specifying the report interval
+#' @return
+#' This function returns a list with the following entries:
+#' \itemize{
+#' \item par: A numeric vector with the values of the layer resistivities and thicknesses
+#' \item value: The value or the RSS (Residual sum of squares)
+#' \item rel.error: The value of the relative error (in percentage)
+#' \item cal.error: A matrix with the RSS and relative error at each iteration
+#' }
+#' @author
+#' Oscar Garcia-Cabrejo \email{khaors@gmail.com}
+#' @family Calibration functions
+#' @references
+#' Muiuane, E. & Pedersen, L. Automatic 1D interpretation of DC resistivity sounding
+#' data. Journal of Applied Geophysics, 42, 1, 35-45, 1999.
+calibration_ilsqp <- function(ves, iterations = 100, ireport = 10){
+  if(class(ves) != "ves"){
+    stop('ERROR: A VES object is required as input')
+  }
+  # Define initial model: two layers
+  par0 <- c( mean(ves$appres), mean(ves$appres), ves$ab2[1]/4, 500)
+  #print(par0)
+  res.2layer <- calibrate_nls(ves, par0, iterations = iterations, ireport = ireport)
+  res.current.layer <- res.2layer
+  res.old.layer <- res.2layer
+  current.error <- 100
+  max.error <- res.2layer$rel.error
+  while(current.error > max.error){
+    nparh <- length(res.current.layer$par)/2
+    new.rho <- vector("numeric", length = (nparh + 1))
+    new.thick <- vector("numeric", length = (nparh + 1))
+    #
+    new.rho[1:(nparh-1)] <- res.current.layer$rho[1:(nparh-1)]
+    new.rho[(nparh+1)] <- res.current.layer$rho[nparh]
+    new.rho[nparh] <- res.current.layer$rho[(nparh-1)]
+    #
+    new.thick[1:(nparh-1)] <- res.current.layer$thickness[1:(nparh-1)]
+    new.thick[(nparh+1)] <- res.current.layer$thickness[nparh]
+    new.thick[nparh] <- res.current.layer$thickness[(nparh-1)]
+    #
+    new.par0 <- c(new.rho, new.thick)
+    #print(new.par0)
+    res.old.layer <- res.current.layer
+    res.current.layer <- calibrate_nls(sev1, par0 = new.par0,
+                                       iterations = iterations,
+                                       ireport = ireport)
+    #print(res.current.layer)
+    max.error <- current.error
+    current.error <- res.current.layer$rel.error
+    cat("Current Error= ", current.error, "\n")
+    #stop('ERROR')
+  }
+  res.current.layer <- calibrate_nls(ves, par0 = res.current.layer$par,
+                                     iterations = iterations,
+                                     ireport = ireport)
+  return(res.current.layer)
 }
