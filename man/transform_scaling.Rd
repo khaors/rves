@@ -22,13 +22,13 @@ Function to
 \details{
 The conversion from apparent to effective resistivities using the scaling approach is based on the use of the following expression:
 \deqn{
-\rho_{\text{eff}}^{i}=S \cdot \rho_{\text{app}}^{i}
+\rho_{eff}^{i}=S \cdot \rho_{app}^{i}
 }
 where $S$ is the so called scaling factor defined as:
 \deqn{
-S = \frac{\rho_{\text{app}}^{i}}{ \rho_{\text{app}}^{i-1} }
+S = \frac{\rho_{app}^{i}}{ \rho_{app}^{i-1} }
 }
-and \eqn{\rho_{\text{app}}^{i}} and \eqn{\rho_{\text{app}}^{i-1}} are the apparent resistivities of the \eqn{i-}th and \eqn{(i-1)}-th layers respectively.
+and \eqn{\rho_{app}^{i}} and \eqn{\rho_{app}^{i-1}} are the apparent resistivities of the \eqn{i-}th and \eqn{(i-1)}-th layers respectively.
 }
 \references{
 Meju, M.  Simple effective resistivity-depth transformations

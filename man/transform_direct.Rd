@@ -26,12 +26,12 @@ Function to transform the apparent resistivity into effective resistivities whic
 \details{
 The conversion from apparent resitivities to effective resistivities is achieved using the following expression:
 \deqn{
-\rho_{\text{eff}}=k\rho_{\text{app}}\exp{(-(1-\alpha))}
+\rho_{eff}=k\rho_{app}\exp{(-(1-\alpha))}
 }
 where:
 \itemize{
-\item \eqn{\rho_{\text{eff}}} is the effective resistivity which is assumed to be closer to the true resistivity.
-\item \eqn{\rho_{\text{app}}} is the apparent resistivity measured in the field.
+\item \eqn{\rho_{eff}} is the effective resistivity which is assumed to be closer to the true resistivity.
+\item \eqn{\rho_{app}} is the apparent resistivity measured in the field.
 \item \eqn{k} is a empirical constant defined to improve the fit between the apparent and effective resistivities. This constant has a value of 2.3.
 \item \eqn{\alpha} is the exponent in the exponential relationship. Its value is of 0.15.
 }

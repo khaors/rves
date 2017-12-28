@@ -25,12 +25,12 @@ NULL
 #' @details
 #' The conversion from apparent resitivities to effective resistivities is achieved using the following expression:
 #' \deqn{
-#' \rho_{\text{eff}}=k\rho_{\text{app}}\exp{(-(1-\alpha))}
+#' \rho_{eff}=k\rho_{app}\exp{(-(1-\alpha))}
 #' }
 #' where:
 #' \itemize{
-#' \item \eqn{\rho_{\text{eff}}} is the effective resistivity which is assumed to be closer to the true resistivity.
-#' \item \eqn{\rho_{\text{app}}} is the apparent resistivity measured in the field.
+#' \item \eqn{\rho_{eff}} is the effective resistivity which is assumed to be closer to the true resistivity.
+#' \item \eqn{\rho_{app}} is the apparent resistivity measured in the field.
 #' \item \eqn{k} is a empirical constant defined to improve the fit between the apparent and effective resistivities. This constant has a value of 2.3.
 #' \item \eqn{\alpha} is the exponent in the exponential relationship. Its value is of 0.15.
 #' }
@@ -65,13 +65,13 @@ transform_direct <- function(ves, k = 2.3, alpha = 0.15){
 #' @details
 #' The conversion from apparent to effective resistivities using the scaling approach is based on the use of the following expression:
 #' \deqn{
-#' \rho_{\text{eff}}^{i}=S \cdot \rho_{\text{app}}^{i}
+#' \rho_{eff}^{i}=S \cdot \rho_{app}^{i}
 #' }
 #' where $S$ is the so called scaling factor defined as:
 #' \deqn{
-#' S = \frac{\rho_{\text{app}}^{i}}{ \rho_{\text{app}}^{i-1} }
+#' S = \frac{\rho_{app}^{i}}{ \rho_{app}^{i-1} }
 #' }
-#' and \eqn{\rho_{\text{app}}^{i}} and \eqn{\rho_{\text{app}}^{i-1}} are the apparent resistivities of the \eqn{i-}th and \eqn{(i-1)}-th layers respectively.
+#' and \eqn{\rho_{app}^{i}} and \eqn{\rho_{app}^{i-1}} are the apparent resistivities of the \eqn{i-}th and \eqn{(i-1)}-th layers respectively.
 #' @author
 #' Oscar Garcia-Cabrejo \email{khaors@gmail.com}
 #' @family transformation functions
