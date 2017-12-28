@@ -209,6 +209,17 @@ sev1a<span class="op">$</span>interpreted &lt;-<span class="st"> </span><span cl
 <span class="kw">print</span>(p2)</code></pre></div>
 <p><img src="rves-tutorial_files/figure-html/plot_earth_model_lbfgsb-1.png" width="576" style="display: block; margin: auto;"></p>
 <p>The model estimated using Quasi-Newton method is similar to the model estimated using non-linear squares as seen in the plot, but the main difference is that the third layer has a smaller thickness and resistivity when compared to the nonlinear squares result. This result highlights the fact of the non-uniqueness of solution of the inverse problem.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">res.svd &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calibrate_svd.html">calibrate_svd</a></span>(sev1a, <span class="dt">par0 =</span> par0, <span class="dt">iterations =</span> <span class="dv">10</span>, <span class="dt">ireport =</span> <span class="dv">5</span>)
+<span class="co">#&gt; iteration, RSS, Rel Error =  0 202.7933 7.330436 </span>
+<span class="co">#&gt; iteration, RSS, Rel Error =  5 85.56126 4.637749 </span>
+<span class="co">#&gt; iteration, RSS, Rel Error =  9 84.61861 4.636767</span>
+rel.err.svd &lt;-<span class="st"> </span><span class="kw">format</span>(res.svd<span class="op">$</span>rel.error, <span class="dt">digits =</span> <span class="dv">3</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sev1a<span class="op">$</span>rhopar &lt;-<span class="st"> </span>res.svd<span class="op">$</span>rho
+sev1a<span class="op">$</span>thickpar &lt;-<span class="st"> </span>res.svd<span class="op">$</span>thickness
+sev1a<span class="op">$</span>interpreted &lt;-<span class="st"> </span><span class="ot">TRUE</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p3 &lt;-<span class="st"> </span><span class="kw">plot</span>(sev1a, <span class="dt">main =</span> <span class="st">"SVD"</span>, <span class="dt">type =</span> <span class="st">"ves"</span>)
+<span class="kw">print</span>(p3)</code></pre></div>
+<p><img src="rves-tutorial_files/figure-html/plot_earth_model_svd-1.png" width="576" style="display: block; margin: auto;"></p>
 </div>
 </div>
 </div>
