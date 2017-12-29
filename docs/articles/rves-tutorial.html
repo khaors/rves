@@ -181,13 +181,14 @@ rerr &lt;-<span class="st"> </span><span class="dv">100</span><span class="op">*
 <span class="co">#&gt; [15] 12.244097  6.279988  4.032997 10.528123</span>
 <span class="kw">print</span>(<span class="kw">mean</span>(rerr))
 <span class="co">#&gt; [1] 10.76954</span></code></pre></div>
-<p>The relative error is still larger than <span class="math inline">\(10\%\)</span> and therefore a proper estimation method is required. The first method to be used in the parameter estimation of the Earth model is the nonlinear least squares, which is a fast method and a small number of iterations is required:</p>
+<p>The relative error is still larger than 10% and therefore a proper estimation method is required. The first method to be used in the parameter estimation of the Earth model is the nonlinear least squares, which is a fast method and a small number of iterations is required:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">par0 &lt;-<span class="st"> </span><span class="kw">c</span>(rho, thick)
 res.nls &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calibrate_nls.html">calibrate_nls</a></span>(sev1a, par0, <span class="dt">iterations =</span> <span class="dv">10</span>, <span class="dt">ireport =</span> <span class="dv">5</span>)
 <span class="co">#&gt; iteration, RSS, Rel Error =  0 17.92395 10.10434 </span>
 <span class="co">#&gt; iteration, RSS, Rel Error =  5 4.657908 4.95162 </span>
-<span class="co">#&gt; iteration, RSS, Rel Error =  9 3.95511 4.878283</span></code></pre></div>
-<p>After <span class="math inline">\(10\)</span> iterations the relative error is of <span class="math inline">\(4.87\%\)</span> which can be considered as a good model. Now these estimated parameters are assigned to the VES object:</p>
+<span class="co">#&gt; iteration, RSS, Rel Error =  9 3.95511 4.878283</span>
+rel.err.nls &lt;-<span class="st"> </span><span class="kw">format</span>(res.nls<span class="op">$</span>rel.err, <span class="dt">digits =</span> <span class="dv">3</span>)</code></pre></div>
+<p>After 10 iterations the relative error is of 4.88% which can be considered as a good model. Now these estimated parameters are assigned to the VES object:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sev1a<span class="op">$</span>rhopar &lt;-<span class="st"> </span>res.nls<span class="op">$</span>rho
 sev1a<span class="op">$</span>thickpar &lt;-<span class="st"> </span>res.nls<span class="op">$</span>thickness
 sev1a<span class="op">$</span>interpreted &lt;-<span class="st"> </span><span class="ot">TRUE</span></code></pre></div>
@@ -209,17 +210,21 @@ sev1a<span class="op">$</span>interpreted &lt;-<span class="st"> </span><span cl
 <span class="kw">print</span>(p2)</code></pre></div>
 <p><img src="rves-tutorial_files/figure-html/plot_earth_model_lbfgsb-1.png" width="576" style="display: block; margin: auto;"></p>
 <p>The model estimated using Quasi-Newton method is similar to the model estimated using non-linear squares as seen in the plot, but the main difference is that the third layer has a smaller thickness and resistivity when compared to the nonlinear squares result. This result highlights the fact of the non-uniqueness of solution of the inverse problem.</p>
+<p>Other approach to estimate the parameters of the Earth model is based on the use of damped least squared using the Singular Value Decomposition of the Jacobian matrix, which can be used with the <em>calibrate_svd</em> function:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">res.svd &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calibrate_svd.html">calibrate_svd</a></span>(sev1a, <span class="dt">par0 =</span> par0, <span class="dt">iterations =</span> <span class="dv">10</span>, <span class="dt">ireport =</span> <span class="dv">5</span>)
 <span class="co">#&gt; iteration, RSS, Rel Error =  0 202.7933 7.330436 </span>
 <span class="co">#&gt; iteration, RSS, Rel Error =  5 85.56126 4.637749 </span>
 <span class="co">#&gt; iteration, RSS, Rel Error =  9 84.61861 4.636767</span>
 rel.err.svd &lt;-<span class="st"> </span><span class="kw">format</span>(res.svd<span class="op">$</span>rel.error, <span class="dt">digits =</span> <span class="dv">3</span>)</code></pre></div>
+<p>The relative error obtained in this case is equal to 4.64 % which is similar to the values obtained with nonlinear least squares and the Quasi-Newton method. Again the resulting parameters are assigned to the VES object:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sev1a<span class="op">$</span>rhopar &lt;-<span class="st"> </span>res.svd<span class="op">$</span>rho
 sev1a<span class="op">$</span>thickpar &lt;-<span class="st"> </span>res.svd<span class="op">$</span>thickness
 sev1a<span class="op">$</span>interpreted &lt;-<span class="st"> </span><span class="ot">TRUE</span></code></pre></div>
+<p>and the results are shown in the following figure.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p3 &lt;-<span class="st"> </span><span class="kw">plot</span>(sev1a, <span class="dt">main =</span> <span class="st">"SVD"</span>, <span class="dt">type =</span> <span class="st">"ves"</span>)
 <span class="kw">print</span>(p3)</code></pre></div>
 <p><img src="rves-tutorial_files/figure-html/plot_earth_model_svd-1.png" width="576" style="display: block; margin: auto;"></p>
+<p>The layer model estimated using this methodology is very similar to the obtained with the previous methods, and there is a good fit between the measurements (red points) and the estimated model (blue line). The main difference lies in the contrast of the resistivity of the third and fourth layers that in this case is very small when compared to the values previously estimated. This implies that the two lower layers can be combined in a single layer which would define the substratum of the Earth model.</p>
 </div>
 </div>
 </div>

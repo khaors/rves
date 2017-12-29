@@ -222,34 +222,36 @@ sev1kr<span class="op">$</span>interpreted &lt;-<span class="st"> </span><span c
 <div id="wavelet-smoothing" class="section level3">
 <h3 class="hasAnchor">
 <a href="#wavelet-smoothing" class="anchor"></a>Wavelet Smoothing</h3>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#library(wavethresh)</span>
-<span class="co">#print(names(sev1a))</span>
-<span class="co">#ab2.out &lt;- pumpingtest::logseq(min(log10(sev1a$ab2)), max(log10(sev1a$ab2)), 32)</span>
-<span class="co">#apprho.approx &lt;- approx(log10(sev1a$ab2),log10(sev1a$appres),</span>
-<span class="co">#                        xout = log10(ab2.out), method = 'linear')</span>
-<span class="co">#waveletwmap &lt;- wd(apprho.approx$y, family="DaubLeAsymm", filter.number=10)</span>
-<span class="co">#softthreshwmap &lt;- threshold(waveletwmap, type="soft", policy="universal")</span>
-<span class="co">#hardthreshwmap &lt;- threshold(waveletwmap, type="hard", policy="universal")</span>
-<span class="co">#s.soft &lt;- wr(softthreshwmap)</span>
-<span class="co">#s.hard &lt;- wr(hardthreshwmap)</span></code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#plot(sev1a$ab2, sev1a$appres, type = "p", log = 'xy', main = 'Wavelet Smoothing', </span>
-<span class="co">#     pch = 16)</span>
-<span class="co">#points(ab2.out, 10^s.soft, col = 'red')</span>
-<span class="co">#points(ab2.out, 10^s.hard, col = 'blue')</span></code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#soft &lt;- pracma::interp1(ab2.out, s.soft, xi = c(3.1, sev1a$ab2[2:17], 299.9))</span>
-<span class="co">#hard &lt;- pracma::interp1(ab2.out, s.hard, xi = c(3.1, sev1a$ab2[2:17], 299.9))</span>
-<span class="co">#ws.df &lt;- data.frame(ab2 = sev1a$ab2, raw = sev1a$appres, soft = 10^soft, </span>
-<span class="co">#                    hard = 10^hard)</span></code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#p1 &lt;- ggplot() + geom_point(aes(x = ab2, y = raw), data = ws.df) + </span>
-<span class="co">#  geom_point(aes(x = ab2, y = soft), data = ws.df, col = "blue") +</span>
-<span class="co">#  geom_point(aes(x = ab2, y = hard), data = ws.df, col = "red") +</span>
-<span class="co">#  theme_bw() + </span>
-<span class="co">#  ggtitle("Wavelet Smoothing") +</span>
-<span class="co">#  scale_x_log10() + </span>
-<span class="co">#  scale_y_log10() +</span>
-<span class="co">#  ylab('Apparent Resistivity') +</span>
-<span class="co">#  xlab("AB2(m)")</span>
-<span class="co">#print(p1)</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">res.wv &lt;-<span class="st"> </span><span class="kw"><a href="../reference/smoothing_ves.html">smoothing_ves</a></span>(sev1a, <span class="dt">method =</span> <span class="st">"wavelet"</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ab2.def &lt;-<span class="st"> </span><span class="kw">rep</span>(res.wv<span class="op">$</span>ab2, <span class="dv">2</span>)
+apprho.def &lt;-<span class="st"> </span><span class="kw">vector</span>(<span class="st">'numeric'</span>, <span class="dt">length =</span> <span class="dv">36</span>)
+apprho.def[<span class="dv">1</span><span class="op">:</span><span class="dv">18</span>] &lt;-<span class="st"> </span>res.wv<span class="op">$</span>apprho
+apprho.def[<span class="dv">19</span><span class="op">:</span><span class="dv">36</span>] &lt;-<span class="st"> </span>sev1a<span class="op">$</span>appres
+meas.type &lt;-<span class="st"> </span><span class="kw">vector</span>(<span class="st">'character'</span>, <span class="dt">length =</span> <span class="dv">36</span>)
+meas.type[<span class="dv">1</span><span class="op">:</span><span class="dv">18</span>] &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="st">"wavelet.thresholding"</span>, <span class="dv">18</span>)
+meas.type[<span class="dv">19</span><span class="op">:</span><span class="dv">36</span>] &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="st">"raw"</span>, <span class="dv">18</span>)
+res.wv.df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">ab2 =</span> ab2.def, <span class="dt">apprho =</span> apprho.def, 
+                        <span class="dt">type =</span> <span class="kw">as.factor</span>(meas.type))</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p.wv &lt;-<span class="st"> </span><span class="kw">ggplot</span>() <span class="op">+</span><span class="st"> </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">x =</span> ab2, <span class="dt">y =</span> apprho, <span class="dt">color =</span> type), 
+                              <span class="dt">data =</span> res.wv.df) <span class="op">+</span>
+<span class="st">  </span><span class="kw">scale_x_log10</span>() <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">scale_y_log10</span>() <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">'Comparison'</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">theme_bw</span>()
+<span class="kw">print</span>(p.wv)  </code></pre></div>
+<p><img src="rves-smoothing_files/figure-html/wave2-1.png" width="576" style="display: block; margin: auto;"></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sev1wv &lt;-<span class="st"> </span><span class="kw"><a href="../reference/ves.html">ves</a></span>(<span class="dt">id =</span> <span class="st">"Sounding 1-Wavelet Thresholding"</span>, <span class="dt">ab2 =</span> res.wv<span class="op">$</span>ab2, 
+              <span class="dt">apprho =</span> res.wv<span class="op">$</span>apprho)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">res.wv.nls &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calibrate_nls.html">calibrate_nls</a></span>(sev1wv, par0, <span class="dt">iterations =</span> <span class="dv">10</span>, <span class="dt">ireport =</span> <span class="dv">5</span>)
+<span class="co">#&gt; iteration, RSS, Rel Error =  0 14.23498 8.522485 </span>
+<span class="co">#&gt; iteration, RSS, Rel Error =  5 1.253244 2.43409 </span>
+<span class="co">#&gt; iteration, RSS, Rel Error =  9 0.8430471 1.911074</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sev1wv<span class="op">$</span>rhopar &lt;-<span class="st"> </span>res.wv.nls<span class="op">$</span>rho
+sev1wv<span class="op">$</span>thickpar &lt;-<span class="st"> </span>res.wv.nls<span class="op">$</span>thickness
+sev1wv<span class="op">$</span>interpreted &lt;-<span class="st"> </span><span class="ot">TRUE</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p5 &lt;-<span class="st"> </span><span class="kw">plot</span>(sev1wv, <span class="dt">type =</span> <span class="st">"ves"</span>)
+<span class="kw">print</span>(p5)</code></pre></div>
+<p><img src="rves-smoothing_files/figure-html/wave6-1.png" width="576" style="display: block; margin: auto;"></p>
 </div>
 </div>
 </div>
