@@ -548,14 +548,20 @@ calibrate_ilsqp <- function(ves, iterations = 100, ireport = 10){
   if(class(ves) != "ves"){
     stop('ERROR: A VES object is required as input')
   }
+  rho.mn <- min(ves$appres)/3
+  rho.mx <- 3*max(ves$appres)
   # Define initial model: two layers
   par0 <- c( mean(ves$appres), mean(ves$appres), ves$ab2[1]/4, 500)
   #print(par0)
-  res.2layer <- calibrate_nls(ves, par0, iterations = iterations, ireport = ireport)
+  #res.2layer <- calibrate_nls(ves, par0, iterations = iterations, ireport = ireport)
+  res.2layer <- calibrate(ves, opt.method = "L-BFGS-B", obj.fn = "rss",
+                           par0 = par0, lower = c(rep(rho.mn,2), rep(5,2)),
+                           upper = c(rep(rho.mx,2),rep(501,2)))
   res.current.layer <- res.2layer
   res.old.layer <- res.2layer
   current.error <- 100
-  max.error <- res.2layer$rel.error
+  max.error <- res.2layer$rel.err
+  nparh <- 0
   while(current.error > max.error){
     nparh <- length(res.current.layer$par)/2
     new.rho <- vector("numeric", length = (nparh + 1))
@@ -570,19 +576,27 @@ calibrate_ilsqp <- function(ves, iterations = 100, ireport = 10){
     new.thick[nparh] <- res.current.layer$thickness[(nparh-1)]
     #
     new.par0 <- c(new.rho, new.thick)
-    #print(new.par0)
+    print(new.par0)
     res.old.layer <- res.current.layer
-    res.current.layer <- calibrate_nls(ves, par0 = new.par0,
-                                       iterations = iterations,
-                                       ireport = ireport)
+    #res.current.layer <- calibrate_nls(ves, par0 = new.par0,
+    #                                   iterations = iterations,
+    #                                   ireport = ireport)
+    res.current.layer <- calibrate(ves, opt.method = "L-BFGS-B", obj.fn = "rss",
+                                   par0 = new.par0,
+                                   lower = c(rep(rho.mn, nparh), rep(5,nparh)),
+                                   upper = c(rep(rho.mx,nparh), rep(501,nparh)))
     #print(res.current.layer)
     max.error <- current.error
-    current.error <- res.current.layer$rel.error
+    current.error <- res.current.layer$rel.err
     cat("Current Error= ", current.error, "\n")
     #stop('ERROR')
   }
-  res.current.layer <- calibrate_nls(ves, par0 = res.current.layer$par,
-                                     iterations = iterations,
-                                     ireport = ireport)
+  #res.current.layer <- calibrate_nls(ves, par0 = res.current.layer$par,
+  #                                   iterations = iterations,
+  #                                   ireport = ireport)
+  res.current.layer <- calibrate(ves, opt.method = "L-BFGS-B", obj.fn = "rss",
+                                 par0 = res.current.layer$par,
+                                 lower = c(rep(rho.mn, nparh), rep(5,nparh)),
+                                 upper = c(rep(rho.mx, nparh), rep(501,nparh)))
   return(res.current.layer)
 }
