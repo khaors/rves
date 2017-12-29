@@ -154,12 +154,13 @@ rerr <- 100*abs(res$appres-apprho)/res$appres
 print(rerr)
 print(mean(rerr))
 ```
-The relative error is still larger than $10\%$ and therefore a proper estimation method is required. The first method to be used in the parameter estimation of the Earth model is the nonlinear least squares, which is a fast method and a small number of iterations is required:
+The relative error is still larger than 10\% and therefore a proper estimation method is required. The first method to be used in the parameter estimation of the Earth model is the nonlinear least squares, which is a fast method and a small number of iterations is required:
 ```{r calculate_rho_thick_nls, echo=TRUE}
 par0 <- c(rho, thick)
 res.nls <- calibrate_nls(sev1a, par0, iterations = 10, ireport = 5)
+rel.err.nls <- format(res.nls$rel.err, digits = 3)
 ```
-After $10$ iterations the relative error is of $4.87\%$ which can be considered as a good model. Now these estimated parameters are assigned to the VES object:
+After 10 iterations the relative error is of `r rel.err.nls`\% which can be considered as a good model. Now these estimated parameters are assigned to the VES object:
 ```{r assign_results_nls,echo=TRUE}
 sev1a$rhopar <- res.nls$rho
 sev1a$thickpar <- res.nls$thickness
@@ -202,20 +203,27 @@ print(p2)
 The model estimated using Quasi-Newton method is similar to the model estimated using non-linear squares as seen in the plot, but the main difference is that the third layer has a smaller thickness and resistivity when compared to the nonlinear squares result. This result highlights the fact of the non-uniqueness of solution of the inverse problem.
 
 
+Other approach to estimate the parameters of the Earth model is based on the use of damped least squared using the Singular Value Decomposition of the Jacobian matrix, which can be used with the _calibrate\_svd_ function:
+
 ```{r calibrate_svd,echo=TRUE}
 res.svd <- calibrate_svd(sev1a, par0 = par0, iterations = 10, ireport = 5)
 rel.err.svd <- format(res.svd$rel.error, digits = 3)
 ```
 
+The relative error obtained in this case is equal to `r rel.err.svd` \% which is similar to the values obtained with nonlinear least squares and the Quasi-Newton method. Again the resulting parameters are assigned to the VES object:
 
 ```{r calibrate_svd1,echo=TRUE}
 sev1a$rhopar <- res.svd$rho
 sev1a$thickpar <- res.svd$thickness
 sev1a$interpreted <- TRUE
 ```
+and the results are shown in the following figure.
 
 ```{r plot_earth_model_svd,fig.height=4, fig.width=6,fig.align='center'}
 p3 <- plot(sev1a, main = "SVD", type = "ves")
 print(p3)
 ```
+
+The layer model estimated using this methodology is very similar to the obtained with the previous methods, and there is a good fit between the measurements (red points) and the estimated model (blue line). The main difference lies in the contrast of the resistivity of the third and fourth layers that in this case is very small when compared to the values previously estimated. This implies that the two lower layers can be combined in a single layer which would define the substratum of the Earth model. 
+
 

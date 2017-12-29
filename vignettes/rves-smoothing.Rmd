@@ -217,41 +217,50 @@ print(p4)
 
 
 ```{r wave,echo=TRUE}
-#library(wavethresh)
-#print(names(sev1a))
-#ab2.out <- pumpingtest::logseq(min(log10(sev1a$ab2)), max(log10(sev1a$ab2)), 32)
-#apprho.approx <- approx(log10(sev1a$ab2),log10(sev1a$appres),
-#                        xout = log10(ab2.out), method = 'linear')
-#waveletwmap <- wd(apprho.approx$y, family="DaubLeAsymm", filter.number=10)
-#softthreshwmap <- threshold(waveletwmap, type="soft", policy="universal")
-#hardthreshwmap <- threshold(waveletwmap, type="hard", policy="universal")
-#s.soft <- wr(softthreshwmap)
-#s.hard <- wr(hardthreshwmap)
+res.wv <- smoothing_ves(sev1a, method = "wavelet")
 ```
 
-```{r wave1,fig.height=4,fig.width=6,fig.align='center'}
-#plot(sev1a$ab2, sev1a$appres, type = "p", log = 'xy', main = 'Wavelet Smoothing', 
-#     pch = 16)
-#points(ab2.out, 10^s.soft, col = 'red')
-#points(ab2.out, 10^s.hard, col = 'blue')
+```{r wave1,echo=TRUE}
+ab2.def <- rep(res.wv$ab2, 2)
+apprho.def <- vector('numeric', length = 36)
+apprho.def[1:18] <- res.wv$apprho
+apprho.def[19:36] <- sev1a$appres
+meas.type <- vector('character', length = 36)
+meas.type[1:18] <- rep("wavelet.thresholding", 18)
+meas.type[19:36] <- rep("raw", 18)
+res.wv.df <- data.frame(ab2 = ab2.def, apprho = apprho.def, 
+                        type = as.factor(meas.type))
 ```
 
-```{r wave2,echo=TRUE}
-#soft <- pracma::interp1(ab2.out, s.soft, xi = c(3.1, sev1a$ab2[2:17], 299.9))
-#hard <- pracma::interp1(ab2.out, s.hard, xi = c(3.1, sev1a$ab2[2:17], 299.9))
-#ws.df <- data.frame(ab2 = sev1a$ab2, raw = sev1a$appres, soft = 10^soft, 
-#                    hard = 10^hard)
+
+```{r wave2,fig.height=4,fig.width=6,fig.align='center'}
+p.wv <- ggplot() + geom_point(aes(x = ab2, y = apprho, color = type), 
+                              data = res.wv.df) +
+  scale_x_log10() + 
+  scale_y_log10() + 
+  ggtitle('Comparison') +
+  theme_bw()
+print(p.wv)  
 ```
 
-```{r wave3,fig.height=4,fig.width=6,fig.align='center'}
-#p1 <- ggplot() + geom_point(aes(x = ab2, y = raw), data = ws.df) + 
-#  geom_point(aes(x = ab2, y = soft), data = ws.df, col = "blue") +
-#  geom_point(aes(x = ab2, y = hard), data = ws.df, col = "red") +
-#  theme_bw() + 
-#  ggtitle("Wavelet Smoothing") +
-#  scale_x_log10() + 
-#  scale_y_log10() +
-#  ylab('Apparent Resistivity') +
-#  xlab("AB2(m)")
-#print(p1)
+```{r wave3,echo=TRUE}
+sev1wv <- ves(id = "Sounding 1-Wavelet Thresholding", ab2 = res.wv$ab2, 
+              apprho = res.wv$apprho)
+```
+
+```{r wave4,echo=TRUE}
+res.wv.nls <- calibrate_nls(sev1wv, par0, iterations = 10, ireport = 5)
+```
+
+```{r wave5,echo=TRUE}
+sev1wv$rhopar <- res.wv.nls$rho
+sev1wv$thickpar <- res.wv.nls$thickness
+sev1wv$interpreted <- TRUE
+```
+
+
+
+```{r wave6,fig.height=4,fig.width=6,fig.align='center'}
+p5 <- plot(sev1wv, type = "ves")
+print(p5)
 ```

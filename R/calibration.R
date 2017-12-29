@@ -521,7 +521,7 @@ calibrate_svd <- function(ves, par0, iterations = 100, ireport = 10){
   return(res)
 }
 #' @title
-#' calibration_ilsqp
+#' calibrate_ilsqp
 #' @description
 #' Function to estimate the layer parameters (real resistivities and thicknesses) from
 #' a VES measurements using the ILPSQ (Iterative Least-Squares Procedure) with Singular
@@ -540,10 +540,11 @@ calibrate_svd <- function(ves, par0, iterations = 100, ireport = 10){
 #' @author
 #' Oscar Garcia-Cabrejo \email{khaors@gmail.com}
 #' @family Calibration functions
+#' @export
 #' @references
 #' Muiuane, E. & Pedersen, L. Automatic 1D interpretation of DC resistivity sounding
 #' data. Journal of Applied Geophysics, 42, 1, 35-45, 1999.
-calibration_ilsqp <- function(ves, iterations = 100, ireport = 10){
+calibrate_ilsqp <- function(ves, iterations = 100, ireport = 10){
   if(class(ves) != "ves"){
     stop('ERROR: A VES object is required as input')
   }
