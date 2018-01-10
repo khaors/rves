@@ -36,7 +36,9 @@ for infield or real-time data processing. Computers and Geosciences,
 21(8), 985-992, 1995.
 }
 \seealso{
-Other transformation functions: \code{\link{transform_direct}}
+Other transformation functions: \code{\link{transform_direct}},
+  \code{\link{transform_smoothed_zohdy}},
+  \code{\link{transform_zohdy}}
 }
 \author{
 Oscar Garcia-Cabrejo \email{khaors@gmail.com}
