@@ -4,7 +4,8 @@
 \alias{plot_transformation}
 \title{plot_transformation}
 \usage{
-plot_transformation(x, trans.type = c("direct", "scaling"))
+plot_transformation(x, trans.type = c("direct", "scaling", "zohdy",
+  "zohdy.smoothed"))
 }
 \arguments{
 \item{x}{A VES object}

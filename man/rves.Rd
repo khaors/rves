@@ -54,7 +54,7 @@ This section includes functions used to calculate the resistivity-depth transfor
 
 the functions included in this section are:
 
-transform_direct, transform_scaling, transform_zohdy
+transform_direct, transform_scaling, transform_zohdy, transform_smoothed_zohdy
 }
 
 \section{base functions}{
