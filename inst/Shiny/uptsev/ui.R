@@ -34,6 +34,7 @@ dbSidebar <- dashboardSidebar(
     menuItem("Home", tabName = "home", icon = icon("home")),
     menuItem("Data", tabName = "data", icon = icon("table")),
     menuItem("Filter Data", tabName = "filter", icon = icon("filter")),
+    menuItem("Transform Data", tabName = "transformation", icon = icon("key")),
     menuItem("Graphical Inversion", tabName = "manual", icon = icon("hand-spock-o")),
     menuItem("Automatic Inversion", tabName = "automatic", icon = icon("fighter-jet")),
     #menuItem("Reports", tabName = "reports", icon = icon("cogs")),
@@ -90,15 +91,24 @@ homeTab <- tabItem(
       h2("Instructions"),
       "1. Load the results of the VES using the Data Tab on the right.",
       br(),br(),
-      "2. Use the Graphical Inversion Tab to define a model using your 'Geophysical Skill'.",
+      "2. If required, use the Filter Tab to remove noise in the apparent resistivity measurements ",
+      "using different methodologies including smoothing spline, kernel polynomial regression, ",
+      "and wavelet thresholding.",
+      br(), br(),
+      "3. Use the Transformation Tab to apply different resistivity-depth transformation to your ",
+      "resistivity measurements. These transformation approaches can be conceived as heuristic ",
+      "inversion methodologies and can be used in cases when a more realisitic initial solution is ",
+      "needed for the automatic inversion routines or a fast multilayer model is required.",
       br(),br(),
-      "3. Use the Automatic Inversion Tab to estimate the real resistivities and thicknesses using ",
+      "4. Use the Graphical Inversion Tab to define a model using your 'Geophysical Skill'.",
+      br(),br(),
+      "5. Use the Automatic Inversion Tab to estimate the real resistivities and thicknesses using ",
       "different optimization techniques. The convential approach is based on linear inverse theory ",
       "and is called Nonlinear Least-Squares method. There are other methods to find the resitivities and ",
       "thicknesses based on optimization theory. These methods include Simulated Annealing, Genetic ",
       "Algorithms, Particle Swarm Optimization, Differential Evoluation, among others",
       br(),br(),
-      "4. Evaluate the estimated model on the Model Diagnostic Tab and be more confident about the ",
+      "6. Evaluate the estimated model on the Model Diagnostic Tab and be more confident about the ",
       "estimated parameters."
     )
 
@@ -132,7 +142,7 @@ dataTab <- tabItem(
                10),
   fileInput('file1', 'Choose CSV/TXT File'),
   helpText("Note: Even if the preview only shows a restricted
-                          number of observations, the pumping_test object will be created
+                          number of observations, the VES object will be created
                           based on the full dataset."),
   tableOutput("view"),
   br()
@@ -175,6 +185,48 @@ filterTab <- tabItem(
     )
   )
 )
+#########################################################################################
+#                                    Transformation Tab
+#########################################################################################
+transformationTab <- tabItem(
+  tabName = "transformation",
+  h3("Resistivity-Depth Transformation"),
+  br(),
+  fluidRow(
+    tags$em("On this tab you can transform your apparent resistivity data measured at a
+            given spacing into real resistivities at given depths. On the surface this
+            seems like the inversion procedure but in this case this is a heuristic
+            inversion. This means that this inversion is not based on optimization but
+            instead this is calculated using ad-hoc rules. Once the trransformation is
+            calculated, the results can be used as an initial model of an optimization-based
+            inversion or just as exploratory tool to understand the variation of the resistivity
+            with depth.")
+  ),
+  br(),
+  br(),
+  sidebarLayout(
+    sidebarPanel(
+      width = 4,
+      selectInput(inputId = "transformation.type",
+                  label = "Select the Transformation Type",
+                  choices = c("None", "Direct", "Scaling", "Zohdy", "Smoothed.Zohdy"),
+                  selected = "None"),
+      br(),
+      actionButton(inputId = "transformationRun", label = "Apply Transformation", icon = icon("bullseye"))
+    ),
+    mainPanel(
+      # Add Plot
+      plotOutput(outputId = "transformationPlot"),
+      br(),
+      checkboxInput(inputId = "transform_results_plot", label = "Show Results", value = FALSE),
+      br(),
+      uiOutput("transform_results")
+    )
+
+
+  )
+
+)
 
 #########################################################################################
 #                                    Graphical Inversion Tab
@@ -203,7 +255,6 @@ manualTab <- tabItem(
       plotOutput(outputId="manual_plot"),
       br(),
       uiOutput("manual_results")
-
     )
   )
 )
@@ -335,6 +386,7 @@ userInterface <- dashboardPage(
       homeTab ,
       dataTab,
       filterTab,
+      transformationTab,
       manualTab,
       automaticTab, #,reportsTab
       diagnosticTab

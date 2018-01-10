@@ -66,6 +66,9 @@ shinyServer(function(input, output, session) {
     if(is.null(current.ves))
       return(NULL)
     filterMethod <- isolate(input$filterMethod)
+    validate(
+      need(filterMethod != "None", "Please select a filter method")
+    )
     res <- NULL
     if(filterMethod == "None")
       return(NULL)
@@ -85,6 +88,9 @@ shinyServer(function(input, output, session) {
   observeEvent(input$filterRun, {
     output$filterResultsPlot <- renderPlot({
       current.ves <- server.env$current.ves
+      validate(
+        need(!is.null(current.ves), "The VES is not defined")
+      )
       if(is.null(current.ves))
         return(NULL)
       ab2.original <- current.ves$ab2
@@ -97,7 +103,41 @@ shinyServer(function(input, output, session) {
     })
   })
   ########################################################################################
-  #                           Manual Inversion Tab
+  #                             Transformation Tab
+  ########################################################################################
+  observeEvent(input$transformationRun, {
+    output$transformationPlot <- renderPlot({
+      current.ves <- server.env$current.ves
+      validate(
+        need(!is.null(current.ves), "The VES is not defined")
+      )
+      if(is.null(current.ves))
+        return(NULL)
+      current.transformation <- isolate(input$transformation.type)
+      validate(
+        need(current.transformation != "None", "Please choose a Transformation")
+      )
+      current.transf <- NULL
+      if(current.transformation == "Direct"){
+        current.transf <- "direct"
+      }
+      else if(current.transformation == "Scaling"){
+        current.transf <- "scaling"
+      }
+      else if(current.transformation == "Zohdy"){
+        current.transf <- "zohdy"
+      }
+      else if(current.transformation == "Smoothed.Zohdy"){
+        current.transf <- "zohdy.smoothed"
+      }
+      p1 <- plot(current.ves, type = "transformation", trans.type = current.transf)
+      print(p1)
+      return(p1)
+    })
+  })
+
+  ########################################################################################
+  #                           Graphical Inversion Tab
   ########################################################################################
   output$manual_run <- renderUI({
     tmp <- actionButton(inputId = "manual_run1", label = "Press to Plot")
@@ -110,6 +150,11 @@ shinyServer(function(input, output, session) {
     nlayers <- isolate(as.numeric(input$manual_nlayers))
     rho <- isolate(as.numeric(unlist(strsplit(input$manual_res,","))))
     thick <- isolate(as.numeric(unlist(strsplit(input$manual_thick,","))))
+    validate(
+      need(nlayers != 1, "Earth model with a single layer"),
+      need(length(rho) == nlayers, "Resisitivities do not match number of layers"),
+      need(length(thick) == nlayers, "Thicknesses do not match number of layers")
+    )
     if(nlayers == 1 || length(rho) != nlayers || length(thick) != nlayers){
       current.ves.manual$interpreted <- FALSE
       server.env$current.ves.manual <- current.ves.manual
@@ -127,6 +172,11 @@ shinyServer(function(input, output, session) {
       nlayers <- isolate(as.numeric(input$manual_nlayers))
       rho <- isolate(as.numeric(unlist(strsplit(input$manual_res,","))))
       thick <- isolate(as.numeric(unlist(strsplit(input$manual_thick,","))))
+      validate(
+        need(nlayers !=1, "Earth model with a single layer"),
+        need(length(rho) == nlayers, "Resistivities do not match"),
+        need(length(thick) == nlayers, "Thicknesses do not match")
+      )
       if(nlayers != length(rho)){
         return(NULL)
       }
@@ -149,8 +199,14 @@ shinyServer(function(input, output, session) {
       #
       output$manual_results <- renderUI({
         current.ves.manual <- server.env$current.ves.manual
+        validate(
+          need(!is.null(current.ves.manual), "The VES object is not defined.")
+        )
         if(is.null(current.ves.manual))
           return(NULL)
+        validate(
+          need(input$manual_nlayers > 1, "Earth Model with a single layer")
+        )
         if(isolate(input$manual_nlayers) == 1)
           return(NULL)
         #print(names(current.ves.manual))
@@ -188,9 +244,6 @@ shinyServer(function(input, output, session) {
     nlayers <- as.numeric(input$manual_nlayers)
     rho <- as.numeric(unlist(strsplit(input$manual_res,",")))
     thick <- as.numeric(unlist(strsplit(input$manual_thick,",")))
-    #print(nlayers)
-    #print(rho)
-    #print(thick)
     updateTextInput(session, inputId = "automatic_nlayers", value = as.character(nlayers))
     updateTextInput(session, inputId = "automatic_res", value = as.character(rho))
     updateTextInput(session, inputId = "automatic_thick", value = as.character(thick))
@@ -200,7 +253,6 @@ shinyServer(function(input, output, session) {
     current.ves.auto <- server.env$current.ves
     tmp <- NULL
     if(is.null(current.ves.auto)){
-      #output$automatic_msg <- "A VES has not been defined"
       return(NULL)
     }
     if(input$automatic_options1){
@@ -284,20 +336,36 @@ shinyServer(function(input, output, session) {
   calibrate.results <- function(){
     #
     current.ves.auto <- server.env$current.ves
+    validate(
+      need(!is.null(current.ves.auto), "VES has not been defined")
+    )
     if(is.null(current.ves.auto)){
       output$automatic_msg <- renderText("VES has not been defined")
       return(NULL)
     }
     #
     nlayers <- isolate(as.numeric(input$automatic_nlayers))
+    validate(
+      need(nlayers > 1, "Earth Model with a single layer")
+    )
     if(nlayers == 1){
-      output$automatic_msg <- renderText("Number of layers in Earth model is 1")
       return(NULL)
     }
     #
     rho <- isolate(as.numeric(unlist(strsplit(input$automatic_res,","))))
+    validate(
+      need(length(rho) == nlayers & length(rho) > 1, "The number of resistivities
+           does not match with the number of layers")
+    )
     thick <- isolate(as.numeric(unlist(strsplit(input$automatic_thick,","))))
+    validate(
+      need(length(thick) == nlayers & length(thick) > 1, "The number of thicknesses
+           does not match with the number of layers")    )
+
     automatic_method <- isolate(input$automatic_method)
+    validate(
+      need(automatic_method != "None", "Select a valid optimization method")
+    )
     check_options <- isolate(input$automatic_options1)
     #
     if(length(rho) != nlayers | length(thick) != nlayers){
@@ -407,6 +475,9 @@ shinyServer(function(input, output, session) {
   observeEvent(input$automatic_plot,{
     output$automatic_plot <- renderPlot({
       current.ves <- server.env$current.ves
+      validate(
+        need(!is.null(current.ves), "The VES object is not defined")
+      )
       current.ves$interpreted <- FALSE
       plot(current.ves, type = "ves")
     })
@@ -415,12 +486,26 @@ shinyServer(function(input, output, session) {
   observeEvent(input$auto_run, {
     output$automatic_plot <- renderPlot({
       current.ves <- server.env$current.ves
+      validate(
+        need(!is.null(current.ves), "The VES object is not defined")
+      )
       nlayers <- isolate(as.numeric(input$automatic_nlayers))
+      validate(
+        need(nlayers > 1, "Earth model with a single layer")
+      )
       rho <- isolate(as.numeric(unlist(strsplit(input$automatic_res,","))))
       thick <- isolate(as.numeric(unlist(strsplit(input$automatic_thick,","))))
       p <- NULL
+      validate(
+        need(length(rho) == nlayers & length(rho) > 1, "Number of resistivities
+             does not match with number of layers")
+      )
       if(length(rho) != nlayers)
         return(NULL)
+      validate(
+        need(length(thick) == nlayers & length(thick) > 1, "Number of thicknesses
+             does not match with number of layers")
+      )
       if(length(thick) != nlayers)
         return(NULL)
       if(is.null(current.ves))
@@ -445,6 +530,9 @@ shinyServer(function(input, output, session) {
       #
       output$automatic_results <- renderUI({
         current.ves <- server.env$current.ves
+        validate(
+          need(!is.null(current.ves), "The VES object is not defined")
+        )
         if(is.null(current.ves))
           return(NULL)
         #print(names(current.ves.manual))
@@ -470,6 +558,13 @@ shinyServer(function(input, output, session) {
     #
     output$automatic_table <- renderTable({
       current.ves <- server.env$current.ves
+      validate(
+        need(!is.null(current.ves), "The VES object is not defined")
+      )
+      #
+      validate(
+        need(current.ves$interpreted, "The VES object is not interpreted")
+      )
       rho <- current.ves$rhopar
       thick <- current.ves$thickpar
       res.df <- data.frame('Real_Resistivity(Ohm_m)' = rho, 'Thickness(m)' = thick)
@@ -488,11 +583,20 @@ shinyServer(function(input, output, session) {
   ########################################################################################
   output$model_diagnostic <- renderPlot({
     current.ves <- server.env$current.ves
+    validate(
+      need(!is.null(current.ves), "The VES object is not defined")
+    )
     if(is.null(current.ves))
       return(NULL)
+    validate(
+      need(current.ves$interpreted, "An interpreted VES object is required")
+    )
     if(!current.ves$interpreted)
       return(NULL)
     #print(input$diagnostic.type)
+    validate(
+      need(input$diagnostic.type != "None", "A valid diagnostic plot type is required")
+    )
     if(input$diagnostic.type == "None")
       return(NULL)
     else if(input$diagnostic.type == "Model Diagnostic"){
