@@ -154,7 +154,7 @@ plot_ves <- function(x, main = NULL, ...){
       scale_x_log10(breaks = breaks, minor_breaks = minor_breaks) +
       ylab( expression(paste("Apparent Resitivity ", Omega, phantom() %.% phantom(), "m"))) +
       xlab('AB2(m)') +
-      ggtitle(paste("Profile: ", ves$id, subtitle)) +
+      ggtitle(paste("Sounding: ", ves$id, subtitle)) +
       theme_bw()
     if(log10yrng < 1){
       pbase <- pbase + scale_y_log10(breaks = minor_breaks)
@@ -196,7 +196,7 @@ plot_ves <- function(x, main = NULL, ...){
       scale_x_log10(breaks = breaks, minor_breaks = minor_breaks) +
       ylab( expression(paste("Apparent Resitivity ", Omega, phantom() %.% phantom(), "m"))) +
       xlab('AB2(m)') +
-      ggtitle(paste("Profile: ", ves$id, subtitle)) +
+      ggtitle(paste("Sounding: ", ves$id, subtitle)) +
       theme_bw()
     if(log10yrng < 1){
       pbase <- pbase + scale_y_log10(breaks = minor_breaks)
@@ -213,14 +213,15 @@ plot_ves <- function(x, main = NULL, ...){
 #' Function to plot the resistivity-depth transformation from a given VES.
 #' @param x A VES object
 #' @param trans.type A character string with the type of transformation to apply. Currently only direct and
-#' scaling transformation are defined.
+#' scaling, zohdy and zohdy.smoothed transformation are defined.
 #' @return
 #' This function returns a ggplot2 object.
 #' @author
 #' Oscar Garcia-Cabrejo \email{khaors@gmail.com}
 #' @export
 #' @importFrom ggplot2 geom_point geom_line scale_x_log10 scale_y_log10 xlab ylab ggtitle xlim ylim
-plot_transformation <- function(x, trans.type = c("direct", "scaling")){
+plot_transformation <- function(x, trans.type = c("direct", "scaling",
+                                                  "zohdy", "zohdy.smoothed")){
   if(class(x) != 'ves'){
     stop('A VES object is required as input')
   }
@@ -234,6 +235,12 @@ plot_transformation <- function(x, trans.type = c("direct", "scaling")){
   else if(trans.type == "scaling"){
     res.trans <- transform_scaling(ves)
   }
+  else if(trans.type == "zohdy"){
+    res.trans <- transform_zohdy(ves)
+  }
+  else if(trans.type == "zohdy.smoothed"){
+    res.trans <- transform_smoothed_zohdy(ves)
+  }
   else{
     stop("ERROR: Unknown transformation.")
   }
@@ -242,10 +249,13 @@ plot_transformation <- function(x, trans.type = c("direct", "scaling")){
   minor_breaks <- rep(1:9, 21)*(10^rep(-10:10, each=9))
   depth <- res.trans$depth
   real.res <- res.trans$real.res
+  thick1 <- c(0.5*diff(depth),500)
+  depth1 <- cumsum(thick1)
   res.trans.df <- data.frame(depth = depth, real.res = real.res)
+
   #
   current.title <- paste0("Resistivity-Depth Transformation(",
-                          trans.type,"): Profile ", ves$id)
+                          trans.type,"): Sounding ", ves$id)
   #
   model.par.df <- NULL
   p <- ggplot() + xlab("Depth(m)") +
@@ -254,34 +264,34 @@ plot_transformation <- function(x, trans.type = c("direct", "scaling")){
     ggtitle(current.title)
   ymn <- 0.8*min(ves$appres)
   ymx <- 1.5*max(ves$appres)
-  if(ves$interpreted){
-    rho <- ves$rhopar
-    thick <- ves$thickpar
-    spacing <- ves$ab2
-    nlayers <- length(rho)
-    thick[nlayers] <- 1.1*max(depth)
-    depth1 <- cumsum(thick)
-    pos_layers <- vector('numeric', length = (nlayers+1))
-    pos_layers[1] <- 0.1
-    pos_layers[2:(nlayers+1)] <- depth1
-    pos_layers1 <- vector('numeric', length = (nlayers*2))
-    rho_layers <- vector('numeric', length = (nlayers*2))
-    for(ilay in 1:nlayers){
-      begin_pos <- (2*ilay-1)
-      end_pos <- (2*ilay)
-      pos_layers1[begin_pos:end_pos] <- c(pos_layers[ilay], pos_layers[ilay+1])
-      rho_layers[begin_pos:end_pos] <- rep(rho[ilay], 2)
-    }
-    model.par.df <- data.frame(depth = pos_layers1, res = rho_layers)
-    ymn <- 0.8*min(ves$appres, ves$rhopar)
-    ymx <- 1.5*max(ves$appres, ves$rhopar)
-    p <- p + geom_path(aes(x = depth, y = res), data = model.par.df,
-                              col = "green")
+  #
+  rho <- real.res
+  thick <- c(diff(depth),500)
+  spacing <- ves$ab2
+  nlayers <- length(rho)
+  thick[nlayers] <- 1.1*max(depth)
+  pos_layers <- vector('numeric', length = (nlayers+1))
+  pos_layers[1] <- 0.1
+  pos_layers[2:(nlayers+1)] <- depth
+  pos_layers1 <- vector('numeric', length = (nlayers*2))
+  rho_layers <- vector('numeric', length = (nlayers*2))
+  for(ilay in 1:nlayers){
+    begin_pos <- (2*ilay-1)
+    end_pos <- (2*ilay)
+    pos_layers1[begin_pos:end_pos] <- c(pos_layers[ilay], pos_layers[ilay+1])
+    rho_layers[begin_pos:end_pos] <- rep(rho[ilay], 2)
   }
+  model.par.df <- data.frame(depth = pos_layers1, res = rho_layers)
+  ymn <- 0.8*min(ves$appres, ves$rhopar)
+  ymx <- 1.5*max(ves$appres, ves$rhopar)
+  p <- p + geom_path(aes(x = depth, y = res), data = model.par.df,
+                     col = "green")
+
   #
   x.range <- c(0.1,max(depth))
   y.range <- c(ymn, ymx)
-  p <- p + geom_point(aes(x = depth, y = real.res), data = res.trans.df, color = "blue") +
+  p <- p + geom_point(aes(x = depth, y = real.res), data = res.trans.df,
+                      color = "blue") +
     theme_bw() +
     scale_x_log10(breaks = breaks, minor_breaks = minor_breaks) +
     scale_y_log10(breaks = breaks, minor_breaks = minor_breaks)

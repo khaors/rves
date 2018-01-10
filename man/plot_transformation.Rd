@@ -10,7 +10,7 @@ plot_transformation(x, trans.type = c("direct", "scaling"))
 \item{x}{A VES object}
 
 \item{trans.type}{A character string with the type of transformation to apply. Currently only direct and
-scaling transformation are defined.}
+scaling, zohdy and zohdy.smoothed transformation are defined.}
 }
 \value{
 This function returns a ggplot2 object.
