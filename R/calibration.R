@@ -562,6 +562,7 @@ calibrate_ilsqp <- function(ves, iterations = 100, ireport = 10){
   current.error <- 100
   max.error <- res.2layer$rel.err
   nparh <- 0
+  #print(max.errorsev1$rhopar<-tmp1$rho)
   while(current.error > max.error){
     nparh <- length(res.current.layer$par)/2
     new.rho <- vector("numeric", length = (nparh + 1))
@@ -578,9 +579,7 @@ calibrate_ilsqp <- function(ves, iterations = 100, ireport = 10){
     new.par0 <- c(new.rho, new.thick)
     print(new.par0)
     res.old.layer <- res.current.layer
-    #res.current.layer <- calibrate_nls(ves, par0 = new.par0,
-    #                                   iterations = iterations,
-    #                                   ireport = ireport)
+    #
     res.current.layer <- calibrate(ves, opt.method = "L-BFGS-B", obj.fn = "rss",
                                    par0 = new.par0,
                                    lower = c(rep(rho.mn, nparh), rep(5,nparh)),
@@ -591,9 +590,7 @@ calibrate_ilsqp <- function(ves, iterations = 100, ireport = 10){
     cat("Current Error= ", current.error, "\n")
     #stop('ERROR')
   }
-  #res.current.layer <- calibrate_nls(ves, par0 = res.current.layer$par,
-  #                                   iterations = iterations,
-  #                                   ireport = ireport)
+  #
   res.current.layer <- calibrate(ves, opt.method = "L-BFGS-B", obj.fn = "rss",
                                  par0 = res.current.layer$par,
                                  lower = c(rep(rho.mn, nparh), rep(5,nparh)),
