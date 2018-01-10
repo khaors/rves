@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>plot_transformation — plot_transformation • rves</title>
+<title>transform_smoothed_zohdy — transform_smoothed_zohdy • rves</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -90,32 +90,48 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>plot_transformation</h1>
+    <h1>transform_smoothed_zohdy</h1>
     </div>
 
     
-    <p>Function to plot the resistivity-depth transformation from a given VES.</p>
+    <p>Function used to improve the original Zohdy's method.</p>
     
 
-    <pre class="usage"><span class='fu'>plot_transformation</span>(<span class='no'>x</span>, <span class='kw'>trans.type</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"direct"</span>, <span class='st'>"scaling"</span>))</pre>
+    <pre class="usage"><span class='fu'>transform_smoothed_zohdy</span>(<span class='no'>ves</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>x</th>
+      <th>ves</th>
       <td><p>A VES object</p></td>
-    </tr>
-    <tr>
-      <th>trans.type</th>
-      <td><p>A character string with the type of transformation to apply. Currently only direct and
-scaling, zohdy and zohdy.smoothed transformation are defined.</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>This function returns a ggplot2 object.</p>
+    <p>This function returns a list with the following entries:</p><ul>
+<li><p>depth: A numeric vector with the layer depths</p></li>
+<li><p>real.res: A numeric vector with the layer resistivities</p></li>
+<li><p>thickness: A numeric vector with the layer thicknesses</p></li>
+<li><p>rho: A numeric vector with the layer resistivities (defined to be compatible
+with calibration results)</p></li>
+<li><p>rms.depth: A numeric value with the rms obtained for the depth conversion</p></li>
+<li><p>rms.rho: A numeric value with the rms obtained for the resistivities.</p></li>
+</ul>
+
+    
+    <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
+
+    <p>Loke, M, \&amp; Barker, R. Improvements to the Zohdy method for the inversion of
+resistivity sounding and pseudosection data. Computers \&amp; Geosciences, 21(2),
+321-332, 1995.</p>
+    
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <p>Other transformation functions: <code><a href='transform_direct.html'>transform_direct</a></code>,
+  <code><a href='transform_scaling.html'>transform_scaling</a></code>,
+  <code><a href='transform_zohdy.html'>transform_zohdy</a></code></p>
     
 
   </div>
@@ -125,6 +141,10 @@ scaling, zohdy and zohdy.smoothed transformation are defined.</p></td>
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
+
+      <li><a href="#references">References</a></li>
+
+      <li><a href="#see-also">See also</a></li>
           </ul>
 
     <h2>Author</h2>
