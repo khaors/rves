@@ -68,7 +68,7 @@
       <h1>RVES Tutorial: Vertical Electrical Sounding interpretation using R</h1>
                         <h4 class="author">Oscar Garcia-Cabrejo</h4>
             
-            <h4 class="date">2018-01-09</h4>
+            <h4 class="date">2018-01-14</h4>
           </div>
 
     
@@ -77,7 +77,6 @@
 <div id="introduction" class="section level1">
 <h1 class="hasAnchor">
 <a href="#introduction" class="anchor"></a>Introduction</h1>
-<p>Importance of subsurface investigations. Specially for groundwater.</p>
 <p>The Vertical Electrical Sounding (VES) is one of the oldest resistivity methods, and it is based on the measurements of the electrical apparent resistivity of the geological medium when the distance between the electrical source and the measurement nodes is increased. The main advantages of the VES include:</p>
 <ul>
 <li>low cost due to its minimal requirements for equipment and personal.</li>
@@ -140,7 +139,13 @@ T(\omega)=G(\omega) H(\omega)
 <div id="parameter-estimation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#parameter-estimation" class="anchor"></a>Parameter Estimation</h2>
-<p>In the previous section, the problem of calculating the apparent resistivity curve <span class="math inline">\(\rho_{\text{app}}(x)\)</span> from a given set of real resistivities <span class="math inline">\(\rho_{\text{real},i}\)</span> and layer thicknesses <span class="math inline">\(h_{i}\)</span> was solved using the ratio of two Fourier transforms. This is a required tool in order to solve a more interesing problem: from the measurements of the apparent resistivity</p>
+<p>In the previous section, the problem of calculating the apparent resistivity curve <span class="math inline">\(\rho_{\text{app}}(x)\)</span> from a given set of real resistivities <span class="math inline">\(\rho_{\text{real},i}\)</span> and layer thicknesses <span class="math inline">\(h_{i}\)</span> was solved using the ratio of two Fourier transforms. This is a required tool in order to solve a more interesing problem: from the measurements of the apparent resistivity obtain the true resistivities and thicknesses of the layers present in the subsurface. Finding the number of layers and their true resistivities and thicknesses is a parameter estimation problem and there are many different techniques that can be used in its solution.</p>
+<p>Let <span class="math inline">\(\left[x_{i}, \rho_{\text{app}}(x_{i}), i=1,\ldots,n\right]\)</span> be a typical VES where <span class="math inline">\(x_{i}\)</span> represents the electrode separation or <span class="math inline">\(AB/2\)</span> and <span class="math inline">\(\rho_{\text{app}}\)</span> the corresponding apparent resistivity measurements. Let <span class="math inline">\(\boldsymbol{\theta}=(\rho_{1}, \rho_{2}, \ldots, \rho_{nL}, t_{1}, t_{2}, \ldots, t_{nL-1})\)</span> be a parameter vector containing the layer true resistivities <span class="math inline">\(\rho_{i}, i =1,\ldots,nL\)</span> and thicknesses <span class="math inline">\(t_{i},i=1,\ldots,nL-1\)</span>. The forward model defined in the previous section and the parameter vector enables us to calculate the apparent resistivity <span class="math inline">\(\bar{\rho}_{\text{app}}(x,\boldsymbol{\theta})\)</span> and this response is compared to the measured apparent resistivities using an objective function defined as: <span class="math display">\[
+OF(\boldsymbol{\theta})=\sqrt{\frac{1}{n}\sum_{i=1}^{n} \left[ \rho_{app}(x_{i})-\bar{\rho}_{app}(x_{i}, \boldsymbol{\theta})\right]^{2}}
+\]</span></p>
+<p>The parameters of the model <span class="math inline">\(\boldsymbol{\theta}^{*}\)</span> are the values of the parameter vector that minimize the objective function defined in the previous equation: <span class="math display">\[
+\boldsymbol{\theta}^{*}=\min{OF(\boldsymbol{\theta})}
+\]</span> The values of <span class="math inline">\(\boldsymbol{\theta}^{*}\)</span> can be estimated using different optimization techniques including the conventional ridge regression (or nonlinear least-squares using the Levemberg-Marquard algorithm), or Global Optimization Techniques such as Simulated Annealing, Genetic Algorithms, Differential evolution, etc.</p>
 </div>
 </div>
 <div id="examples" class="section level1">

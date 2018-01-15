@@ -19,8 +19,6 @@ library(rves)
 
 # Introduction
 
-Importance of subsurface investigations. Specially for groundwater.
-
 The Vertical Electrical Sounding (VES) is one of the oldest resistivity methods, and it is based on the measurements of the electrical apparent resistivity of the geological medium when the distance between the electrical source and the measurement nodes is increased. The main advantages of the VES include: 
 
 - low cost due to its minimal requirements for equipment and personal.
@@ -104,7 +102,19 @@ In practical problems, $T(\lambda)$ can be easily calculated using some kind of 
 
 ## Parameter Estimation
 
-In the previous section, the problem of calculating the apparent resistivity curve $\rho_{\text{app}}(x)$ from a given set of real resistivities $\rho_{\text{real},i}$ and layer thicknesses $h_{i}$ was solved using the ratio of two Fourier transforms. This is a required tool in order to solve a more interesing problem: from the measurements of the apparent resistivity 
+In the previous section, the problem of calculating the apparent resistivity curve $\rho_{\text{app}}(x)$ from a given set of real resistivities $\rho_{\text{real},i}$ and layer thicknesses $h_{i}$ was solved using the ratio of two Fourier transforms. This is a required tool in order to solve a more interesing problem: from the measurements of the apparent resistivity obtain the true resistivities and thicknesses of the layers present in the subsurface. Finding the number of layers and their true resistivities and thicknesses is a parameter estimation problem and there are many different techniques that can be used in its solution. 
+
+Let $\left[x_{i}, \rho_{\text{app}}(x_{i}), i=1,\ldots,n\right]$ be a typical VES where $x_{i}$ represents the electrode separation or $AB/2$ and $\rho_{\text{app}}$ the corresponding apparent resistivity measurements. Let  $\boldsymbol{\theta}=(\rho_{1}, \rho_{2}, \ldots, \rho_{nL}, t_{1}, t_{2}, \ldots, t_{nL-1})$ be a parameter vector containing the layer true resistivities $\rho_{i}, i =1,\ldots,nL$ and thicknesses $t_{i},i=1,\ldots,nL-1$. The forward model defined in the previous section and the parameter vector enables us to calculate the apparent resistivity  $\bar{\rho}_{\text{app}}(x,\boldsymbol{\theta})$ and this response is compared to the measured apparent resistivities using an objective function defined as:
+$$
+OF(\boldsymbol{\theta})=\sqrt{\frac{1}{n}\sum_{i=1}^{n} \left[ \rho_{app}(x_{i})-\bar{\rho}_{app}(x_{i}, \boldsymbol{\theta})\right]^{2}}
+$$
+
+The parameters of the model $\boldsymbol{\theta}^{*}$ are the values of the parameter vector that minimize the objective function defined in the previous equation:
+$$
+\boldsymbol{\theta}^{*}=\min{OF(\boldsymbol{\theta})}
+$$
+The values of $\boldsymbol{\theta}^{*}$ can be estimated using different optimization techniques including the conventional ridge regression (or nonlinear least-squares using the Levemberg-Marquard algorithm), or Global Optimization Techniques such as Simulated Annealing, Genetic Algorithms, Differential evolution, etc.
+
 
 # Examples
 
