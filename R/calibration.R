@@ -352,24 +352,33 @@ calibrate_nls <- function(ves, par0, iterations = 100, ireport = 10){
     stop('ERROR: A VES object is required as input')
   }
   #
+  f_model <- function(x, spacing){
+    par <- 10^x
+    res <- apparent_resistivities_simple(par, rves::filt$V1, spacing)
+    return(log10(res))
+  }
+  #
   cal.error <- matrix(0.0, nrow = iterations, ncol = 2)
   spacing <- ves$ab2
-  measured <- ves$appres
+  measured <- log10(ves$appres)
   npar <- length(par0)
   nparh <- npar/2
   niter <- iterations
   iter <- 0
-  cpar <- par0
+  cpar <- log10(par0)
   cpar1 <- as.matrix(cpar, npar, 1)
   mu_max <- 20
   mu <- mu_max
   beta <- 2
+  old.par <- NULL
+  old.error <- 100
+  current.error1 <- 100
   while(iter < niter){
     # Data difference
-    cres <- apparent_resistivities_simple(cpar, rves::filt$V1, spacing)
+    cres <- f_model(cpar, spacing)
     d <- as.matrix((cres-measured), length(measured), 1)
     # Calculate jacobian matrix
-    J <- jacobian(apparent_resistivities_simple, cpar, filt=rves::filt$V1, spacing=spacing)
+    J <- jacobian(f_model, x = cpar, spacing = spacing)
     # calculate parameter correction
     x <- solve(t(J)%*%J+mu*pracma::eye(npar),t(J)%*%d)#/(iter+1)
     # calculate error vector
@@ -378,13 +387,21 @@ calibrate_nls <- function(ves, par0, iterations = 100, ireport = 10){
     y <- solve(t(J)%*%J+(mu)*pracma::eye(npar),t(J)%*%err)
     E1 <- norm(y)
     #
+    old.par <- cpar
     cpar1 <- cpar1 - x
     cpar <- as.numeric(cpar1)
-    cres <- apparent_resistivities_simple(cpar, rves::filt$V1, spacing)
+    cres <- f_model(cpar, spacing)
     current.error <- mean((cres-measured)**2)
+    old.error <- current.error1
     current.error1 <- 100*mean(abs(measured-cres)/measured)
-    cal.error[iter+1,1] <- mean((cres-measured)**2)
-    cal.error[iter+1,2] <- 100*mean(abs(measured-cres)/measured)
+    cal.error[iter+1,1] <- current.error
+    cal.error[iter+1,2] <- current.error1
+    if(current.error1 > old.error){
+      cat("Final step ", iter, ", Error= ", old.error, "\n")
+      current.error1 <- old.error
+      cpar <- old.par
+      break
+    }
     if(iter != -1){
       mu2 <- mu/2
       x2 <- solve(t(J)%*%J+mu2*pracma::eye(npar),t(J)%*%d)
@@ -409,10 +426,10 @@ calibrate_nls <- function(ves, par0, iterations = 100, ireport = 10){
     }
     iter <- iter+1
   }
-  J <- jacobian(apparent_resistivities_simple, cpar, filt=rves::filt$V1, spacing=spacing)
-  res <- list(par = cpar, value = current.error, rel.error = current.error1,
-              cal.error = cal.error, rho = cpar[1:nparh],
-              thickness = cpar[(nparh+1):npar], hessian = t(J)%*%J)
+  J <- jacobian(f_model, x = cpar, spacing = spacing)
+  res <- list(par = 10^cpar, value = current.error, rel.error = current.error1,
+              cal.error = cal.error, rho = 10^cpar[1:nparh],
+              thickness = 10^cpar[(nparh+1):npar], hessian = t(J)%*%J)
   return(res)
 }
 #' @title
