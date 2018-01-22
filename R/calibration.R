@@ -508,6 +508,8 @@ calibrate_svd <- function(ves, par0, iterations = 100, ireport = 10){
     #x <- solve(t(J)%*%J+beta[ik]*pracma::eye(npar),t(J)%*%d)
     rel.err1 <- vector('numeric', length = 11)
     rel.err1[1] <- rel.err
+    current.error1 <- 100
+    current.error <- 100
     for(ii in 1:10){
       for(ik in (11-ii):1){
         corrected.eigenvalues <- diag(qvalues + beta[ik])
@@ -521,6 +523,8 @@ calibrate_svd <- function(ves, par0, iterations = 100, ireport = 10){
         rel.err1[ii+1] <- mean(100*abs(10^cres1-10^measured)/10^measured)
         if(rel.err1[ii] > rel.err || rel.err1[ii+1] > rel.err1[ii]){
           cpar <- oldpar
+          current.error1 <- rel.err1[ii+1]
+          current.error <- sum((cres1-measured)^2)
           break
         }
         else{
@@ -583,42 +587,53 @@ calibrate_ilsqp <- function(ves, iterations = 100, ireport = 10){
   current.error <- 100
   max.error <- res.2layer$rel.err
   nparh <- 0
-  #print(max.errorsev1$rhopar<-tmp1$rho)
-  while(current.error > max.error){
-    nparh <- length(res.current.layer$par)/2
-    new.rho <- vector("numeric", length = (nparh + 1))
-    new.thick <- vector("numeric", length = (nparh + 1))
-    #
-    new.rho[1:(nparh-1)] <- res.current.layer$rho[1:(nparh-1)]
-    new.rho[(nparh+1)] <- res.current.layer$rho[nparh]
-    new.rho[nparh] <- res.current.layer$rho[(nparh-1)]
-    #
-    new.thick[1:(nparh-1)] <- res.current.layer$thickness[1:(nparh-1)]
-    new.thick[(nparh+1)] <- res.current.layer$thickness[nparh]
-    new.thick[nparh] <- res.current.layer$thickness[(nparh-1)]
-    #
-    new.par0 <- c(new.rho, new.thick)
-    print(new.par0)
-    res.old.layer <- res.current.layer
-    #
-    res.current.layer <- calibrate_nls(ves, par0 = new.par0, iterations = iterations,
-                                       ireport = ireport)
-    #res.current.layer <- calibrate(ves, opt.method = "L-BFGS-B", obj.fn = "rss",
-    #                               par0 = new.par0,
-    #                               lower = c(rep(rho.mn, nparh), rep(5,nparh)),
-    #                               upper = c(rep(rho.mx,nparh), rep(501,nparh)))
-    #print(res.current.layer)
-    max.error <- current.error
-    current.error <- res.current.layer$rel.err
-    cat("Current Error= ", current.error, "\n")
-    #stop('ERROR')
+  best.model <- NULL
+  min.error <- 100
+  #print(max.errorsev1$rhopar<-tmp1$rho
+  for(ilayer in 1:19){
+    old.error <- max.error
+    #while(current.error > max.error){
+      nparh <- length(res.current.layer$par)/2
+      new.rho <- vector("numeric", length = (nparh + 1))
+      new.thick <- vector("numeric", length = (nparh + 1))
+      #
+      new.rho[1:(nparh-1)] <- res.current.layer$rho[1:(nparh-1)]
+      new.rho[(nparh+1)] <- res.current.layer$rho[nparh]
+      new.rho[nparh] <- res.current.layer$rho[(nparh-1)]
+      #
+      new.thick[1:(nparh-1)] <- res.current.layer$thickness[1:(nparh-1)]
+      new.thick[(nparh+1)] <- res.current.layer$thickness[nparh]
+      new.thick[nparh] <- res.current.layer$thickness[(nparh-1)]
+      #
+      new.par0 <- c(new.rho, new.thick)
+      #print(new.par0)
+      res.old.layer <- res.current.layer
+      #
+      res.current.layer <- calibrate_nls(ves, par0 = new.par0, iterations = iterations,
+                                         ireport = ireport)
+      #res.current.layer <- calibrate(ves, opt.method = "L-BFGS-B", obj.fn = "log_rss",
+      #                               par0 = new.par0,
+      #                               lower = c(rep(rho.mn, nparh), rep(5,nparh)),
+      #                               upper = c(rep(rho.mx,nparh), rep(501,nparh)))
+      #print(res.current.layer)
+      if(res.current.layer$rel.err < min.error){
+        min.error <- res.current.layer$rel.err
+        best.model <- res.current.layer
+        cat("Current best model, Nr Layers= ", as.character(ilayer + 1), "\n")
+      }
+      current.error <- res.current.layer$rel.err
+      cat("Current Error= ", current.error, "\n")
+      #stop('ERROR')
+    #}
+
+
   }
   #
   #res.current.layer <- calibrate(ves, opt.method = "L-BFGS-B", obj.fn = "rss",
   #                               par0 = res.current.layer$par,
   #                               lower = c(rep(rho.mn, nparh), rep(5,nparh)),
   #                               upper = c(rep(rho.mx, nparh), rep(501,nparh)))
-  res.current.layer <- calibrate_nls(ves, par0 = res.current.layer$par,
+  res.current.layer <- calibrate_nls(ves, par0 = best.model$par,
                                      iterations = iterations,
                                      ireport = ireport)
   return(res.current.layer)
