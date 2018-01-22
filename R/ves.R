@@ -249,9 +249,11 @@ plot_transformation <- function(x, trans.type = c("direct", "scaling",
   minor_breaks <- rep(1:9, 21)*(10^rep(-10:10, each=9))
   depth <- res.trans$depth
   real.res <- res.trans$real.res
-  thick1 <- c(0.5*diff(depth),500)
+  thick1 <- c(diff(depth),500)
   depth1 <- cumsum(thick1)
-  res.trans.df <- data.frame(depth = depth, real.res = real.res)
+  depth2 <- log10(res.trans$depth)-0.5*diff(log10(c(0.1,res.trans$depth)))
+  res.trans.df <- data.frame(depth = depth, real.res = real.res,
+                             depth1 = 10^depth2)
 
   #
   current.title <- paste0("Resistivity-Depth Transformation(",
@@ -290,7 +292,7 @@ plot_transformation <- function(x, trans.type = c("direct", "scaling",
   #
   x.range <- c(0.1,max(depth))
   y.range <- c(ymn, ymx)
-  p <- p + geom_point(aes(x = depth, y = real.res), data = res.trans.df,
+  p <- p + geom_point(aes(x = depth1, y = real.res), data = res.trans.df,
                       color = "blue") +
     theme_bw() +
     scale_x_log10(breaks = breaks, minor_breaks = minor_breaks) +
