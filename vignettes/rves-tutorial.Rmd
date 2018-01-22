@@ -139,7 +139,7 @@ sev1a <- ves(id= "Sounding 1", ab2 = ab2, apprho = apprho)
 ```
 The plot of the VES used as example can be seen in the following plot:
 ```{r plot_sev1a, fig.height=4,fig.width=6,fig.align='center'}
-p1 <- plot(sev1a)
+p1 <- plot(sev1a, type = "ves")
 ```
 
 
