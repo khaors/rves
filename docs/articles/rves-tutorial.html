@@ -68,7 +68,7 @@
       <h1>RVES Tutorial: Vertical Electrical Sounding interpretation using R</h1>
                         <h4 class="author">Oscar Garcia-Cabrejo</h4>
             
-            <h4 class="date">2018-01-14</h4>
+            <h4 class="date">2018-01-21</h4>
           </div>
 
     
@@ -164,9 +164,7 @@ apprho &lt;-<span class="st"> </span>ves_data1<span class="op">$</span>apprho</c
 <p>and these are used to define the VES object inside R:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sev1a &lt;-<span class="st"> </span><span class="kw"><a href="../reference/ves.html">ves</a></span>(<span class="dt">id=</span> <span class="st">"Sounding 1"</span>, <span class="dt">ab2 =</span> ab2, <span class="dt">apprho =</span> apprho)</code></pre></div>
 <p>The plot of the VES used as example can be seen in the following plot:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p1 &lt;-<span class="st"> </span><span class="kw">plot</span>(sev1a)
-<span class="co">#&gt; Warning in if (type == "ves") {: the condition has length &gt; 1 and only the</span>
-<span class="co">#&gt; first element will be used</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p1 &lt;-<span class="st"> </span><span class="kw">plot</span>(sev1a, <span class="dt">type =</span> <span class="st">"ves"</span>)</code></pre></div>
 <p><img src="rves-tutorial_files/figure-html/plot_sev1a-1.png" width="576" style="display: block; margin: auto;"></p>
 <p>An initial model (true resistivities and thicknesses) is obtained from visual inspection of the previous plot:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rho &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">40</span>,<span class="dv">70</span>,<span class="dv">30</span>, <span class="dv">20</span>)
@@ -189,11 +187,11 @@ rerr &lt;-<span class="st"> </span><span class="dv">100</span><span class="op">*
 <p>The relative error is still larger than 10% and therefore a proper estimation method is required. The first method to be used in the parameter estimation of the Earth model is the nonlinear least squares, which is a fast method and a small number of iterations is required:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">par0 &lt;-<span class="st"> </span><span class="kw">c</span>(rho, thick)
 res.nls &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calibrate_nls.html">calibrate_nls</a></span>(sev1a, par0, <span class="dt">iterations =</span> <span class="dv">10</span>, <span class="dt">ireport =</span> <span class="dv">5</span>)
-<span class="co">#&gt; iteration, RSS, Rel Error =  0 17.92395 10.10434 </span>
-<span class="co">#&gt; iteration, RSS, Rel Error =  5 4.657908 4.95162 </span>
-<span class="co">#&gt; iteration, RSS, Rel Error =  9 3.95511 4.878283</span>
+<span class="co">#&gt; iteration, RSS, Rel Error =  0 0.0026274 2.806841 </span>
+<span class="co">#&gt; iteration, RSS, Rel Error =  5 0.000757266 1.358926 </span>
+<span class="co">#&gt; Final step  7 , Error=  1.349501</span>
 rel.err.nls &lt;-<span class="st"> </span><span class="kw">format</span>(res.nls<span class="op">$</span>rel.err, <span class="dt">digits =</span> <span class="dv">3</span>)</code></pre></div>
-<p>After 10 iterations the relative error is of 4.88% which can be considered as a good model. Now these estimated parameters are assigned to the VES object:</p>
+<p>After 10 iterations the relative error is of 1.35% which can be considered as a good model. Now these estimated parameters are assigned to the VES object:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sev1a<span class="op">$</span>rhopar &lt;-<span class="st"> </span>res.nls<span class="op">$</span>rho
 sev1a<span class="op">$</span>thickpar &lt;-<span class="st"> </span>res.nls<span class="op">$</span>thickness
 sev1a<span class="op">$</span>interpreted &lt;-<span class="st"> </span><span class="ot">TRUE</span></code></pre></div>
@@ -217,11 +215,11 @@ sev1a<span class="op">$</span>interpreted &lt;-<span class="st"> </span><span cl
 <p>The model estimated using Quasi-Newton method is similar to the model estimated using non-linear squares as seen in the plot, but the main difference is that the third layer has a smaller thickness and resistivity when compared to the nonlinear squares result. This result highlights the fact of the non-uniqueness of solution of the inverse problem.</p>
 <p>Other approach to estimate the parameters of the Earth model is based on the use of damped least squared using the Singular Value Decomposition of the Jacobian matrix, which can be used with the <em>calibrate_svd</em> function:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">res.svd &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calibrate_svd.html">calibrate_svd</a></span>(sev1a, <span class="dt">par0 =</span> par0, <span class="dt">iterations =</span> <span class="dv">10</span>, <span class="dt">ireport =</span> <span class="dv">5</span>)
-<span class="co">#&gt; iteration, RSS, Rel Error =  0 202.7933 7.330436 </span>
-<span class="co">#&gt; iteration, RSS, Rel Error =  5 85.56126 4.637749 </span>
-<span class="co">#&gt; iteration, RSS, Rel Error =  9 84.61861 4.636767</span>
+<span class="co">#&gt; iteration, RSS, Rel Error =  0 175.2952 6.504923 </span>
+<span class="co">#&gt; iteration, RSS, Rel Error =  5 77.78382 4.357021 </span>
+<span class="co">#&gt; iteration, RSS, Rel Error =  9 77.78382 4.357021</span>
 rel.err.svd &lt;-<span class="st"> </span><span class="kw">format</span>(res.svd<span class="op">$</span>rel.error, <span class="dt">digits =</span> <span class="dv">3</span>)</code></pre></div>
-<p>The relative error obtained in this case is equal to 4.64 % which is similar to the values obtained with nonlinear least squares and the Quasi-Newton method. Again the resulting parameters are assigned to the VES object:</p>
+<p>The relative error obtained in this case is equal to 4.36 % which is similar to the values obtained with nonlinear least squares and the Quasi-Newton method. Again the resulting parameters are assigned to the VES object:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sev1a<span class="op">$</span>rhopar &lt;-<span class="st"> </span>res.svd<span class="op">$</span>rho
 sev1a<span class="op">$</span>thickpar &lt;-<span class="st"> </span>res.svd<span class="op">$</span>thickness
 sev1a<span class="op">$</span>interpreted &lt;-<span class="st"> </span><span class="ot">TRUE</span></code></pre></div>

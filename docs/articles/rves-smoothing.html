@@ -68,7 +68,7 @@
       <h1>VES Smoothing using the rves package</h1>
                         <h4 class="author">Oscar Garcia-Cabrejo</h4>
             
-            <h4 class="date">2018-01-14</h4>
+            <h4 class="date">2018-01-21</h4>
           </div>
 
     
@@ -175,9 +175,9 @@ res.ss.df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span
 thick &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">2</span>,<span class="dv">10</span>,<span class="dv">50</span>,<span class="dv">500</span>)
 par0 &lt;-<span class="st"> </span><span class="kw">c</span>(rho, thick)</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">res.ss.nls &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calibrate_nls.html">calibrate_nls</a></span>(sev1ss, par0, <span class="dt">iterations =</span> <span class="dv">10</span>, <span class="dt">ireport =</span> <span class="dv">5</span>)
-<span class="co">#&gt; iteration, RSS, Rel Error =  0 14.20094 9.227093 </span>
-<span class="co">#&gt; iteration, RSS, Rel Error =  5 1.696413 3.035974 </span>
-<span class="co">#&gt; iteration, RSS, Rel Error =  9 1.038521 2.573048</span></code></pre></div>
+<span class="co">#&gt; iteration, RSS, Rel Error =  0 0.002201384 2.654601 </span>
+<span class="co">#&gt; iteration, RSS, Rel Error =  5 0.0003970715 1.093091 </span>
+<span class="co">#&gt; iteration, RSS, Rel Error =  9 0.0002212703 0.8111669</span></code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sev1ss<span class="op">$</span>rhopar &lt;-<span class="st"> </span>res.ss.nls<span class="op">$</span>rho
 sev1ss<span class="op">$</span>thickpar &lt;-<span class="st"> </span>res.ss.nls<span class="op">$</span>thickness
 sev1ss<span class="op">$</span>interpreted &lt;-<span class="st"> </span><span class="ot">TRUE</span></code></pre></div>
@@ -209,9 +209,9 @@ res.kr.df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sev1kr &lt;-<span class="st"> </span><span class="kw"><a href="../reference/ves.html">ves</a></span>(<span class="dt">id =</span> <span class="st">"Sounding 1-Kernel Regression"</span>, <span class="dt">ab2 =</span> res.kr<span class="op">$</span>ab2, 
               <span class="dt">apprho =</span> res.kr<span class="op">$</span>apprho)</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">res.kr.nls &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calibrate_nls.html">calibrate_nls</a></span>(sev1kr, par0, <span class="dt">iterations =</span> <span class="dv">10</span>, <span class="dt">ireport =</span> <span class="dv">5</span>)
-<span class="co">#&gt; iteration, RSS, Rel Error =  0 12.83909 8.823171 </span>
-<span class="co">#&gt; iteration, RSS, Rel Error =  5 1.109336 2.367637 </span>
-<span class="co">#&gt; iteration, RSS, Rel Error =  9 0.4859133 1.735097</span></code></pre></div>
+<span class="co">#&gt; iteration, RSS, Rel Error =  0 0.002041967 2.584166 </span>
+<span class="co">#&gt; iteration, RSS, Rel Error =  5 0.0002895334 0.9670573 </span>
+<span class="co">#&gt; iteration, RSS, Rel Error =  9 0.0001384567 0.6277856</span></code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sev1kr<span class="op">$</span>rhopar &lt;-<span class="st"> </span>res.kr.nls<span class="op">$</span>rho
 sev1kr<span class="op">$</span>thickpar &lt;-<span class="st"> </span>res.kr.nls<span class="op">$</span>thickness
 sev1kr<span class="op">$</span>interpreted &lt;-<span class="st"> </span><span class="ot">TRUE</span></code></pre></div>
@@ -243,9 +243,9 @@ res.wv.df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sev1wv &lt;-<span class="st"> </span><span class="kw"><a href="../reference/ves.html">ves</a></span>(<span class="dt">id =</span> <span class="st">"Sounding 1-Wavelet Thresholding"</span>, <span class="dt">ab2 =</span> res.wv<span class="op">$</span>ab2, 
               <span class="dt">apprho =</span> res.wv<span class="op">$</span>apprho)</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">res.wv.nls &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calibrate_nls.html">calibrate_nls</a></span>(sev1wv, par0, <span class="dt">iterations =</span> <span class="dv">10</span>, <span class="dt">ireport =</span> <span class="dv">5</span>)
-<span class="co">#&gt; iteration, RSS, Rel Error =  0 14.23498 8.522485 </span>
-<span class="co">#&gt; iteration, RSS, Rel Error =  5 1.253244 2.43409 </span>
-<span class="co">#&gt; iteration, RSS, Rel Error =  9 0.8430471 1.911074</span></code></pre></div>
+<span class="co">#&gt; iteration, RSS, Rel Error =  0 0.002179202 2.449921 </span>
+<span class="co">#&gt; iteration, RSS, Rel Error =  5 0.0002837838 0.9449526 </span>
+<span class="co">#&gt; iteration, RSS, Rel Error =  9 0.0001236067 0.6023878</span></code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sev1wv<span class="op">$</span>rhopar &lt;-<span class="st"> </span>res.wv.nls<span class="op">$</span>rho
 sev1wv<span class="op">$</span>thickpar &lt;-<span class="st"> </span>res.wv.nls<span class="op">$</span>thickness
 sev1wv<span class="op">$</span>interpreted &lt;-<span class="st"> </span><span class="ot">TRUE</span></code></pre></div>
