@@ -601,7 +601,8 @@ calibrate_ilsqp <- function(ves, iterations = 100, ireport = 10){
     print(new.par0)
     res.old.layer <- res.current.layer
     #
-    res.current.layer <- calibrate_nls(ves, par0 = new.par0, iterations = 10, ireport = 5)
+    res.current.layer <- calibrate_nls(ves, par0 = new.par0, iterations = iterations,
+                                       ireport = ireport)
     #res.current.layer <- calibrate(ves, opt.method = "L-BFGS-B", obj.fn = "rss",
     #                               par0 = new.par0,
     #                               lower = c(rep(rho.mn, nparh), rep(5,nparh)),
@@ -618,6 +619,7 @@ calibrate_ilsqp <- function(ves, iterations = 100, ireport = 10){
   #                               lower = c(rep(rho.mn, nparh), rep(5,nparh)),
   #                               upper = c(rep(rho.mx, nparh), rep(501,nparh)))
   res.current.layer <- calibrate_nls(ves, par0 = res.current.layer$par,
-                                     iterations = 10, ireport = 5)
+                                     iterations = iterations,
+                                     ireport = ireport)
   return(res.current.layer)
 }
