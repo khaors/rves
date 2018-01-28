@@ -655,6 +655,7 @@ calibrate_ilsqp <- function(ves, iterations = 100, ireport = 10){
 #' @author
 #' Oscar Garcia-Cabrejo \email{khaors@gmail.com}
 #' @family calibration functions
+#' @export
 calibrate_seq_nls <- function(ves, iterations = 100, ireport = 10,
                               max.layers = 10){
   if(class(ves) != "ves"){
