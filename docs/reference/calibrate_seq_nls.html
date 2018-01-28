@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>calibrate_nls — calibrate_nls • rves</title>
+<title>calibrate_seq_nls — calibrate_seq_nls • rves</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -90,58 +90,48 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>calibrate_nls</h1>
+    <h1>calibrate_seq_nls</h1>
     </div>
 
     
-    <p>Function to estimate the real resistivities and thicknesses using the nonlinear least-squares approach
-proposed by Roy(1999).</p>
+    <p>Sequential estimation of true resistivities and thicknesses of a VES.</p>
     
 
-    <pre class="usage"><span class='fu'>calibrate_nls</span>(<span class='no'>ves</span>, <span class='no'>par0</span>, <span class='kw'>iterations</span> <span class='kw'>=</span> <span class='fl'>100</span>, <span class='kw'>ireport</span> <span class='kw'>=</span> <span class='fl'>10</span>)</pre>
+    <pre class="usage"><span class='fu'>calibrate_seq_nls</span>(<span class='no'>ves</span>, <span class='kw'>iterations</span> <span class='kw'>=</span> <span class='fl'>100</span>, <span class='kw'>ireport</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>max.layers</span> <span class='kw'>=</span> <span class='fl'>10</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>ves</th>
-      <td><p>A ves object</p></td>
-    </tr>
-    <tr>
-      <th>par0</th>
-      <td><p>A numeric vector with the values of the layer resistivities and thicknesses</p></td>
+      <td><p>A VES object</p></td>
     </tr>
     <tr>
       <th>iterations</th>
-      <td><p>Number of iterations</p></td>
+      <td><p>An integer specifying the maximum number of iterations</p></td>
     </tr>
     <tr>
       <th>ireport</th>
-      <td><p>Number of iterations to report results on the console</p></td>
+      <td><p>An integer specifying the report interval</p></td>
     </tr>
-    </table>
-    
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
-
-    <p>A list with the following entries:</p><ul>
+    <tr>
+      <th>max.layers</th>
+      <td><p>An integer specifying the maximum number of layers to include in the
+sequential estimation.
+This function returns a list with the following entries:</p><ul>
 <li><p>par: A numeric vector with the values of the layer resistivities and thicknesses</p></li>
 <li><p>value: The value or the RSS (Residual sum of squares)</p></li>
 <li><p>rel.error: The value of the relative error (in percentage)</p></li>
 <li><p>cal.error: A matrix with the RSS and relative error at each iteration</p></li>
-<li><p>hessian: First order approximation of the Hessian matrix. This is calculate using the Jacobian matrix.</p></li>
-</ul>
-
-    
-    <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
-
-    <p>Roy, I. An efficient non-linear least-squares 1D inversion scheme for resistivity
-and IP sounding data. 1999. Geophysical Prospecting, 47, 4, 527-550.</p>
+</ul></td>
+    </tr>
+    </table>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <p>Other calibration functions: <code><a href='calibrate_ilsqp.html'>calibrate_ilsqp</a></code>,
-  <code><a href='calibrate_seq_nls.html'>calibrate_seq_nls</a></code>,
-  <code><a href='calibrate_svd.html'>calibrate_svd</a></code>, <code><a href='calibrate.html'>calibrate</a></code>,
+  <code><a href='calibrate_nls.html'>calibrate_nls</a></code>, <code><a href='calibrate_svd.html'>calibrate_svd</a></code>,
+  <code><a href='calibrate.html'>calibrate</a></code>,
   <code><a href='log_mnad_resistivity.html'>log_mnad_resistivity</a></code>,
   <code><a href='log_mxad_resistivity.html'>log_mxad_resistivity</a></code>,
   <code><a href='log_rss_resistivity.html'>log_rss_resistivity</a></code>,
@@ -157,10 +147,6 @@ and IP sounding data. 1999. Geophysical Prospecting, 47, 4, 527-550.</p>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
       
-      <li><a href="#value">Value</a></li>
-
-      <li><a href="#references">References</a></li>
-
       <li><a href="#see-also">See also</a></li>
           </ul>
 
