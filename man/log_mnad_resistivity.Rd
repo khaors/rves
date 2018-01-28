@@ -22,8 +22,10 @@ A numeric value with the log of the mean absolute deviation
 Function to calculate the log of the mean absolute deviation between the measured and calculated apparent resistivity.
 }
 \seealso{
-Other calibration functions: \code{\link{calibrate_nls}},
-  \code{\link{calibrate}},
+Other calibration functions: \code{\link{calibrate_ilsqp}},
+  \code{\link{calibrate_nls}},
+  \code{\link{calibrate_seq_nls}},
+  \code{\link{calibrate_svd}}, \code{\link{calibrate}},
   \code{\link{log_mxad_resistivity}},
   \code{\link{log_rss_resistivity}},
   \code{\link{mnad_resistivity}},

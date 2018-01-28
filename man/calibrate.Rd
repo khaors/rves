@@ -45,7 +45,10 @@ This function returns a list with the following entries:
 Function to estimate the resistivities and thicnesses of the layers.
 }
 \seealso{
-Other calibration functions: \code{\link{calibrate_nls}},
+Other calibration functions: \code{\link{calibrate_ilsqp}},
+  \code{\link{calibrate_nls}},
+  \code{\link{calibrate_seq_nls}},
+  \code{\link{calibrate_svd}},
   \code{\link{log_mnad_resistivity}},
   \code{\link{log_mxad_resistivity}},
   \code{\link{log_rss_resistivity}},

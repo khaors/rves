@@ -32,7 +32,16 @@ Meju, M. An effective ridge regression procedure for resistivity data inversion.
 Computers and Geosciences, 18(2-3), 99-119, 1992.
 }
 \seealso{
-Other Calibration functions: \code{\link{calibrate_ilsqp}}
+Other calibration functions: \code{\link{calibrate_ilsqp}},
+  \code{\link{calibrate_nls}},
+  \code{\link{calibrate_seq_nls}}, \code{\link{calibrate}},
+  \code{\link{log_mnad_resistivity}},
+  \code{\link{log_mxad_resistivity}},
+  \code{\link{log_rss_resistivity}},
+  \code{\link{mnad_resistivity}},
+  \code{\link{mxad_resistivity}},
+  \code{\link{relative_error_resitivity}},
+  \code{\link{rss_resistivity}}
 }
 \author{
 Oscar Garcia-Cabrejo \email{khaors@gmail.com}

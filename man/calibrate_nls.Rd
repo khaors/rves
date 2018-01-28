@@ -34,7 +34,9 @@ Roy, I. An efficient non-linear least-squares 1D inversion scheme for resistivit
 and IP sounding data. 1999. Geophysical Prospecting, 47, 4, 527-550.
 }
 \seealso{
-Other calibration functions: \code{\link{calibrate}},
+Other calibration functions: \code{\link{calibrate_ilsqp}},
+  \code{\link{calibrate_seq_nls}},
+  \code{\link{calibrate_svd}}, \code{\link{calibrate}},
   \code{\link{log_mnad_resistivity}},
   \code{\link{log_mxad_resistivity}},
   \code{\link{log_rss_resistivity}},

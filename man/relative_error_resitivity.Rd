@@ -22,8 +22,10 @@ This function returns the value of the relative error.
 Function to calculate the relative error between the calculated and measured resistivities.
 }
 \seealso{
-Other calibration functions: \code{\link{calibrate_nls}},
-  \code{\link{calibrate}},
+Other calibration functions: \code{\link{calibrate_ilsqp}},
+  \code{\link{calibrate_nls}},
+  \code{\link{calibrate_seq_nls}},
+  \code{\link{calibrate_svd}}, \code{\link{calibrate}},
   \code{\link{log_mnad_resistivity}},
   \code{\link{log_mxad_resistivity}},
   \code{\link{log_rss_resistivity}},

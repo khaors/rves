@@ -450,7 +450,7 @@ calibrate_nls <- function(ves, par0, iterations = 100, ireport = 10){
 #' }
 #' @author
 #' Oscar Garcia-Cabrejo \email{khaors@gmail.com}
-#' @family Calibration functions
+#' @family calibration functions
 #' @references Meju, M. An effective ridge regression procedure for resistivity data inversion.
 #' Computers and Geosciences, 18(2-3), 99-119, 1992.
 #' @importFrom numDeriv jacobian
@@ -564,7 +564,7 @@ calibrate_svd <- function(ves, par0, iterations = 100, ireport = 10){
 #' }
 #' @author
 #' Oscar Garcia-Cabrejo \email{khaors@gmail.com}
-#' @family Calibration functions
+#' @family calibration functions
 #' @export
 #' @references
 #' Muiuane, E. & Pedersen, L. Automatic 1D interpretation of DC resistivity sounding
@@ -625,8 +625,6 @@ calibrate_ilsqp <- function(ves, iterations = 100, ireport = 10){
       cat("Current Error= ", current.error, "\n")
       #stop('ERROR')
     #}
-
-
   }
   #
   #res.current.layer <- calibrate(ves, opt.method = "L-BFGS-B", obj.fn = "rss",
@@ -637,4 +635,47 @@ calibrate_ilsqp <- function(ves, iterations = 100, ireport = 10){
                                      iterations = iterations,
                                      ireport = ireport)
   return(res.current.layer)
+}
+#' @title
+#' calibrate_seq_nls
+#' @description
+#' Sequential estimation of true resistivities and thicknesses of a VES.
+#' @param ves A VES object
+#' @param iterations An integer specifying the maximum number of iterations
+#' @param ireport An integer specifying the report interval
+#' @param max.layers An integer specifying the maximum number of layers to include in the
+#' sequential estimation.
+#' This function returns a list with the following entries:
+#' \itemize{
+#' \item par: A numeric vector with the values of the layer resistivities and thicknesses
+#' \item value: The value or the RSS (Residual sum of squares)
+#' \item rel.error: The value of the relative error (in percentage)
+#' \item cal.error: A matrix with the RSS and relative error at each iteration
+#' }
+#' @author
+#' Oscar Garcia-Cabrejo \email{khaors@gmail.com}
+#' @family calibration functions
+calibrate_seq_nls <- function(ves, iterations = 100, ireport = 10,
+                              max.layers = 10){
+  if(class(ves) != "ves"){
+    stop('ERROR: A VES object is required as input')
+  }
+  #
+  current.res <- NULL
+  current.par <- NULL
+  best.res <- NULL
+  current.err <- 0.1
+  max.err <- 100
+  for(ilay in 2:max.layers){
+    current.par <- c(rep(mean(ves$appres), ilay), ves$ab2[1]/2.3, rep(5, (ilay-2) ), 500)
+    current.res <- calibrate_nls(ves, par0 = current.par, iterations = iterations,
+                                 ireport = ireport)
+    current.err <- current.res$rel.error
+    if(current.err < max.err){
+      best.res <- current.res
+      max.err <- current.err
+    }
+  }
+  res <- best.res
+  return(best.res)
 }
