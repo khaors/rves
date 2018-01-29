@@ -667,8 +667,10 @@ calibrate_seq_nls <- function(ves, iterations = 100, ireport = 10,
   best.res <- NULL
   current.err <- 0.1
   max.err <- 100
+  depth <- ves$ab2/2.3
   for(ilay in 2:max.layers){
-    current.par <- c(rep(mean(ves$appres), ilay), ves$ab2[1]/2.3, rep(5, (ilay-2) ), 500)
+    pos <- round(seq(1, length(depth), length.out = (ilay +1)))
+    current.par <- c(rep(mean(ves$appres), ilay), diff(depth[pos]))
     current.res <- calibrate_nls(ves, par0 = current.par, iterations = iterations,
                                  ireport = ireport)
     current.err <- current.res$rel.error
