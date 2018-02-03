@@ -20,9 +20,7 @@ library(ggplot2)
 
 # Introduction
 
-Importance of VES for subsurface investigations. Specially for groundwater.
-
-VES measurements of apparent resistivity and node spacing. Values of apparent resistivity sometimes include noise which is an obstacle for a proper parameter estimation.
+Vertical Electrical Sounding (VES) is one of the oldest resistivity methods and its the main geophysical method used in groundwater exploration  due to its cost and investigation depth. In a VES, measurements of apparent resistivity are taked for different values of node spacing. As in any measurement of a physical property, the values of apparent resistivity sometimes include some degree of noise which is an obstacle for a proper parameter estimation (thicknesses and real resistivities). Given the ubiquity of noise in measurements of the apparent resistivities, there are no methodologies to remove the noise in VES. 
 
 Noise in VES can be reduced using smoothing techniques. Definition of smoothing. Techniques for smoothing.
 
@@ -43,6 +41,7 @@ where $\lambda$ is the smoothing parameter, and the function $\hat{\rho}_{\text{
 
 
 ## Smoothing via Kernel Regression
+
 Another approach to smooth the VES data is to use local polynomial regressions. In this approach, the function that approximates the apparent resistivity measurements is a polynomial of order $p$ defined as:
 $$
 \hat{\rho}_{\text{app},i}(x) = a_{0} + a_{1}(x-x_{i})+\frac{a_{2}}{2!}(x-x_{i})^{2} + \ldots + \frac{a_{p}}{p!}(x-x_{i})^{p}
@@ -80,8 +79,34 @@ w(x_{1})& 0& \cdots & 0 \\
 $$
 
 
-## Smoothing via Wavelets
+## Smoothing via Wavelet Shrinkage
 
+Let $\{x_{i},\rho_{\text{app},i}:i=1,\ldots.n\}$ be a set of measurements of a VES ( electrode spacing $x$ and apparent resistivity $\rho_{\text{app}}$). Again it is assumed that the measurements of the apparent resistivity $\rho_{\text{app},i}^{m}$ are given by:
+$$
+\rho_{\text{app},i}^{m}(x) = \hat{\rho}_{\text{app},i}(x) + \epsilon(x)  
+$$
+where $\hat{\rho}_{\text{app},i}(x)$ are the true values of the apparent resistivity and $\epsilon(x)$ is a noise component that needs to be filtered. Let $W[\cdot]$ and $W^{-1}[\cdot]$ be the forward and inverse wavelet tranform operators, and $D[\cdot,\lambda]$ the denoising operator defined in terms of the $\lambda$ parameter. The smoothing procedure using wavelet shrinkage has three steps:
+
+1. Calculate the wavelet transform of the measured apparent resistivity curve:
+$$
+Y = W[\rho_{\text{app},i}^{m}(x)]
+$$
+2. Apply the denoising operator to the wavelet transform of the measured resistivity:
+$$
+Z=D[Y,\lambda]
+$$
+3. Calculate the inverse wavelet transform of the denoised wavelet transform:
+$$
+\hat{\rho}_{\text{app},i}(x)= W^{-1}[Z]
+$$
+As seen in the previous equations, the key of this smoothing technique is the definition of the $\lambda$ parameter called _shinkring parameter_. As its name suggets, the role of $\lambda$ is to shrink the magnitude of the wavelet transform of a signal $U$ using the following rule:  
+
+
+$$
+D[U,\lambda]=\text{sgn}{(U)} \max{(0,|U|-\lambda)}
+$$
+
+The action of this operator is to nullify the values of $U$ for which $|U| < \lambda$, and reduce the values of $U$ to $|U|-\lambda$ in the case that $|U| > \lambda$. The small values of $U$ are associated with the high frequency variations in the signals, in other words, this variations are called noise. 
 
 # Example
 

@@ -14,22 +14,25 @@ calibrate_seq_nls(ves, iterations = 100, ireport = 10, max.layers = 10)
 \item{ireport}{An integer specifying the report interval}
 
 \item{max.layers}{An integer specifying the maximum number of layers to include in the
-sequential estimation.
+sequential estimation.}
+}
+\value{
 This function returns a list with the following entries:
 \itemize{
 \item par: A numeric vector with the values of the layer resistivities and thicknesses
 \item value: The value or the RSS (Residual sum of squares)
 \item rel.error: The value of the relative error (in percentage)
 \item cal.error: A matrix with the RSS and relative error at each iteration
-}}
+}
 }
 \description{
 Sequential estimation of true resistivities and thicknesses of a VES.
 }
 \seealso{
 Other calibration functions: \code{\link{calibrate_ilsqp}},
-  \code{\link{calibrate_nls}}, \code{\link{calibrate_svd}},
-  \code{\link{calibrate}},
+  \code{\link{calibrate_joint_nls}},
+  \code{\link{calibrate_nls}}, \code{\link{calibrate_seq}},
+  \code{\link{calibrate_svd}}, \code{\link{calibrate}},
   \code{\link{log_mnad_resistivity}},
   \code{\link{log_mxad_resistivity}},
   \code{\link{log_rss_resistivity}},

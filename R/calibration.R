@@ -645,6 +645,7 @@ calibrate_ilsqp <- function(ves, iterations = 100, ireport = 10){
 #' @param ireport An integer specifying the report interval
 #' @param max.layers An integer specifying the maximum number of layers to include in the
 #' sequential estimation.
+#' @return
 #' This function returns a list with the following entries:
 #' \itemize{
 #' \item par: A numeric vector with the values of the layer resistivities and thicknesses
@@ -681,4 +682,221 @@ calibrate_seq_nls <- function(ves, iterations = 100, ireport = 10,
   }
   res <- best.res
   return(best.res)
+}
+#' @title
+#' calibrate_seq
+#' @description
+#' Sequential VES inversion using different optimization algorithms
+#' @param ves A VES object
+#' @param opt.method A character string specifying the optimization method to be used
+#' @param max.layers An integer with the maximum number of layers to be testsed
+#' @param lower A numeric value
+#' @param upper A numeric value
+#' @return
+#' This function returns a list with the following entries:
+#' \itemize{
+#' \item par: A numeric vector with the values of the layer resistivities and thicknesses
+#' \item value: The value or the RSS (Residual sum of squares)
+#' \item rel.error: The value of the relative error (in percentage)
+#' \item cal.error: A matrix with the RSS and relative error at each iteration
+#' }
+#' @author
+#' Oscar Garcia-Cabrejo \email{khaors@gmail.com}
+#' @family calibration functions
+#' @export
+calibrate_seq <- function(ves, opt.method, max.layers = 10, lower = 1, upper = 500){
+  if(class(ves) != "ves"){
+    stop('ERROR: A VES object is required as input')
+  }
+  current.res <- NULL
+  current.par <- NULL
+  best.res <- NULL
+  current.err <- 0.1
+  max.err <- 100
+  depth <- ves$ab2/2.3
+  for(ilay in 2:max.layers){
+    pos <- round(seq(1, length(depth), length.out = (ilay +1)))
+    current.par <- c(rep(mean(ves$appres), ilay), diff(depth[pos]))
+    lowerlim <- rep(rep(lower, ilay), 2)
+    upperlim <- rep(rep(upper, ilay), 2)
+    current.res <- calibrate(ves, par0 = current.par, opt.method = opt.method,
+                             obj.fn = "log_rss", lower = lowerlim,
+                             upper = upperlim)
+    current.err <- current.res$rel.err
+    if(current.err < max.err){
+      best.res <- current.res
+      max.err <- current.err
+    }
+  }
+  res <- best.res
+  return(best.res)
+
+
+}
+#' @title
+#' calibrate_joint_nls
+#' @description
+#' Parameter estimation of more than one VES in a single step.
+#' @param ves.list A list of VES objects
+#' @param par0 A numeric vector with the initial model
+#' @param iterations An integer specifying the maximum number of iterations
+#' @param ireport An integer specifying the report interval
+#' @return
+#' This function returns a list with the following entries:
+#' \itemize{
+#' \item par: A numeric vector with the values of the layer resistivities and thicknesses
+#' \item value: The value or the RSS (Residual sum of squares)
+#' \item rel.error: The value of the relative error (in percentage)
+#' \item cal.error: A matrix with the RSS and relative error at each iteration
+#' }
+#' @author
+#' Oscar Garcia-Cabrejo \email{khaors@gmail.com}
+#' @family calibration functions
+#' @export
+calibrate_joint_nls <- function(ves.list, par0, iterations = 100, ireport = 10){
+  if(class(ves.list) != "list"){
+    stop("ERROR: a list is required as input")
+  }
+  #
+  f_model1 <- function(x, spacing.list){
+    nset <- length(spacing.list)
+    all.res <- NULL
+    npar <- length(x)/nset
+    for(iset in 1:nset){
+      begin.pos <- 1+(iset-1)*npar
+      end.pos <- begin.pos + npar - 1
+      par <- 10^x[begin.pos:end.pos]
+      spacing <- spacing.list[[iset]]
+      res <- apparent_resistivities_simple(par, rves::filt$V1, spacing)
+      all.res <- c(all.res, log10(res))
+    }
+    return(all.res)
+  }
+  #
+  cal.error <- matrix(0.0, nrow = iterations, ncol = 2)
+  nves <- length(ves.list)
+  if(nves == 1){
+    stop('ERROR: At least two VES are required for the joint inversion')
+  }
+  spacing.list <- list()#ves$ab2
+  measured <- NULL
+  for(ives in 1:nves){
+    spacing.list[[ives]] <- ves.list[[ives]]$ab2
+    measured <- c(measured, log10(ves.list[[ives]]$appres))
+  }
+  #
+  npar <- length(par0)/nves
+  nparh <- npar/2
+  niter <- iterations
+  iter <- 0
+  cpar <- log10(par0)
+  cpar1 <- as.matrix(cpar, npar, 1)
+  mu_max <- 20
+  mu <- mu_max
+  beta <- 2
+  old.par <- NULL
+  old.error <- 100
+  current.error1 <- 100
+  while(iter < niter){
+    # Data difference
+    cres <- f_model1(cpar, spacing.list)
+    d <- as.matrix((cres-measured), length(measured), 1)
+    # Calculate jacobian matrix
+    J <- jacobian(f_model1, x = cpar, spacing.list = spacing.list)
+    # calculate parameter correction
+    x <- solve(t(J)%*%J+mu*pracma::eye(2*npar),t(J)%*%d)#/(iter+1)
+    # calculate error vector
+    err <- J%*%x-d
+    # Calculate y
+    y <- solve(t(J)%*%J+(mu)*pracma::eye(2*npar),t(J)%*%err)
+    E1 <- norm(y)
+    #
+    old.par <- cpar
+    cpar1 <- cpar1 - x
+    cpar <- as.numeric(cpar1)
+    cres <- f_model1(cpar, spacing.list)
+    current.error <- mean((cres-measured)**2)
+    old.error <- current.error1
+    current.error1 <- 100*mean(abs(measured-cres)/measured)
+    cal.error[iter+1,1] <- current.error
+    cal.error[iter+1,2] <- current.error1
+    if(current.error1 > old.error){
+      cat("Final step ", iter, ", Error= ", old.error, "\n")
+      current.error1 <- old.error
+      cpar <- old.par
+      break
+    }
+    if(iter != -1){
+      mu2 <- mu/2
+      x2 <- solve(t(J)%*%J+mu2*pracma::eye(2*npar),t(J)%*%d)
+      err2 <- J%*%x2-d
+      y2 <- solve(t(J)%*%J+mu2*pracma::eye(2*npar),t(J)%*%err2)
+      E2 <- norm(y2)
+      p <- sqrt(E1/E2)
+      if(p > 1){
+        q <- exp(-beta*mu2)-p*exp(-beta*mu)
+        r <- abs((1-p)/q)
+        new_mu <- log(r)/beta
+      }
+      else {
+        new_mu <- mu2
+      }
+      if((mu-1)>1e-4){
+        mu <- new_mu
+      }
+    }
+    if(mod(iter,ireport) == 0 | iter == (niter-1)){
+      cat("iteration, RSS, Rel Error = ", c(iter,current.error,current.error1), "\n")
+    }
+    iter <- iter+1
+  }
+  #
+  # Extract results
+  #
+  current.res <- list()
+  current.rho <- matrix(0.0, nrow = nves, ncol = nparh)
+  current.thickness <- matrix(0.0, nrow = nves, ncol = nparh)
+  for(ives in 1:nves){
+    beginp <- 1 + (ives-1)*npar
+    endp <- beginp + npar - 1
+    current.par <- 10^cpar[beginp:endp]
+    current.res[[ives]] <- current.par
+    current.rho[ives,1:nparh] <- current.par[1:nparh]
+    current.thickness[ives,1:nparh] <- current.par[(nparh+1):npar]
+  }
+  #
+  res <- list(par = 10^cpar, value = current.error, rel.error = current.error1,
+              cal.error = cal.error, rho = current.rho,
+              thickness = current.thickness)
+  return(res)
+}
+#
+calibrate_seq_joint_nls <- function(ves.list, iterations = 100, ireport = 10,
+                                    max.layers = 10){
+  if(class(ves) != "ves"){
+    stop('ERROR: A VES object is required as input')
+  }
+  #
+  current.res <- NULL
+  current.par <- NULL
+  best.res <- NULL
+  current.err <- 0.1
+  max.err <- 100
+  for(ilay in 2:max.layers){
+    depth <- ves$ab2/2.3
+    pos <- round(seq(1, length(depth), length.out = (ilay +1)))
+    current.par <- c(rep(mean(ves$appres), ilay), diff(depth[pos]))
+    current.res <- calibrate_joint_nls(ves, par0 = current.par,
+                                       iterations = iterations,
+                                       ireport = ireport)
+    current.err <- current.res$rel.error
+    if(current.err < max.err){
+      best.res <- current.res
+      max.err <- current.err
+    }
+  }
+  res <- best.res
+  return(best.res)
+
+
 }

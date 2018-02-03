@@ -32,9 +32,11 @@ Muiuane, E. & Pedersen, L. Automatic 1D interpretation of DC resistivity soundin
 data. Journal of Applied Geophysics, 42, 1, 35-45, 1999.
 }
 \seealso{
-Other calibration functions: \code{\link{calibrate_nls}},
+Other calibration functions: \code{\link{calibrate_joint_nls}},
+  \code{\link{calibrate_nls}},
   \code{\link{calibrate_seq_nls}},
-  \code{\link{calibrate_svd}}, \code{\link{calibrate}},
+  \code{\link{calibrate_seq}}, \code{\link{calibrate_svd}},
+  \code{\link{calibrate}},
   \code{\link{log_mnad_resistivity}},
   \code{\link{log_mxad_resistivity}},
   \code{\link{log_rss_resistivity}},
