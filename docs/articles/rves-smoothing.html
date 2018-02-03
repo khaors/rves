@@ -68,7 +68,7 @@
       <h1>VES Smoothing using the rves package</h1>
                         <h4 class="author">Oscar Garcia-Cabrejo</h4>
             
-            <h4 class="date">2018-01-29</h4>
+            <h4 class="date">2018-02-03</h4>
           </div>
 
     
@@ -77,8 +77,7 @@
 <div id="introduction" class="section level1">
 <h1 class="hasAnchor">
 <a href="#introduction" class="anchor"></a>Introduction</h1>
-<p>Importance of VES for subsurface investigations. Specially for groundwater.</p>
-<p>VES measurements of apparent resistivity and node spacing. Values of apparent resistivity sometimes include noise which is an obstacle for a proper parameter estimation.</p>
+<p>Vertical Electrical Sounding (VES) is one of the oldest resistivity methods and its the main geophysical method used in groundwater exploration due to its cost and investigation depth. In a VES, measurements of apparent resistivity are taked for different values of node spacing. As in any measurement of a physical property, the values of apparent resistivity sometimes include some degree of noise which is an obstacle for a proper parameter estimation (thicknesses and real resistivities). Given the ubiquity of noise in measurements of the apparent resistivities, there are no methodologies to remove the noise in VES.</p>
 <p>Noise in VES can be reduced using smoothing techniques. Definition of smoothing. Techniques for smoothing.</p>
 </div>
 <div id="basic-concepts" class="section level1">
@@ -123,9 +122,29 @@ w(x_{1})&amp; 0&amp; \cdots &amp; 0 \\
 \right]
 \]</span></p>
 </div>
-<div id="smoothing-via-wavelets" class="section level2">
+<div id="smoothing-via-wavelet-shrinkage" class="section level2">
 <h2 class="hasAnchor">
-<a href="#smoothing-via-wavelets" class="anchor"></a>Smoothing via Wavelets</h2>
+<a href="#smoothing-via-wavelet-shrinkage" class="anchor"></a>Smoothing via Wavelet Shrinkage</h2>
+<p>Let <span class="math inline">\(\{x_{i},\rho_{\text{app},i}:i=1,\ldots.n\}\)</span> be a set of measurements of a VES ( electrode spacing <span class="math inline">\(x\)</span> and apparent resistivity <span class="math inline">\(\rho_{\text{app}}\)</span>). Again it is assumed that the measurements of the apparent resistivity <span class="math inline">\(\rho_{\text{app},i}^{m}\)</span> are given by: <span class="math display">\[
+\rho_{\text{app},i}^{m}(x) = \hat{\rho}_{\text{app},i}(x) + \epsilon(x)  
+\]</span> where <span class="math inline">\(\hat{\rho}_{\text{app},i}(x)\)</span> are the true values of the apparent resistivity and <span class="math inline">\(\epsilon(x)\)</span> is a noise component that needs to be filtered. Let <span class="math inline">\(W[\cdot]\)</span> and <span class="math inline">\(W^{-1}[\cdot]\)</span> be the forward and inverse wavelet tranform operators, and <span class="math inline">\(D[\cdot,\lambda]\)</span> the denoising operator defined in terms of the <span class="math inline">\(\lambda\)</span> parameter. The smoothing procedure using wavelet shrinkage has three steps:</p>
+<ol style="list-style-type: decimal">
+<li>Calculate the wavelet transform of the measured apparent resistivity curve: <span class="math display">\[
+Y = W[\rho_{\text{app},i}^{m}(x)]
+\]</span>
+</li>
+<li>Apply the denoising operator to the wavelet transform of the measured resistivity: <span class="math display">\[
+Z=D[Y,\lambda]
+\]</span>
+</li>
+<li>Calculate the inverse wavelet transform of the denoised wavelet transform: <span class="math display">\[
+\hat{\rho}_{\text{app},i}(x)= W^{-1}[Z]
+\]</span> As seen in the previous equations, the key of this smoothing technique is the definition of the <span class="math inline">\(\lambda\)</span> parameter called <em>shinkring parameter</em>. As its name suggets, the role of <span class="math inline">\(\lambda\)</span> is to shrink the magnitude of the wavelet transform of a signal <span class="math inline">\(U\)</span> using the following rule:</li>
+</ol>
+<p><span class="math display">\[
+D[U,\lambda]=\text{sgn}{(U)} \max{(0,|U|-\lambda)}
+\]</span></p>
+<p>The action of this operator is to nullify the values of <span class="math inline">\(U\)</span> for which <span class="math inline">\(|U| &lt; \lambda\)</span>, and reduce the values of <span class="math inline">\(U\)</span> to <span class="math inline">\(|U|-\lambda\)</span> in the case that <span class="math inline">\(|U| &gt; \lambda\)</span>. The small values of <span class="math inline">\(U\)</span> are associated with the high frequency variations in the signals, in other words, this variations are called noise.</p>
 </div>
 </div>
 <div id="example" class="section level1">
@@ -268,7 +287,7 @@ sev1wv<span class="op">$</span>interpreted &lt;-<span class="st"> </span><span c
 <a href="#basic-concepts">Basic Concepts</a><ul class="nav nav-pills nav-stacked">
 <li><a href="#smoothing-via-splines">Smoothing via splines</a></li>
       <li><a href="#smoothing-via-kernel-regression">Smoothing via Kernel Regression</a></li>
-      <li><a href="#smoothing-via-wavelets">Smoothing via Wavelets</a></li>
+      <li><a href="#smoothing-via-wavelet-shrinkage">Smoothing via Wavelet Shrinkage</a></li>
       </ul>
 </li>
       <li>
