@@ -752,6 +752,7 @@ calibrate_seq <- function(ves, opt.method, max.layers = 10, lower = 1, upper = 5
 #' @author
 #' Oscar Garcia-Cabrejo \email{khaors@gmail.com}
 #' @family calibration functions
+#' @importFrom pracma eye inv
 #' @export
 calibrate_joint_nls <- function(ves.list, par0, iterations = 100, ireport = 10){
   if(class(ves.list) != "list"){
@@ -780,9 +781,11 @@ calibrate_joint_nls <- function(ves.list, par0, iterations = 100, ireport = 10){
   }
   spacing.list <- list()#ves$ab2
   measured <- NULL
+  ndat <- 0
   for(ives in 1:nves){
     spacing.list[[ives]] <- ves.list[[ives]]$ab2
     measured <- c(measured, log10(ves.list[[ives]]$appres))
+    ndat <- ndat + length(ves.list[[ives]]$ab2)
   }
   #
   npar <- length(par0)/nves
@@ -796,25 +799,70 @@ calibrate_joint_nls <- function(ves.list, par0, iterations = 100, ireport = 10){
   beta <- 2
   old.par <- NULL
   old.error <- 100
+  current.error <- 100
   current.error1 <- 100
+  # Initialization of Jacobian and constraint matrices
+  # G <- matrix(0.0, nrow = ndat, ncol = length(par0))
+  # Cobs <- eye(ndat)
+  # CR <- 1*eye((npar*(nves-1)))
+  # CCu <- cbind(Cobs, matrix(0.0, nrow = ndat, ncol = (npar*(nves-1)) ))
+  # CCl <- cbind(matrix(0.0, nrow = (npar*(nves-1)), ncol = ndat), CR)
+  # CC <- rbind(CCu, CCl)
+#  R <- matrix(0.0, nrow = (npar*(nves-1)), ncol = length(par0))
+#  for(ives in 1:(nves-1)){
+#    for(ipar in 1:nparh){
+#      begin.pos <- ives*ipar
+#      end.pos <- begin.pos + nparh - 1
+#      R[end]
+#    }
+#  }
+#  for(ii in 1:(npar*(nves-1))){
+#    R[ii,ii] <- 1
+#    R[ii,(ii+npar)] <- -1
+#  }
+  #
   while(iter < niter){
     # Data difference
     cres <- f_model1(cpar, spacing.list)
     d <- as.matrix((cres-measured), length(measured), 1)
     # Calculate jacobian matrix
     J <- jacobian(f_model1, x = cpar, spacing.list = spacing.list)
+    #G <- J
+    #Gp <- rbind(G, R)
+    #delta_r <- -R%*%cpar1
+    #dp <- rbind(d, delta_r)
     # calculate parameter correction
-    x <- solve(t(J)%*%J+mu*pracma::eye(2*npar),t(J)%*%d)#/(iter+1)
+    x <- solve(t(J)%*%J+mu*pracma::eye(nves*npar),t(J)%*%d)#/(iter+1)
+    #xp <- solve(t(Gp)%*%inv(CC)%*%Gp+mu*eye(nves*npar),t(Gp)%*%inv(CC)%*%dp)
     # calculate error vector
     err <- J%*%x-d
+    #errp <- Gp%*%xp-dp
     # Calculate y
-    y <- solve(t(J)%*%J+(mu)*pracma::eye(2*npar),t(J)%*%err)
+    y <- solve(t(J)%*%J+(mu)*eye(nves*npar),t(J)%*%err)
+    #yp <- solve(t(Gp)%*%Gp+(mu)*eye(nves*npar),t(Gp)%*%errp)
     E1 <- norm(y)
     #
     old.par <- cpar
-    cpar1 <- cpar1 - x
+    cpar1 <- cpar1 - x #p[1:length(par0)]
+    pos.valid <- cpar1 < 0
+    if(sum(pos.valid) > 1){
+      #cpar1 <- old.par - x
+      cpar <- old.par
+      print("Correction")
+      break
+      #print(old.par)
+      #print(cpar1)
+      #print(xp)
+      #print(x)
+      #stop('ERROR: the parameter values have become negative')
+    }
     cpar <- as.numeric(cpar1)
     cres <- f_model1(cpar, spacing.list)
+    pos <- is.nan(cres)
+    if(sum(pos) > 1){
+      print(cpar)
+      stop("ERROR: the forward model evaluated NAN")
+    }
     current.error <- mean((cres-measured)**2)
     old.error <- current.error1
     current.error1 <- 100*mean(abs(measured-cres)/measured)
@@ -828,9 +876,12 @@ calibrate_joint_nls <- function(ves.list, par0, iterations = 100, ireport = 10){
     }
     if(iter != -1){
       mu2 <- mu/2
-      x2 <- solve(t(J)%*%J+mu2*pracma::eye(2*npar),t(J)%*%d)
+      x2 <- solve(t(J)%*%J+mu2*pracma::eye(nves*npar),t(J)%*%d)
+      #x2p <- solve(t(Gp)%*%inv(CC)%*%Gp+mu2*pracma::eye(nves*npar),t(Gp)%*%inv(CC)%*%dp)
       err2 <- J%*%x2-d
-      y2 <- solve(t(J)%*%J+mu2*pracma::eye(2*npar),t(J)%*%err2)
+      #err2p <- Gp%*%x2p-dp
+      y2 <- solve(t(J)%*%J+mu2*eye(nves*npar),t(J)%*%err2)
+      #y2p <- solve(t(Gp)%*%inv(CC)%*%Gp+mu2*eye(nves*npar),t(Gp)%*%inv(CC)%*%err2p)
       E2 <- norm(y2)
       p <- sqrt(E1/E2)
       if(p > 1){
@@ -870,23 +921,52 @@ calibrate_joint_nls <- function(ves.list, par0, iterations = 100, ireport = 10){
               thickness = current.thickness)
   return(res)
 }
-#
+#' @title
+#' calibrate_seq_joint_nls
+#' @description
+#' Inversion of several VES with the same number of layers using Nonlinear Least-Squares
+#' @param ves.list A list of VES objects
+#' @param iterations An integer specifying the maximum number of iterations
+#' @param ireport An integer specifying the report interval
+#' @param max.layers An integer with the maximun number of layers to be tested during the
+#' inversion
+#' @return
+#' This function returns a list with the following entries:
+#' \itemize{
+#' \item par: A numeric vector with the values of the layer resistivities and thicknesses
+#' \item value: The value or the RSS (Residual sum of squares)
+#' \item rel.error: The value of the relative error (in percentage)
+#' \item cal.error: A matrix with the RSS and relative error at each iteration
+#' }
+#' @author
+#' Oscar Garcia-Cabrejo \email{khaors@gmail.com}
+#' @family calibration functions
+#' @export
 calibrate_seq_joint_nls <- function(ves.list, iterations = 100, ireport = 10,
                                     max.layers = 10){
-  if(class(ves) != "ves"){
-    stop('ERROR: A VES object is required as input')
+  if(class(ves.list) != "list"){
+    stop('ERROR: A list object is required as input')
   }
   #
+  nves <- length(ves.list)
+  if(nves == 1){
+    stop('ERROR: More than 1 VES is required in the input list')
+  }
   current.res <- NULL
   current.par <- NULL
   best.res <- NULL
   current.err <- 0.1
   max.err <- 100
   for(ilay in 2:max.layers){
-    depth <- ves$ab2/2.3
-    pos <- round(seq(1, length(depth), length.out = (ilay +1)))
-    current.par <- c(rep(mean(ves$appres), ilay), diff(depth[pos]))
-    current.res <- calibrate_joint_nls(ves, par0 = current.par,
+    def.par <- NULL
+    for(ives in 1:nves){
+      current.ves <- ves.list[[ives]]
+      depth <- current.ves$ab2/2.3
+      pos <- round(seq(1, length(depth), length.out = (ilay +1)))
+      current.par <- c(rep(mean(current.ves$appres), ilay), diff(depth[pos]))
+      def.par <- c(def.par, current.par)
+    }
+    current.res <- calibrate_joint_nls(ves.list, par0 = def.par,
                                        iterations = iterations,
                                        ireport = ireport)
     current.err <- current.res$rel.error
@@ -897,6 +977,4 @@ calibrate_seq_joint_nls <- function(ves.list, iterations = 100, ireport = 10,
   }
   res <- best.res
   return(best.res)
-
-
 }

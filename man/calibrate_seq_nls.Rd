@@ -31,8 +31,10 @@ Sequential estimation of true resistivities and thicknesses of a VES.
 \seealso{
 Other calibration functions: \code{\link{calibrate_ilsqp}},
   \code{\link{calibrate_joint_nls}},
-  \code{\link{calibrate_nls}}, \code{\link{calibrate_seq}},
-  \code{\link{calibrate_svd}}, \code{\link{calibrate}},
+  \code{\link{calibrate_nls}},
+  \code{\link{calibrate_seq_joint_nls}},
+  \code{\link{calibrate_seq}}, \code{\link{calibrate_svd}},
+  \code{\link{calibrate}},
   \code{\link{log_mnad_resistivity}},
   \code{\link{log_mxad_resistivity}},
   \code{\link{log_rss_resistivity}},

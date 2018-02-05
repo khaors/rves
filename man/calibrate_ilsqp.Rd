@@ -34,6 +34,7 @@ data. Journal of Applied Geophysics, 42, 1, 35-45, 1999.
 \seealso{
 Other calibration functions: \code{\link{calibrate_joint_nls}},
   \code{\link{calibrate_nls}},
+  \code{\link{calibrate_seq_joint_nls}},
   \code{\link{calibrate_seq_nls}},
   \code{\link{calibrate_seq}}, \code{\link{calibrate_svd}},
   \code{\link{calibrate}},

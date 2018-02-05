@@ -36,6 +36,7 @@ and IP sounding data. 1999. Geophysical Prospecting, 47, 4, 527-550.
 \seealso{
 Other calibration functions: \code{\link{calibrate_ilsqp}},
   \code{\link{calibrate_joint_nls}},
+  \code{\link{calibrate_seq_joint_nls}},
   \code{\link{calibrate_seq_nls}},
   \code{\link{calibrate_seq}}, \code{\link{calibrate_svd}},
   \code{\link{calibrate}},

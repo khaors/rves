@@ -25,6 +25,7 @@ Function to calculate the relative error between the calculated and measured res
 Other calibration functions: \code{\link{calibrate_ilsqp}},
   \code{\link{calibrate_joint_nls}},
   \code{\link{calibrate_nls}},
+  \code{\link{calibrate_seq_joint_nls}},
   \code{\link{calibrate_seq_nls}},
   \code{\link{calibrate_seq}}, \code{\link{calibrate_svd}},
   \code{\link{calibrate}},
