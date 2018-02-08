@@ -135,7 +135,7 @@ apprho <- ves_data1$apprho
 ```
 and these are used to define the VES object inside R:
 ```{r define_ves2,echo=TRUE}
-sev1a <- ves(id= "Sounding 1", ab2 = ab2, apprho = apprho)
+sev1a <- ves(id= "VES1", ab2 = ab2, apprho = apprho)
 ```
 The plot of the VES used as example can be seen in the following plot:
 ```{r plot_sev1a, fig.height=4,fig.width=6,fig.align='center'}

@@ -218,8 +218,8 @@ shinyServer(function(input, output, session) {
                                               spacing = spacing)
         #print(cal.app.rho$appres)
         #print(meas.app.rho)
-        rel.err <- 100*mean(abs(cal.app.rho$appres-meas.app.rho)/meas.app.rho)
-        mse <- mean((cal.app.rho$appres-meas.app.rho)^2)
+        rel.err <- 100*mean(abs(log10(cal.app.rho$appres)-log10(meas.app.rho))/log10(meas.app.rho))
+        mse <- mean((log10(cal.app.rho$appres)-log10(meas.app.rho))^2)
         str1 <- "<h3>Results Parameter Estimation</h3><br>"
         str2 <- paste("<b>Relative Error(%)= </b>", format(rel.err, digits = 3), "<br>", sep = " ")
         str3 <- paste("<b>Mean Squared Error= </b>", format(mse, digits = 3), sep = " ")
