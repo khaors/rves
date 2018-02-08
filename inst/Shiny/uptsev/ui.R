@@ -38,6 +38,8 @@ dbSidebar <- dashboardSidebar(
     menuItem("Transform Data", tabName = "transformation", icon = icon("key")),
     menuItem("Graphical Inversion", tabName = "manual", icon = icon("hand-spock-o")),
     menuItem("Automatic Inversion", tabName = "automatic", icon = icon("fighter-jet")),
+    menuItem("Automatic Sequential Inversion", tabName = "automaticSeq",
+             icon = icon("space-shuttle")),
     #menuItem("Reports", tabName = "reports", icon = icon("cogs")),
     menuItem("Model Diagnostic", tabName = "diagnostic", icon = icon("wrench")),
     menuItem("Source Code", icon = icon("code"), href = "https://github.com/khaors/rves")
@@ -310,6 +312,42 @@ automaticTab <- tabItem(
   )
 )
 #########################################################################################
+#                                    AutomaticSequentialTab
+#########################################################################################
+automaticSeqTab <- tabItem(
+  tabName = "automaticSeq",
+  h3("VES Inversion: Automatic Sequential Method"),
+  br(),
+  br(),
+  fluidRow(
+    tags$em("On this tab you can estimate the Earth model (real resisivities and thicknesses),
+             whithout specifying an initial model, using different optimization techniques an Earth model with minimum error is found.
+            Some fitness measures of the estimated model are presented below the plot.")
+  ),
+  br(),
+  br(),
+  sidebarLayout(
+    sidebarPanel(
+      textInput(inputId = "seqIterations", label = "Maximum Number of Iterations", value = "10"),
+      br(),
+      textInput(inputId = "seqReport", label = "Report Iterations", value = "2"),
+      br(),
+      textInput(inputId = "seqMaxlayers", label = "Maximum Number of Layers", value = "10"),
+      br(),
+      actionButton(inputId = "seq_plot", label = "Plot"),
+      actionButton(inputId = "seqRun", label = "Run (a lot) VES Run (a lot)",
+                   icon = icon("bicycle"))
+    ),
+    mainPanel(
+      plotOutput(outputId = "seq_plot"),
+      br(),
+      uiOutput(outputId = 'seq_results'),
+      br(),
+      dataTableOutput(outputId = "seq_table")
+    )
+  )
+)
+#########################################################################################
 #                                    diagnosticTab
 #########################################################################################
 diagnosticTab <- tabItem(
@@ -390,6 +428,7 @@ userInterface <- dashboardPage(
       transformationTab,
       manualTab,
       automaticTab, #,reportsTab
+      automaticSeqTab,
       diagnosticTab
     )
   )

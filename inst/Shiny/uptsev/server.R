@@ -606,7 +606,7 @@ shinyServer(function(input, output, session) {
       }
       #
       current.res <- calibrate.results()
-      print(current.res)
+      #print(current.res)
       #
       total.depth.model <- sum(current.res$thickness)
       total.depth.ves <- max(current.ves$ab2)
@@ -677,6 +677,138 @@ shinyServer(function(input, output, session) {
       scroller = TRUE))# renderDataTable
 
   }) #observeEvent
+  ########################################################################################
+  #                           Sequential Estimation Tab
+  ########################################################################################
+  calibrate.seq.results <- function(){
+    #
+    current.ves<- server.env$current.ves
+    validate(
+      need(!is.null(current.ves), "VES has not been defined")
+    )
+    if(is.null(current.ves)){
+      return(NULL)
+    }
+    #
+    niterations <- isolate(as.numeric(input$seqIterations))
+    validate(
+      need(niterations > 9, "Sequential Estimation: Number of iterations too low")
+    )
+    if(niterations < 9){
+      return(NULL)
+    }
+    #
+    nreport <- isolate(as.numeric(input$seqReport))
+    validate(
+      need(nreport > 0 & nreport < niterations, "Sequential Estimation: Number of report iterations wrong")
+    )
+    if(nreport == 1 & nreport == niterations){
+      return(NULL)
+    }
+    #
+    max.layers <- isolate(as.numeric(input$seqMaxlayers))
+    validate(
+      need(max.layers > 1, "Sequential Estimation: Number of layers must be greater than 1")
+    )
+    if(max.layers == 1){
+      return(NULL)
+    }
+    # Sequential estimation using NLS
+    current.res <- calibrate_seq_nls(current.ves,
+                                 iterations = niterations,
+                                 ireport = nreport,
+                                 max.layers = max.layers)
+    #
+    current.ves$rhopar <- current.res$rho
+    current.ves$thickpar <- current.res$thickness
+    current.ves$interpreted <- TRUE
+    #
+    server.env$current.ves <- current.ves
+    return(current.res)
+  }
+  #
+  observeEvent(input$seqRun, {
+    output$seq_plot <- renderPlot({
+      current.ves <- server.env$current.ves
+      validate(
+        need(!is.null(current.ves), "The VES object is not defined")
+      )
+      #
+      current.res <- calibrate.seq.results()
+      nlayers <- length(current.res$rho)
+      #print(nlayers)
+      #
+      total.depth.model <- sum(current.res$thickness)
+      total.depth.ves <- max(current.ves$ab2)
+      if(total.depth.model < total.depth.ves){
+        depth.corr <- total.depth.ves - total.depth.model
+        current.res$thickness[nlayers] <- current.res$thickness[nlayers] + depth.corr
+      }
+      current.ves$rhopar <- current.res$rho
+      current.ves$thickpar <- current.res$thickness
+      current.ves$interpreted <- TRUE
+      server.env$current.ves <- current.ves
+      #
+      plot(current.ves, type = "ves")
+    })
+    #
+    output$seq_results <- renderUI({
+      current.ves <- server.env$current.ves
+      validate(
+        need(!is.null(current.ves), "The VES object is not defined")
+      )
+      if(is.null(current.ves))
+        return(NULL)
+      #print(names(current.ves.manual))
+      rho <- isolate(current.ves$rhopar)
+      thick <- isolate(current.ves$thickpar)
+      spacing <- current.ves$ab2
+      meas.app.rho <- isolate(current.ves$appres)
+      automatic_method <- isolate(input$automatic_method)
+      cal.app.rho <- apparent_resistivities(rho, thick, filt = rves::filt$V1,
+                                            spacing = spacing)
+      #print(cal.app.rho$appres)
+      #print(meas.app.rho)
+      rel.err <- 100*mean(abs(cal.app.rho$appres-meas.app.rho)/meas.app.rho)
+      mse <- mean((cal.app.rho$appres-meas.app.rho)^2)
+      str1 <- "<h3>Results Parameter Estimation</h3><br>"
+      str2 <- paste("<b>Relative Error(%)= </b>", format(rel.err, digits = 3), "<br>", sep = " ")
+      str3 <- paste("<b>Mean Squared Error= </b>", format(mse, digits = 3), "<br>", sep = " ")
+      str4 <- paste("<b>Optimization Method= </b>", "NLS Sequential", "<br><br>", sep = " ")
+      HTML(paste(str1, str2, str3, str4))
+    })
+    #
+    output$seq_table <- renderDataTable({
+      current.ves <- server.env$current.ves
+      validate(
+        need(!is.null(current.ves), "The VES object is not defined")
+      )
+      #
+      validate(
+        need(current.ves$interpreted, "The VES object is not interpreted")
+      )
+      rho <- current.ves$rhopar
+      thick <- current.ves$thickpar
+      res.df <- data.frame('Real_Resistivity(Ohm_m)' = rho, 'Thickness(m)' = thick)
+      nlay <- length(rho)
+      layers <- vector('character', nlay)
+      for(i in 1:nlay){
+        layers[i] <- paste0("Layer", as.character(i))
+      }
+      row.names(res.df) <- layers
+      res.df
+    },
+    extensions = c('Buttons'),
+    options = list(
+      pageLength = length(server.env$current.ves$ab2),
+      dom = 'Bfrtip',
+      buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
+      text = 'Download',
+      scrollY = 200,
+      scroller = TRUE))# renderDataTable
+  })
+
+
   ########################################################################################
   #                           Model Diagnostic Tab
   ########################################################################################
