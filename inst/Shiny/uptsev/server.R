@@ -11,6 +11,7 @@ library(shiny)
 library(rves)
 library(ggplot2)
 library(gridExtra)
+library(DT)
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output, session) {
@@ -18,7 +19,9 @@ shinyServer(function(input, output, session) {
   current.table <- NULL
   current.ves.manual <- NULL
   current.ves.auto <- NULL
+  original.ves <- NULL
   first <- FALSE
+  filtered <- FALSE
   # Panel 'Import data'
   dInput <- reactive({
     in.file <- input$file1
@@ -55,6 +58,7 @@ shinyServer(function(input, output, session) {
     fname <- input$file1
     ves <- ves(fname, ab2 =d.input[,1],apprho= d.input[,2])
     server.env$current.ves <- ves
+    server.env$original.ves <- ves
     #print(ves)
     head(d.input, n=input$nrow.preview)
   })
@@ -83,16 +87,21 @@ shinyServer(function(input, output, session) {
     current.ves$ab2 <- res$ab2
     current.ves$appres <- res$apprho
     server.env$current.ves <- current.ves
+    server.env$filtered <- TRUE
     return(current.ves)
   }
+  #
   observeEvent(input$filterRun, {
     output$filterResultsPlot <- renderPlot({
       current.ves <- server.env$current.ves
       validate(
-        need(!is.null(current.ves), "The VES is not defined")
+        need(!is.null(current.ves), "The VES is not defined. No filtering applied.")
       )
       if(is.null(current.ves))
         return(NULL)
+      validate(
+        need(!server.env$filtered, "The VES is already filtered")
+      )
       ab2.original <- current.ves$ab2
       appres.original <- current.ves$appres
       current.ves <- filter.ves()
@@ -101,11 +110,93 @@ shinyServer(function(input, output, session) {
       p1 <- p1 + geom_point(aes(x = ab2, y = appres), data = original.df)
       print(p1)
     })
+    #
+    output$filterResultsTable <- renderDataTable({
+      current.ves <- server.env$current.ves
+      validate(
+        need(!is.null(current.ves), "The VES is not defined")
+      )
+      if(is.null(current.ves))
+        return(NULL)
+      validate(
+        need(server.env$filtered, "The VES has not been filtered")
+      )
+      #
+      if(!server.env$filtered)
+        return(NULL)
+      ab2 <- current.ves$ab2
+      filt.rho <- current.ves$appres
+      real.rho <- server.env$original.ves$appres
+      #print(filt.rho)
+      res <- data.frame(spacing = ab2, filtered.rho = filt.rho,
+                        real.rho = real.rho)
+      return(res)
+    },
+    extensions = c('Buttons'),
+    options = list(
+      pageLength = length(server.env$current.ves$ab2),
+      dom = 'Bfrtip',
+      buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
+      text = 'Download',
+      scrollY = 200,
+      scroller = TRUE))
   })
+  #
+  observeEvent(input$filterRestore, ({
+    server.env$current.ves <- server.env$original.ves
+    server.env$filtered <- FALSE
+    print("VES Restored.")
+  }))
   ########################################################################################
   #                             Transformation Tab
   ########################################################################################
   observeEvent(input$transformationRun, {
+    output$transform_results <- renderDataTable({
+      current.ves <- server.env$current.ves
+      if(input$transform_results_plot){
+        validate(
+          need(!is.null(current.ves), "The VES is not defined")
+        )
+        #
+        if(is.null(current.ves))
+          return(NULL)
+        #
+        current.transformation <- isolate(input$transformation.type)
+        validate(
+          need(current.transformation != "None", "Please choose a Transformation")
+        )
+        current.transf <- NULL
+        if(current.transformation == "Direct"){
+          current.transf <- "direct"
+        }
+        else if(current.transformation == "Scaling"){
+          current.transf <- "scaling"
+        }
+        else if(current.transformation == "Zohdy"){
+          current.transf <- "zohdy"
+        }
+        else if(current.transformation == "Smoothed.Zohdy"){
+          current.transf <- "smoothed_zohdy"
+        }
+        #
+        base_transform <- "transform_"
+        def_transform <- paste0(base_transform, current.transf)
+        args <- list(ves = current.ves)
+        res_transform <- do.call(def_transform, args)
+        res <- data.frame(depth = res_transform$depth,
+                          real.resistivity = res_transform$real.res)
+        return(res)
+      }
+
+    }, extensions = c('Buttons'),
+    options = list(
+      pageLength = length(server.env$current.ves$ab2),
+      dom = 'Bfrtip',
+      buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
+      text = 'Download',
+      scrollY = 200,
+      scroller = TRUE))
+    #
     output$transformationPlot <- renderPlot({
       current.ves <- server.env$current.ves
       validate(
@@ -340,7 +431,6 @@ shinyServer(function(input, output, session) {
       need(!is.null(current.ves.auto), "VES has not been defined")
     )
     if(is.null(current.ves.auto)){
-      output$automatic_msg <- renderText("VES has not been defined")
       return(NULL)
     }
     #
@@ -386,7 +476,6 @@ shinyServer(function(input, output, session) {
     #print(par0)
     #print(class(par0))
     # Estimate model parameters
-    output$automatic_msg <- renderText({"Working on estimation..."})
     if(automatic_method == "Nonlinear Least Squares"){
       current.res <- calibrate_nls(current.ves.auto, par0 = par0,
                                    iterations = nls_niter,
@@ -467,7 +556,6 @@ shinyServer(function(input, output, session) {
       print("Differential Evolution: Finished")
     }
     updateSelectInput(session, inputId = "diagnostic.type", selected = "None")
-    #output$automatic_msg <- renderText({"Working on estimation...Finished"})
     #print(names(current.res))
     return(current.res)
   }
@@ -510,12 +598,15 @@ shinyServer(function(input, output, session) {
         return(NULL)
       if(is.null(current.ves))
         return(NULL)
+      validate(
+        need(nlayers > 1, "VES model with a single layer")
+      )
       if(nlayers == 1){
-        output$automatic_msg <- renderText("Initial Solution with only 1 layer")
         return(NULL)
       }
       #
       current.res <- calibrate.results()
+      print(current.res)
       #
       total.depth.model <- sum(current.res$thickness)
       total.depth.ves <- max(current.ves$ab2)
@@ -556,7 +647,7 @@ shinyServer(function(input, output, session) {
       plot(current.ves, type = "ves")
     }) #renderPlot
     #
-    output$automatic_table <- renderTable({
+    output$automatic_table <- renderDataTable({
       current.ves <- server.env$current.ves
       validate(
         need(!is.null(current.ves), "The VES object is not defined")
@@ -575,7 +666,15 @@ shinyServer(function(input, output, session) {
       }
       row.names(res.df) <- layers
       res.df
-    }, rownames = TRUE, digits = 3)# renderTable
+    },
+    extensions = c('Buttons'),
+    options = list(
+      pageLength = length(server.env$current.ves$ab2),
+      dom = 'Bfrtip',
+      buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
+      text = 'Download',
+      scrollY = 200,
+      scroller = TRUE))# renderDataTable
 
   }) #observeEvent
   ########################################################################################

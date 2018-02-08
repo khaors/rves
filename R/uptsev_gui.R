@@ -13,3 +13,4 @@ uptsev_gui <- function() {
   }
   shiny::runApp(appDir, display.mode = "normal")
 }
+

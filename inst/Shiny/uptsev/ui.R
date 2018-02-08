@@ -10,6 +10,7 @@
 library(shiny)
 library(shinydashboard)
 library(rves)
+library(DT)
 #
 dbHeader <- dashboardHeader(title = "UPTSE-V",
                             tags$li(a(href = 'http://www.uptc.edu.co',
@@ -174,14 +175,18 @@ filterTab <- tabItem(
         textInput(inputId = "kernel_bw", label = "Bandwidth ", value = "0.1")
       ),
       br(),
-      actionButton(inputId = "filterRun", label = "Apply Filter", icon = icon("bullseye"))
-      #br(),
-      #actionButton(inputId = "filterPlot", label = "Plot")
+      checkboxInput(inputId = "filter_show", label = "Show Results", value = FALSE),
+      br(),
+      actionButton(inputId = "filterRun", label = "Apply Filter", icon = icon("bullseye")),
+      br(),
+      br(),
+      actionButton(inputId = "filterRestore", label = "Restore Original VES",
+                   icon = icon("fast-backward"))
     ),
     mainPanel(
       plotOutput(outputId = "filterResultsPlot"),
       br(),
-      tableOutput(outputId = "filterResultsTable")
+      dataTableOutput(outputId = "filterResultsTable")
     )
   )
 )
@@ -212,15 +217,15 @@ transformationTab <- tabItem(
                   choices = c("None", "Direct", "Scaling", "Zohdy", "Smoothed.Zohdy"),
                   selected = "None"),
       br(),
+      checkboxInput(inputId = "transform_results_plot", label = "Show Results", value = FALSE),
+      br(),
       actionButton(inputId = "transformationRun", label = "Apply Transformation", icon = icon("bullseye"))
     ),
     mainPanel(
       # Add Plot
       plotOutput(outputId = "transformationPlot"),
       br(),
-      checkboxInput(inputId = "transform_results_plot", label = "Show Results", value = FALSE),
-      br(),
-      uiOutput("transform_results")
+      dataTableOutput("transform_results")
     )
 
 
@@ -298,13 +303,9 @@ automaticTab <- tabItem(
     mainPanel(
       plotOutput(outputId = "automatic_plot"),
       br(),
-      h4(HTML("<b>Message Window</b>")),
-      br(),
-      textOutput(outputId = "automatic_msg"),
-      br(),
       uiOutput(outputId = 'automatic_results'),
       br(),
-      uiOutput(outputId = "automatic_table")
+      dataTableOutput(outputId = "automatic_table")
     )
   )
 )

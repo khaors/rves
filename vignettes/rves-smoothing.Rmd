@@ -190,6 +190,7 @@ and the results are plotted.
 p3 <- plot(sev1ss, type = "ves")
 print(p3)
 ```
+The smoothing using splines causes a reduction in the calibration error which now is equal to $0.81$ in contrast to $1.35$ obtained whithout smoothing. 
 
 ### Kernel Regression
 
