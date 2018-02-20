@@ -20,9 +20,7 @@ library(ggplot2)
 
 # Introduction
 
-Vertical Electrical Sounding (VES) is one of the oldest resistivity methods and its the main geophysical method used in groundwater exploration  due to its cost and investigation depth. In a VES, measurements of apparent resistivity are taked for different values of node spacing. As in any measurement of a physical property, the values of apparent resistivity sometimes include some degree of noise which is an obstacle for a proper parameter estimation (thicknesses and real resistivities). Given the ubiquity of noise in measurements of the apparent resistivities, there are no methodologies to remove the noise in VES. 
-
-Noise in VES can be reduced using smoothing techniques. Definition of smoothing. Techniques for smoothing.
+Vertical Electrical Sounding (VES) is one of the oldest resistivity methods and its the main geophysical method used in groundwater exploration  due to its cost and investigation depth. In a VES, measurements of apparent resistivity are taked for different values of node spacing. As in any measurement of a physical property, the values of apparent resistivity sometimes include some degree of noise which is an obstacle for a proper parameter estimation (thicknesses and real resistivities). Given the ubiquity of noise in measurements of the apparent resistivities, there are no predefined methodologies to remove the noise ocurring in VES. In the rves package, the noise removal problem is solved using smoothing techniques where the main goal is to extract a smooth curve from a set of measurements. There are several smoothing techniques that can be used to filter or smooth the apparent resistivity measurements, but they do not have a widespread use. Therefore in this package  three smoothing techniques are included to help in the pre-processing of the VES measurements and improve the inversion process. The three smoothing techniques are smoothing spline, kernel regression and wavelet thresholding. 
 
 
 # Basic Concepts
@@ -190,13 +188,19 @@ and the results are plotted.
 p3 <- plot(sev1ss, type = "ves")
 print(p3)
 ```
-The smoothing using splines causes a reduction in the calibration error which now is equal to $0.81$ in contrast to $1.35$ obtained whithout smoothing. 
+In this case the change in the shape of the ves curve is not significative, but the effect of the filtering is seen in the reduction of the RMS obtained during calibration that changed from $1.35$ (no smoothing) to $0.81$ (smoothing.spline). The number of layers of the inverted model did not change but there are small variations in the layer  resistivities.
 
 ### Kernel Regression
+
+Now, let's try kernel regression. This procedure can be applied to the original ves object using the _smoothing\_ves_ function with the _kernel.regression_ option and the corresponding bandwidth:
 
 ```{r kernelregression,echo=TRUE}
 res.kr <- smoothing_ves(sev1a, method = "kernel.regression", bw = 0.5)
 ```
+
+For effects of the ves smoothing it is recommended to try different values of bw in the interval from $0.1$ to $0.7$. 
+
+Once the results are obtained, a data.frame is created to compare the effect of the smoothing:
 
 ```{r kernelregression_organize,echo=TRUE}
 ab2.def <- rep(res.kr$ab2, 2)
@@ -209,7 +213,7 @@ meas.type[19:36] <- rep("raw", 18)
 res.kr.df <- data.frame(ab2 = ab2.def, apprho = apprho.def, 
                         type = as.factor(meas.type))
 ```
-
+and the results are plotted:
 ```{r plot_kernelregression,fig.width=7,fig.height=4,fig.align='center'}
 p.kr <- ggplot() + geom_point(aes(x = ab2, y = apprho, color = type), 
                               data = res.kr.df) +
@@ -219,34 +223,36 @@ p.kr <- ggplot() + geom_point(aes(x = ab2, y = apprho, color = type),
   theme_bw()
 print(p.kr)  
 ```
-
+As seen in the smooth.spline case, the effect of the filtering is visible for intermediate to large spacings. With the filtered values, a new ves object is defined:
 ```{r kr_vesdef,echo=TRUE}
 sev1kr <- ves(id = "Sounding 1-Kernel Regression", ab2 = res.kr$ab2, 
               apprho = res.kr$apprho)
 ```
-
+and the estimates of the real resistivities and thicknesses is obtained:
 ```{r estimate_kr, echo=TRUE}
 res.kr.nls <- calibrate_nls(sev1kr, par0, iterations = 10, ireport = 5)
 ```
-
+The calibration results are assigned to the ves object using
 ```{r assign_results_kr_nls,echo=TRUE}
 sev1kr$rhopar <- res.kr.nls$rho
 sev1kr$thickpar <- res.kr.nls$thickness
 sev1kr$interpreted <- TRUE
 ```
-
+and the results are finally plotted:
 ```{r plot_sevkr,fig.width=6,fig.height=4,fig.align='center'}
 p4 <- plot(sev1kr, type = "ves")
 print(p4)
 ```
+Again the effect of the smoothing is seen in the reduction of the RMS obtained during the calibration that now reaches a values of $0.628$ (down from $1.35$). The number of layers did no change but there are small differences in the resistivities obtained during the calibration step when compared to the results of the smoothing spline and no smoothing.
 
 ### Wavelet Smoothing
 
+The third method for ves smoothing is wavelet thresholding which is applied in a similar manner to the previously explained methods:
 
 ```{r wave,echo=TRUE}
 res.wv <- smoothing_ves(sev1a, method = "wavelet")
 ```
-
+The results of the smoothing are assigned to a data.frame for visual comparison with the original values
 ```{r wave1,echo=TRUE}
 ab2.def <- rep(res.wv$ab2, 2)
 apprho.def <- vector('numeric', length = 36)
@@ -258,7 +264,7 @@ meas.type[19:36] <- rep("raw", 18)
 res.wv.df <- data.frame(ab2 = ab2.def, apprho = apprho.def, 
                         type = as.factor(meas.type))
 ```
-
+and this data.frame is plotted
 
 ```{r wave2,fig.height=4,fig.width=6,fig.align='center'}
 p.wv <- ggplot() + geom_point(aes(x = ab2, y = apprho, color = type), 
@@ -270,24 +276,26 @@ p.wv <- ggplot() + geom_point(aes(x = ab2, y = apprho, color = type),
 print(p.wv)  
 ```
 
+where it is clear that the smoothing modified values for all spacings. These results are used to define a new ves object:
+
 ```{r wave3,echo=TRUE}
 sev1wv <- ves(id = "Sounding 1-Wavelet Thresholding", ab2 = res.wv$ab2, 
               apprho = res.wv$apprho)
 ```
-
+which in turn is used to estimate the layer parameters:
 ```{r wave4,echo=TRUE}
 res.wv.nls <- calibrate_nls(sev1wv, par0, iterations = 10, ireport = 5)
 ```
-
+The results of the calibration are assigned again to the ves object:
 ```{r wave5,echo=TRUE}
 sev1wv$rhopar <- res.wv.nls$rho
 sev1wv$thickpar <- res.wv.nls$thickness
 sev1wv$interpreted <- TRUE
 ```
-
-
-
+and finally the results are plotted.
 ```{r wave6,fig.height=4,fig.width=6,fig.align='center'}
 p5 <- plot(sev1wv, type = "ves")
 print(p5)
 ```
+
+The effect of the smoothing is seen in the reduction of the RMS to a value of $0.602$, which is the smallest rms value obtained so far. In addition the resistivity of the third layer is less than the corresponding value estimated with the smoothing spline, kernel regression and no smoothing; whereas there is an increase in the true resistivity of the second layer. Despite these differences, the layered model did not change in a significant way. 

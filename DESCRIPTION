@@ -14,5 +14,6 @@ RoxygenNote: 6.0.1
 Imports: stringi, GenSA, GA, pso, DEoptim, pracma, numDeriv, ggplot2, gridExtra, shiny, shinydashboard, DT, locpol, wavethresh
 Suggests: knitr,
     rmarkdown,
-    covr
+    covr, 
+    knitcitations
 VignetteBuilder: knitr

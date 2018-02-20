@@ -1,0 +1,233 @@
+---
+title: "Resistivity-Depth Transformations using the rves package"
+author: "Oscar Garcia-Cabrejo"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: "references.bib"
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+library(rves)
+library(ggplot2)
+library(gridExtra)
+library(knitcitations)
+cleanbib()
+options("citation_format" = "pandoc")
+```
+
+# Introduction
+
+Vertical Electrical Sounding (VES) is one of the oldest resistivity methods and its the main geophysical method used in groundwater exploration due to its cost and investigation depth. In a VES, measurements of apparent resistivity are taked for different values of node spacing. These measurements are used to define a simplified subsurface representation composed of true layer resistivities and thicknesses in a process that is generically called inversion. The modern inversion procedures are based on nonlinear least-squares or global optimization methodologies which in general require an intermediate technical knowledge from the user to be applied in a proper way. However, in some cases the user requires a simple and fast procedure to estimate the true layer resistivities and thicknesses without using these advanced optimization approaches. In these cases the resistivity-depth transformations become an alternative to define the layered model, and they  can be used as a first approximation to the real layered model or as an initial model to more common and versatile optimization procedures.
+
+# Transformation Approaches
+
+The rves package includes four resistivity-depth transformations:
+
+- Direct Transformation `r citep("10.1016/0098-3004(95)00035-7")`
+- Scaling Transformation `r citep("10.1016/0098-3004(95)00035-7")`
+- Zohdy method `r citep("10.1190/1.1442648")`
+- Smoothed Zohdy method `r citep("10.1016/0098-3004(94)00075-6")`
+
+These methods are explained in the following sections.
+
+## Direct Method
+
+In the direct method proposed by `r citet("Meju_1995")`, the electrode spacings $x$ are transformed to depths $d$ according to the following equation:
+
+$$
+d(x) = \frac{x}{2.3}
+$$
+whereas the true resistivity can be assumed equal to the apparent resistivity:
+$$
+\rho_{\text{eff}}(d)=\rho_{app}[d(x)]
+$$
+or the true resistivity can be approximated using the following equation:
+$$
+\rho_{\text{eff}}(d)=k \rho_{\text{app}}[d(x)]\exp{[-(1-\alpha)]}
+$$
+where the exponent $\alpha$ is equal to $0$ for synthetic data and is between $0.15-0.20$ for field data, and the constant $k$ is assigned a value of $2.3$. 
+
+
+## Scaling Method
+
+This is another simple and fast method to transform the apparent resistivity data proposed by  `r citet("Meju_1995")` and it is based on successive approximations of true resistivity data using a scaling rule defined by:
+$$
+\rho_{\text{eff}}(d_{i})=\rho_{\text{app}}(d_{i}) \times S
+$$
+where $\rho_{\text{app}}$ is the apparent resistivity and the scaling factor $S$ is defined as:
+$$
+S=\frac{\rho_{\text{app}}(d_{i})}{\rho_{\text{app}}(d_{i-1})}
+$$
+The measurement depths $d_{i}$ are defined in the usual way as:
+
+$$
+d_{i}=\frac{x_{i}}{2.3}
+$$
+This approach is applied assuming that the first value of the apparent resistivity is the true resistivity of the first layer. 
+
+## Zohdy's Method
+
+This is an iterative and fast method to obtain the resistivity distribution in function of the depth that was originally proposed by `r citet("Zohdy_1989")`. This methodology is automatic and does not require the specification of an initial model and the numbers of the final model is equal to the number of resistivity measurements. This approach can be classified as a geometrical method where the apparent resistivities are corrected to define the true resistivities. In the original reference Zohdy points out that the sounding curve is always shifted to the left when compared to the true resistivity curve. Therefore it is assumed that the real resistivity curve can be obtained from the sounding curve by shifting the latter by a specific amount. In addition the amplitude of the sounding curve is always less than the corresponding amplitude of the true resistivity curve and therefore it defines a constraint on minimunm change that a true resistivity curve can have. This approach is defined from this geometrical relationships betweeen the sounding curve and the true resistivity curve.  The transformation is applied in two steps:
+
+- Depth determination
+- Resistivity determination
+
+### Depth determination
+
+The amount of shift to be applied to the sounding curve to define the true resistivity curve is the based on the following iterative procedure:
+
+1. Initialize the depths $d_{i}$with the corresponding values of the electrode spacing $x_{i}$ and the real resistivities $\rho_{i}$ are equal to the apparent resistivities $\rho_{\text{app},i}$.
+2. Computer the theoretical VES curve for this multilayer model.
+3. Compute the RMS percent of the current theoretical model using the digital filter approach.
+4. Multiply all depths by $0.9$ to decrease all layer depths by $10\%$ or other small arbitrary amount.
+5. Compare the new RMS with the obtained in the previous iteration. If the new RMS is less than the old RMS then use the new depths as initial depths and
+6. Repeat steps 4,2,3, and 5 until no improvement in RMS is obtained.
+
+
+### Resistivity determination
+
+1. Each value of the real resistivity is adjusted using the following expression:
+
+$$
+\rho_{i}^{(j+1)}=\rho_{i}^{(j)} \times \frac{\bar{\rho_{0}}(i)}{\bar{\rho_{cj}}(i)}
+$$
+where:
+
+- $i$ is the number of layer
+- $j$ is the current iteration
+- $\rho_{i}^{(j)}$ is the real resistivity of the i-th layer at the j-th iteration
+- $\bar{\rho_{0}}(i)$ is the observed apparent resistivity at the i-th spacing.
+- $\bar{\rho_{ci}}(i)$ is the calculated apparent resistivity at the i-th spacing at the j-th iteration.
+
+2. Calculate a new VES curve using the adjusted layer resistivities.
+3. Compute the RMS value of the new VES curve. 
+4. Repeat steps 1-3 until the RMS value is stable and does not reduce anymore.
+
+## Smoothed Zohdy's Method
+
+The main problem with the use of the Zohdy's method is its sensitivity with respect to the presence of noise in the apparent resistivity measurements which makes instable the original method. To solve this problem `r citet("Loke_1995")` proposed a smoothing procedure based on using the logs of the apparent resistivity data instead of the original measurements and the resistivity correction is defined using a weighted average of the resistivity differences. 
+
+This method is based on the original definition proposed by `r citep("Zohdy_1989")` expressed in terms of the logarithms of the apparent resistivity measurements:
+
+$$
+\begin{aligned}
+\rho_{i}^{(j+1)}&=\rho_{i}^{(j)} \times \exp{\left(c_{i}^{(j)}\right)}\\
+&=\rho_{i}^{(j)} \times \left( \frac{\rho_{0}^{(j)}}{\rho_{ci}^{(j)}} \right)
+\end{aligned}
+$$
+where the scaling factor of the i-th measurements at the j-th iteration $c_{i}^{(j)}$ is defined as:
+
+$$
+c_{i}^{(j)}=\log{\left[\rho_{i+1}^{(j)}\right]}-\log{\left[\rho_{i}^{(j)}\right]}
+$$
+The smoothed version of the Zohdy's method proposed by `r citet("Loke_1995")` is based on the use of a modified scaling factor $c_{i}^{(j),*}$ 
+$$
+\rho_{i}^{(j+1)}=\rho_{i}^{(j)} \times \exp{\left(c_{i}^{(j),*}\right)}
+$$
+that is defined as:
+$$
+c_{i}^{(j),*}=f_{i}^{(j)} \times c_{i}^{(j)}
+$$
+where the correction factor of the i-th measurement and the j-th iteration $$f_{i}^{(j)}$$ is given by: 
+
+$$
+f_{i}^{(j)}=f_{i}^{(j-1)} \times \left( 1 + \frac{c_{i}^{(j)}}{c_{i}^{(j-1)}}\right)
+$$
+where the scaling factors for each measurements and iterations are considered in the definition of this correction factor. As an iterative calculation, the initial value of the correction factor is set to $1.0$.
+
+
+
+# Example
+
+The first step in this analysis is to load the _rves_ library:
+
+```{r load_library,echo=TRUE}
+library(rves)
+```
+For this example the VES ves\_data1 included in the package is used to test the different functions included in __rves__:
+```{r load_data,echo=TRUE}
+data("ves_data1")
+```
+The electrode spacing and the apparent resistivity values are defined:
+```{r define_ves1,echo=TRUE}
+ab2 <- ves_data1$ab2
+apprho <- ves_data1$apprho
+```
+and these are used to define the VES object inside R:
+```{r define_ves2,echo=TRUE}
+sev1a <- ves(id= "VES1", ab2 = ab2, apprho = apprho)
+```
+The plot of the VES used as example can be seen in the following plot:
+```{r plot_sev1a, fig.height=4,fig.width=6,fig.align='center'}
+p1 <- plot(sev1a, type = "ves")
+```
+
+Let's define an initial model (four real resistivities and thicknesses) and use the _calibrate\_nls_ to refine it until a low RMS is obtained:
+
+```{r calibration_sev1a, echo=TRUE}
+rho <- c(40,70,30, 20)
+thick <- c(2,10,50,500)
+par <- c(rho, thick)
+res.sev1a <- calibrate_nls(sev1a, par0 = par, iterations = 10, ireport = 2)
+```
+The estimated model parameters are assigned again to the ves object:
+```{r assign_results_sev1a, echo = TRUE}
+sev1a$rhopar <- res.sev1a$rho
+sev1a$thickpar <- res.sev1a$thickness
+sev1a$interpreted <- TRUE
+```
+and the results of the estimation process are finally plotted:
+```{r plot_calibration_sev1a, fig.height=4,fig.width=6,fig.align='center'}
+p2 <- plot(sev1a, type = "ves")
+print(p2)
+```
+
+From the previous plot, it is clear that the original measurements display  some degree of noise which makes that the final RMS previously obtained is still large. The specified model has four layers and the visual match between the apparent resistivity measurements and the corresponding theoretical curve is good, which gives us some degree of confidence in this estimated model.
+
+Let's try now the transformation approaches previously discussed in this document. The _rves_ package includes specific functions for each method:
+
+- transform_direct
+- transform_scaling
+- transform_zohdy
+- transform_smoothed_zohdy
+
+These functions are rarelly invoked by the user. Instead these functions are called by the plot function to generate the corresponding plots. An example of the use of these functions on the dataset used in this example is shown in the following code chunk: 
+
+```{r sev1a_direct, echo = TRUE}
+res.sev1a.direct <- transform_direct(sev1a)
+res.sev1a.direct.df <- data.frame(depth = res.sev1a.direct$depth, 
+                                  real.resisitivity = res.sev1a.direct$real.res)
+res.sev1a.scaling <- transform_scaling(sev1a)
+res.sev1a.zohdy <- transform_zohdy(sev1a)
+res.sev1a.zohdy.sm <- transform_smoothed_zohdy(sev1a)
+```
+
+The results of these transformations are now plotted:
+
+```{r sev1a_transformation,echo=TRUE}
+p3 <- plot(sev1a, type = "transformation", trans.type = "direct")
+p4 <- plot(sev1a, type = "transformation", trans.type = "scaling")
+p5 <- plot(sev1a, type = "transformation", trans.type = "zohdy")
+p6 <- plot(sev1a, type = "transformation", trans.type = "zohdy.smoothed")
+```
+and all the plots are combined for visual comparison:
+```{r plot_sev1a_transformation, fig.height=14,fig.width=8,fig.align='center'}
+p.all <- grid.arrange(p3, p4, p5, p6, ncol = 1)
+```
+
+The most noticeable characteristic of the results displayed in the previous plots is the fact that the estimated models have a number of layers equal to the number of measurements. This is a specific characteristic of the transformation methods and it is not surprising given the fact that each apparent resistivity measurement is providing information of the lithology located at a given depth. The results of the direct transformation are shifted version of the original VES curve and therefore it shows that the first layer has an effective resistivity of $50\;\Omega \cdot m$, a group of layers with an effective resistivity of   about $60\;\Omega \cdot m$, and then a group the layers with a decreasing resistivity from $60\;\Omega \cdot m-20\;\Omega \cdot m$. The model obtained using this type of transformation does not display large resistivity constrast making the identification of lithology difficult. The results of the scaling and Zohdy's  appoaches show the same trend but now the differences in the effective resistivity are larger and more similar to the differences in values seen in the original estimation using nonlinear least-squares. Even greater differences in the effective resistivity are seen in the case of the smoothed Zohdy's approach where now different lithologies can be easily assigned to the layers. 
+
+
+## References
+
+```{r bib,echo=FALSE,message=FALSE}
+write.bibtex(file="references.bib")
+```
