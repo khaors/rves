@@ -105,7 +105,7 @@ k=\frac{2 \pi}{\frac{1}{r_{AM}} - \frac{1}{r_{BM}} - \frac{1}{r_{AN}} + \frac{1}
 <div id="forward-model" class="section level2">
 <h2 class="hasAnchor">
 <a href="#forward-model" class="anchor"></a>Forward Model</h2>
-<p>An essential part of the estimation of the real resistivitis and thicknesses of the layer in the area where the VES was obtained is the ability to calculate the apparent resistivity values from the knowledge of the number of layers, their true resistities and thicknesses. These parameters can be estimated matching the apparent resistivity curve to the measured apparent resistivities. The most efficient procedure to calculate this apparent resistivity curve is the methodology of the linear filter originally proposed by Gosh(1971) . This approach is divided in two stages:</p>
+<p>An essential part of the estimation of the real resistivitis and thicknesses of the layer in the area where the VES was obtained is the ability to calculate the apparent resistivity values from the knowledge of the number of layers, their true resistities and thicknesses. These parameters can be estimated matching the apparent resistivity curve to the measured apparent resistivities. The most efficient procedure to calculate this apparent resistivity curve is the methodology of the linear filter originally proposed by <span class="citation">GHOSH (1971)</span> and improved by <span class="citation">GUPTASARMA (1982)</span>. This approach is divided in two stages:</p>
 <ul>
 <li>Resistivity Transform Calculation</li>
 </ul>
@@ -231,6 +231,18 @@ sev1a<span class="op">$</span>interpreted &lt;-<span class="st"> </span><span cl
 <p><img src="rves-tutorial_files/figure-html/plot_earth_model_svd-1.png" width="576" style="display: block; margin: auto;"></p>
 <p>The layer model estimated using this methodology is very similar to the obtained with the previous methods, and there is a good fit between the measurements (red points) and the estimated model (blue line). The main difference lies in the contrast of the resistivity of the third and fourth layers that in this case is very small when compared to the values previously estimated. This implies that the two lower layers can be combined in a single layer which would define the substratum of the Earth model.</p>
 </div>
+<div id="references" class="section level2 unnumbered">
+<h2 class="hasAnchor">
+<a href="#references" class="anchor"></a>References</h2>
+<div id="refs" class="references">
+<div id="ref-GHOSH_1971">
+<p>GHOSH, D. P. 1971. “THE APPLICATION OF LINEAR FILTER THEORY TO THE DIRECT INTERPRETATION OF GEOELECTRICAL RESISTIVITY SOUNDING MEASUREMENTS.” <em>Geophysical Prospecting</em> 19 (2). Wiley-Blackwell: 192–217. doi:<a href="https://doi.org/10.1111/j.1365-2478.1971.tb00593.x">10.1111/j.1365-2478.1971.tb00593.x</a>.</p>
+</div>
+<div id="ref-GUPTASARMA_1982">
+<p>GUPTASARMA, D. 1982. “OPTIMIZATION OF SHORT DIGITAL LINEAR FILTERS FOR INCREASED ACCURACY.” <em>Geophysical Prospecting</em> 30 (4). Wiley-Blackwell: 501–14. doi:<a href="https://doi.org/10.1111/j.1365-2478.1982.tb01320.x">10.1111/j.1365-2478.1982.tb01320.x</a>.</p>
+</div>
+</div>
+</div>
 </div>
 </div>
   </div>
@@ -251,6 +263,7 @@ sev1a<span class="op">$</span>interpreted &lt;-<span class="st"> </span><span cl
       <li>
 <a href="#examples">Examples</a><ul class="nav nav-pills nav-stacked">
 <li><a href="#ves-1">VES 1</a></li>
+      <li><a href="#references">References</a></li>
       </ul>
 </li>
       </ul>

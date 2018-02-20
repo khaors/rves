@@ -7,6 +7,7 @@ vignette: >
   %\VignetteIndexEntry{Vignette Title}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+bibliography: "references_sm1.bib"
 ---
 
 ```{r setup, include = FALSE}
@@ -16,6 +17,10 @@ knitr::opts_chunk$set(
 )
 library(rves)
 library(ggplot2)
+library(knitcitations)
+cleanbib()
+options("citation_format" = "pandoc")
+bib <- read.bibtex("references_sm.bib")
 ```
 
 # Introduction
@@ -26,8 +31,7 @@ Vertical Electrical Sounding (VES) is one of the oldest resistivity methods and 
 # Basic Concepts
 
 ## Smoothing via splines
-
-Let $\{x_{i},\rho_{\text{app},i}:i=1,\ldots.n\}$ be a set of measurements of electrode spacing $x$ and apparent resistivity $\rho_{\text{app}}$ in what is called a VES (Vertical Electrical Sounding). It is assumed that the measurements of apparent resistivity are described by a model $\rho_{\text{app},i}=\hat{\rho}_{\text{app},i} + \epsilon_{i}$ where $\epsilon_{i}$ are a set of independent random variables with  zero mean and constant variance, and $\hat{\rho}_{\text{app},i}$ is a cubic smoothing spline that approximates the measurements  $\rho_{\text{app},i}$. This cubic spline is a third order polynomial defined as:
+In this section a basic introduction to smoothing using spline is given. More details about this procedure can be found in `r citet(bib[["Green1994"]])`. Let $\{x_{i},\rho_{\text{app},i}:i=1,\ldots.n\}$ be a set of measurements of electrode spacing $x$ and apparent resistivity $\rho_{\text{app}}$ in what is called a VES (Vertical Electrical Sounding). It is assumed that the measurements of apparent resistivity are described by a model $\rho_{\text{app},i}=\hat{\rho}_{\text{app},i} + \epsilon_{i}$ where $\epsilon_{i}$ are a set of independent random variables with  zero mean and constant variance, and $\hat{\rho}_{\text{app},i}$ is a cubic smoothing spline that approximates the measurements  $\rho_{\text{app},i}$. This cubic spline is a third order polynomial defined as:
 $$
 \hat{\rho}_{\text{app},i}(x) = a_{i}(x-x_{i})^{3}+b_{i}(x-x_{i})^{2} + c_{i}(x-x_{i}) + d_{i}
 $$
@@ -40,7 +44,7 @@ where $\lambda$ is the smoothing parameter, and the function $\hat{\rho}_{\text{
 
 ## Smoothing via Kernel Regression
 
-Another approach to smooth the VES data is to use local polynomial regressions. In this approach, the function that approximates the apparent resistivity measurements is a polynomial of order $p$ defined as:
+Another approach to smooth the VES data is to use local polynomial regressions. This is a well known statistical procedure and more information can be found in `r citet(bib[["Kloke2015"]])`. In this approach, the function that approximates the apparent resistivity measurements is a polynomial of order $p$ defined as:
 $$
 \hat{\rho}_{\text{app},i}(x) = a_{0} + a_{1}(x-x_{i})+\frac{a_{2}}{2!}(x-x_{i})^{2} + \ldots + \frac{a_{p}}{p!}(x-x_{i})^{p}
 $$
@@ -79,7 +83,7 @@ $$
 
 ## Smoothing via Wavelet Shrinkage
 
-Let $\{x_{i},\rho_{\text{app},i}:i=1,\ldots.n\}$ be a set of measurements of a VES ( electrode spacing $x$ and apparent resistivity $\rho_{\text{app}}$). Again it is assumed that the measurements of the apparent resistivity $\rho_{\text{app},i}^{m}$ are given by:
+Another approach to smoothing comes from the signal processing community using the wavelet transform as proposed by `r citep("10.1109/5992.841791")`. Let $\{x_{i},\rho_{\text{app},i}:i=1,\ldots.n\}$ be a set of measurements of a VES ( electrode spacing $x$ and apparent resistivity $\rho_{\text{app}}$). Again it is assumed that the measurements of the apparent resistivity $\rho_{\text{app},i}^{m}$ are given by:
 $$
 \rho_{\text{app},i}^{m}(x) = \hat{\rho}_{\text{app},i}(x) + \epsilon(x)  
 $$
@@ -299,3 +303,10 @@ print(p5)
 ```
 
 The effect of the smoothing is seen in the reduction of the RMS to a value of $0.602$, which is the smallest rms value obtained so far. In addition the resistivity of the third layer is less than the corresponding value estimated with the smoothing spline, kernel regression and no smoothing; whereas there is an increase in the true resistivity of the second layer. Despite these differences, the layered model did not change in a significant way. 
+
+
+## References
+
+```{r bib,echo=FALSE,message=FALSE}
+write.bibtex(file="references_sm1.bib")
+```

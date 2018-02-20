@@ -7,6 +7,7 @@ vignette: >
   %\VignetteIndexEntry{RVES tutorial}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+bibliography: "references_tut.bib"
 ---
 
 ```{r setup, include = FALSE}
@@ -15,6 +16,9 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 library(rves)
+library(knitcitations)
+cleanbib()
+options("citation_format" = "pandoc")
 ```
 
 # Introduction
@@ -47,7 +51,7 @@ The values of the apparent resistivity $\rho_{app,k}$ change as the electrode se
 
 ## Forward Model
 
-An essential part of the estimation of the real resistivitis and thicknesses of the layer in the area where the VES was obtained is the ability to calculate the apparent resistivity values from the knowledge of the number of layers, their true resistities and thicknesses. These parameters can be estimated matching the apparent resistivity curve to the measured apparent resistivities. The most efficient procedure to calculate this apparent resistivity curve is the methodology of the linear filter originally proposed by Gosh(1971) \footnote{Gosh. Filter. Journal}. This approach is divided in two stages:
+An essential part of the estimation of the real resistivitis and thicknesses of the layer in the area where the VES was obtained is the ability to calculate the apparent resistivity values from the knowledge of the number of layers, their true resistities and thicknesses. These parameters can be estimated matching the apparent resistivity curve to the measured apparent resistivities. The most efficient procedure to calculate this apparent resistivity curve is the methodology of the linear filter originally proposed by `r citet("10.1111/j.1365-2478.1971.tb00593.x")` and improved by `r citet("10.1111/j.1365-2478.1982.tb01320.x")`. This approach is divided in two stages:
 
 * Resistivity Transform Calculation
 
@@ -236,4 +240,9 @@ print(p3)
 
 The layer model estimated using this methodology is very similar to the obtained with the previous methods, and there is a good fit between the measurements (red points) and the estimated model (blue line). The main difference lies in the contrast of the resistivity of the third and fourth layers that in this case is very small when compared to the values previously estimated. This implies that the two lower layers can be combined in a single layer which would define the substratum of the Earth model. 
 
+## References
+
+```{r bib,echo=FALSE,message=FALSE}
+write.bibtex(file="references_tut.bib")
+```
 

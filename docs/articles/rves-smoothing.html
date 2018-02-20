@@ -88,7 +88,7 @@
 <div id="smoothing-via-splines" class="section level2">
 <h2 class="hasAnchor">
 <a href="#smoothing-via-splines" class="anchor"></a>Smoothing via splines</h2>
-<p>Let <span class="math inline">\(\{x_{i},\rho_{\text{app},i}:i=1,\ldots.n\}\)</span> be a set of measurements of electrode spacing <span class="math inline">\(x\)</span> and apparent resistivity <span class="math inline">\(\rho_{\text{app}}\)</span> in what is called a VES (Vertical Electrical Sounding). It is assumed that the measurements of apparent resistivity are described by a model <span class="math inline">\(\rho_{\text{app},i}=\hat{\rho}_{\text{app},i} + \epsilon_{i}\)</span> where <span class="math inline">\(\epsilon_{i}\)</span> are a set of independent random variables with zero mean and constant variance, and <span class="math inline">\(\hat{\rho}_{\text{app},i}\)</span> is a cubic smoothing spline that approximates the measurements <span class="math inline">\(\rho_{\text{app},i}\)</span>. This cubic spline is a third order polynomial defined as: <span class="math display">\[
+<p>In this section a basic introduction to smoothing using spline is given. More details about this procedure can be found in <span class="citation">Green and Silverman (1994)</span>. Let <span class="math inline">\(\{x_{i},\rho_{\text{app},i}:i=1,\ldots.n\}\)</span> be a set of measurements of electrode spacing <span class="math inline">\(x\)</span> and apparent resistivity <span class="math inline">\(\rho_{\text{app}}\)</span> in what is called a VES (Vertical Electrical Sounding). It is assumed that the measurements of apparent resistivity are described by a model <span class="math inline">\(\rho_{\text{app},i}=\hat{\rho}_{\text{app},i} + \epsilon_{i}\)</span> where <span class="math inline">\(\epsilon_{i}\)</span> are a set of independent random variables with zero mean and constant variance, and <span class="math inline">\(\hat{\rho}_{\text{app},i}\)</span> is a cubic smoothing spline that approximates the measurements <span class="math inline">\(\rho_{\text{app},i}\)</span>. This cubic spline is a third order polynomial defined as: <span class="math display">\[
 \hat{\rho}_{\text{app},i}(x) = a_{i}(x-x_{i})^{3}+b_{i}(x-x_{i})^{2} + c_{i}(x-x_{i}) + d_{i}
 \]</span> where <span class="math inline">\(a_{i},b_{i},c_{i}\)</span> and <span class="math inline">\(d_{i}\)</span> are fixed coefficients that can be estimated from the measured data. The coefficients of the function <span class="math inline">\(\hat{\rho}_{\text{app},i}\)</span> can be estimated as the minimum of: <span class="math display">\[
 \sum\limits_{i=1}^{n}[\rho_{\text{app},i}-\hat{\rho}_{\text{app},i}]^{2} + \lambda \int \hat{\rho}_{\text{app}}^{''}(x)^{2}dx
@@ -97,7 +97,7 @@
 <div id="smoothing-via-kernel-regression" class="section level2">
 <h2 class="hasAnchor">
 <a href="#smoothing-via-kernel-regression" class="anchor"></a>Smoothing via Kernel Regression</h2>
-<p>Another approach to smooth the VES data is to use local polynomial regressions. In this approach, the function that approximates the apparent resistivity measurements is a polynomial of order <span class="math inline">\(p\)</span> defined as: <span class="math display">\[
+<p>Another approach to smooth the VES data is to use local polynomial regressions. This is a well known statistical procedure and more information can be found in <span class="citation">Kloke and McKean (2015)</span>. In this approach, the function that approximates the apparent resistivity measurements is a polynomial of order <span class="math inline">\(p\)</span> defined as: <span class="math display">\[
 \hat{\rho}_{\text{app},i}(x) = a_{0} + a_{1}(x-x_{i})+\frac{a_{2}}{2!}(x-x_{i})^{2} + \ldots + \frac{a_{p}}{p!}(x-x_{i})^{p}
 \]</span> where the <span class="math inline">\((a_{i},i=0,\ldots,p)\)</span> are fixed coefficients that are estimated by minimizing: <span class="math display">\[
 \sum_{i=1}^{n}w_{i}(x)[\rho_{\text{app}}(x_{i})-\hat{\rho}_{\text{app},i}(x)]^{2}
@@ -127,7 +127,7 @@ w(x_{1})&amp; 0&amp; \cdots &amp; 0 \\
 <div id="smoothing-via-wavelet-shrinkage" class="section level2">
 <h2 class="hasAnchor">
 <a href="#smoothing-via-wavelet-shrinkage" class="anchor"></a>Smoothing via Wavelet Shrinkage</h2>
-<p>Let <span class="math inline">\(\{x_{i},\rho_{\text{app},i}:i=1,\ldots.n\}\)</span> be a set of measurements of a VES ( electrode spacing <span class="math inline">\(x\)</span> and apparent resistivity <span class="math inline">\(\rho_{\text{app}}\)</span>). Again it is assumed that the measurements of the apparent resistivity <span class="math inline">\(\rho_{\text{app},i}^{m}\)</span> are given by: <span class="math display">\[
+<p>Another approach to smoothing comes from the signal processing community using the wavelet transform as proposed by <span class="citation">(Taswell 2000)</span>. Let <span class="math inline">\(\{x_{i},\rho_{\text{app},i}:i=1,\ldots.n\}\)</span> be a set of measurements of a VES ( electrode spacing <span class="math inline">\(x\)</span> and apparent resistivity <span class="math inline">\(\rho_{\text{app}}\)</span>). Again it is assumed that the measurements of the apparent resistivity <span class="math inline">\(\rho_{\text{app},i}^{m}\)</span> are given by: <span class="math display">\[
 \rho_{\text{app},i}^{m}(x) = \hat{\rho}_{\text{app},i}(x) + \epsilon(x)  
 \]</span> where <span class="math inline">\(\hat{\rho}_{\text{app},i}(x)\)</span> are the true values of the apparent resistivity and <span class="math inline">\(\epsilon(x)\)</span> is a noise component that needs to be filtered. Let <span class="math inline">\(W[\cdot]\)</span> and <span class="math inline">\(W^{-1}[\cdot]\)</span> be the forward and inverse wavelet tranform operators, and <span class="math inline">\(D[\cdot,\lambda]\)</span> the denoising operator defined in terms of the <span class="math inline">\(\lambda\)</span> parameter. The smoothing procedure using wavelet shrinkage has three steps:</p>
 <ol style="list-style-type: decimal">
@@ -296,6 +296,21 @@ sev1wv<span class="op">$</span>interpreted &lt;-<span class="st"> </span><span c
 <p>The effect of the smoothing is seen in the reduction of the RMS to a value of <span class="math inline">\(0.602\)</span>, which is the smallest rms value obtained so far. In addition the resistivity of the third layer is less than the corresponding value estimated with the smoothing spline, kernel regression and no smoothing; whereas there is an increase in the true resistivity of the second layer. Despite these differences, the layered model did not change in a significant way.</p>
 </div>
 </div>
+<div id="references" class="section level2 unnumbered">
+<h2 class="hasAnchor">
+<a href="#references" class="anchor"></a>References</h2>
+<div id="refs" class="references">
+<div id="ref-Green1994">
+<p>Green, PJ, and BW Silverman. 1994. <em>Nonparametric Regression and Generalized Linear Models: A Roughness Penalty Approach</em>. United Kingdom: Chapman &amp; Hall.</p>
+</div>
+<div id="ref-Kloke2015">
+<p>Kloke, John., and Joseph W. McKean. 2015. <em>Nonparametric Statistical Methods Using R /</em>. Chapman &amp; Hall/Crc the R Series. Boca Raton, Florida : CRC Press,</p>
+</div>
+<div id="ref-Taswell_2000">
+<p>Taswell, C. 2000. “The What, How, and Why of Wavelet Shrinkage Denoising.” <em>Computing in Science &amp; Engineering</em> 2 (3). Institute of Electrical; Electronics Engineers (IEEE): 12–19. doi:<a href="https://doi.org/10.1109/5992.841791">10.1109/5992.841791</a>.</p>
+</div>
+</div>
+</div>
 </div>
 </div>
   </div>
@@ -316,6 +331,7 @@ sev1wv<span class="op">$</span>interpreted &lt;-<span class="st"> </span><span c
       <li>
 <a href="#example">Example</a><ul class="nav nav-pills nav-stacked">
 <li><a href="#ves-1">VES 1</a></li>
+      <li><a href="#references">References</a></li>
       </ul>
 </li>
       </ul>
