@@ -48,6 +48,9 @@
       <a href="../articles/rves-smoothing.html">VES Smoothing using the rves package</a>
     </li>
     <li>
+      <a href="../articles/rves-transformation.html">Resistivity-Depth Transformations using the rves package</a>
+    </li>
+    <li>
       <a href="../articles/rves-tutorial.html">RVES Tutorial: Vertical Electrical Sounding interpretation using R</a>
     </li>
   </ul>
@@ -68,7 +71,7 @@
       <h1>VES Smoothing using the rves package</h1>
                         <h4 class="author">Oscar Garcia-Cabrejo</h4>
             
-            <h4 class="date">2018-02-05</h4>
+            <h4 class="date">2018-02-20</h4>
           </div>
 
     
@@ -77,8 +80,7 @@
 <div id="introduction" class="section level1">
 <h1 class="hasAnchor">
 <a href="#introduction" class="anchor"></a>Introduction</h1>
-<p>Vertical Electrical Sounding (VES) is one of the oldest resistivity methods and its the main geophysical method used in groundwater exploration due to its cost and investigation depth. In a VES, measurements of apparent resistivity are taked for different values of node spacing. As in any measurement of a physical property, the values of apparent resistivity sometimes include some degree of noise which is an obstacle for a proper parameter estimation (thicknesses and real resistivities). Given the ubiquity of noise in measurements of the apparent resistivities, there are no methodologies to remove the noise in VES.</p>
-<p>Noise in VES can be reduced using smoothing techniques. Definition of smoothing. Techniques for smoothing.</p>
+<p>Vertical Electrical Sounding (VES) is one of the oldest resistivity methods and its the main geophysical method used in groundwater exploration due to its cost and investigation depth. In a VES, measurements of apparent resistivity are taked for different values of node spacing. As in any measurement of a physical property, the values of apparent resistivity sometimes include some degree of noise which is an obstacle for a proper parameter estimation (thicknesses and real resistivities). Given the ubiquity of noise in measurements of the apparent resistivities, there are no predefined methodologies to remove the noise ocurring in VES. In the rves package, the noise removal problem is solved using smoothing techniques where the main goal is to extract a smooth curve from a set of measurements. There are several smoothing techniques that can be used to filter or smooth the apparent resistivity measurements, but they do not have a widespread use. Therefore in this package three smoothing techniques are included to help in the pre-processing of the VES measurements and improve the inversion process. The three smoothing techniques are smoothing spline, kernel regression and wavelet thresholding.</p>
 </div>
 <div id="basic-concepts" class="section level1">
 <h1 class="hasAnchor">
@@ -161,14 +163,15 @@ D[U,\lambda]=\text{sgn}{(U)} \max{(0,|U|-\lambda)}
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ab2 &lt;-<span class="st"> </span>ves_data1<span class="op">$</span>ab2
 apprho &lt;-<span class="st"> </span>ves_data1<span class="op">$</span>apprho</code></pre></div>
 <p>and these are used to define the VES object inside R:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sev1a &lt;-<span class="st"> </span><span class="kw"><a href="../reference/ves.html">ves</a></span>(<span class="dt">id=</span> <span class="st">"Sounding 1"</span>, <span class="dt">ab2 =</span> ab2, <span class="dt">apprho =</span> apprho)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sev1a &lt;-<span class="st"> </span><span class="kw"><a href="../reference/ves.html">ves</a></span>(<span class="dt">id=</span> <span class="st">"VES1"</span>, <span class="dt">ab2 =</span> ab2, <span class="dt">apprho =</span> apprho)</code></pre></div>
 <p>The plot of the VES used as example can be seen in the following plot:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p1 &lt;-<span class="st"> </span><span class="kw">plot</span>(sev1a, <span class="dt">type =</span> <span class="st">"ves"</span>)</code></pre></div>
-<p><img src="rves-smoothing_files/figure-html/plot_sev1a-1.png" width="576" style="display: block; margin: auto;"></p>
 <div id="smoothing-via-splines-1" class="section level3">
 <h3 class="hasAnchor">
 <a href="#smoothing-via-splines-1" class="anchor"></a>Smoothing via splines</h3>
+<p>The smoothing of the VES1 using smoothing splines is achieved using the <em>smoothing_ves</em> function:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">res.ss &lt;-<span class="st"> </span><span class="kw"><a href="../reference/smoothing_ves.html">smoothing_ves</a></span>(sev1a, <span class="dt">method =</span> <span class="st">"smooth.spline"</span>)</code></pre></div>
+<p>Now the results of the smoothing procedure are extracted and assigned to a data.frame:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ab2.def &lt;-<span class="st"> </span><span class="kw">rep</span>(res.ss<span class="op">$</span>ab2, <span class="dv">2</span>)
 apprho.def &lt;-<span class="st"> </span><span class="kw">vector</span>(<span class="st">'numeric'</span>, <span class="dt">length =</span> <span class="dv">36</span>)
 apprho.def[<span class="dv">1</span><span class="op">:</span><span class="dv">18</span>] &lt;-<span class="st"> </span>res.ss<span class="op">$</span>apprho
@@ -180,6 +183,7 @@ meas.type[<span class="dv">1</span><span class="op">:</span><span class="dv">18<
 meas.type[<span class="dv">19</span><span class="op">:</span><span class="dv">36</span>] &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="st">"raw"</span>, <span class="dv">18</span>)
 res.ss.df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">ab2 =</span> ab2.def, <span class="dt">apprho =</span> apprho.def, 
                         <span class="dt">type =</span> <span class="kw">as.factor</span>(meas.type))</code></pre></div>
+<p>A comparison of the measured and smoothed apparent resistivity values are seed in the following figure, where it is evident that there are small differences between the resistivity values. The smoothing procedure using splines corrects the values at intermediate and large spacings.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p.ss &lt;-<span class="st"> </span><span class="kw">ggplot</span>() <span class="op">+</span><span class="st"> </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">x =</span> ab2, <span class="dt">y =</span> apprho, <span class="dt">color =</span> type), 
                               <span class="dt">data =</span> res.ss.df) <span class="op">+</span>
 <span class="st">  </span><span class="kw">scale_x_log10</span>() <span class="op">+</span><span class="st"> </span>
@@ -187,27 +191,34 @@ res.ss.df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span
 <span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">'Comparison'</span>) <span class="op">+</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">theme_bw</span>()
 <span class="kw">print</span>(p.ss)  </code></pre></div>
-<p><img src="rves-smoothing_files/figure-html/plot_smoothspline-1.png" width="576" style="display: block; margin: auto;"></p>
+<p><img src="rves-smoothing_files/figure-html/plot_smoothspline-1.png" width="576" style="display: block; margin: auto;"> Now, the smoothed resistivity values are used to define a new ves object:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sev1ss &lt;-<span class="st"> </span><span class="kw"><a href="../reference/ves.html">ves</a></span>(<span class="dt">id =</span> <span class="st">"Sounding 1-Smoothing Spline"</span>, <span class="dt">ab2 =</span> res.ss<span class="op">$</span>ab2, 
               <span class="dt">apprho =</span> res.ss<span class="op">$</span>apprho)</code></pre></div>
+<p>The initial solution for the calibration procedure are defined as follows:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rho &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">40</span>,<span class="dv">70</span>,<span class="dv">30</span>, <span class="dv">20</span>)
 thick &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">2</span>,<span class="dv">10</span>,<span class="dv">50</span>,<span class="dv">500</span>)
 par0 &lt;-<span class="st"> </span><span class="kw">c</span>(rho, thick)</code></pre></div>
+<p>and the true resistivities and layer thicknesses are estimated using the conventional nonlinear least-squares approach:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">res.ss.nls &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calibrate_nls.html">calibrate_nls</a></span>(sev1ss, par0, <span class="dt">iterations =</span> <span class="dv">10</span>, <span class="dt">ireport =</span> <span class="dv">5</span>)
 <span class="co">#&gt; iteration, RSS, Rel Error =  0 0.002201384 2.654601 </span>
 <span class="co">#&gt; iteration, RSS, Rel Error =  5 0.0003970715 1.093091 </span>
 <span class="co">#&gt; iteration, RSS, Rel Error =  9 0.0002212703 0.8111669</span></code></pre></div>
+<p>The results of the calibration are assigned to the ves object</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sev1ss<span class="op">$</span>rhopar &lt;-<span class="st"> </span>res.ss.nls<span class="op">$</span>rho
 sev1ss<span class="op">$</span>thickpar &lt;-<span class="st"> </span>res.ss.nls<span class="op">$</span>thickness
 sev1ss<span class="op">$</span>interpreted &lt;-<span class="st"> </span><span class="ot">TRUE</span></code></pre></div>
+<p>and the results are plotted.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p3 &lt;-<span class="st"> </span><span class="kw">plot</span>(sev1ss, <span class="dt">type =</span> <span class="st">"ves"</span>)
 <span class="kw">print</span>(p3)</code></pre></div>
-<p><img src="rves-smoothing_files/figure-html/plot_sevss-1.png" width="576" style="display: block; margin: auto;"></p>
+<p><img src="rves-smoothing_files/figure-html/plot_sevss-1.png" width="576" style="display: block; margin: auto;"> In this case the change in the shape of the ves curve is not significative, but the effect of the filtering is seen in the reduction of the RMS obtained during calibration that changed from <span class="math inline">\(1.35\)</span> (no smoothing) to <span class="math inline">\(0.81\)</span> (smoothing.spline). The number of layers of the inverted model did not change but there are small variations in the layer resistivities.</p>
 </div>
 <div id="kernel-regression" class="section level3">
 <h3 class="hasAnchor">
 <a href="#kernel-regression" class="anchor"></a>Kernel Regression</h3>
+<p>Now, let’s try kernel regression. This procedure can be applied to the original ves object using the <em>smoothing_ves</em> function with the <em>kernel.regression</em> option and the corresponding bandwidth:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">res.kr &lt;-<span class="st"> </span><span class="kw"><a href="../reference/smoothing_ves.html">smoothing_ves</a></span>(sev1a, <span class="dt">method =</span> <span class="st">"kernel.regression"</span>, <span class="dt">bw =</span> <span class="fl">0.5</span>)</code></pre></div>
+<p>For effects of the ves smoothing it is recommended to try different values of bw in the interval from <span class="math inline">\(0.1\)</span> to <span class="math inline">\(0.7\)</span>.</p>
+<p>Once the results are obtained, a data.frame is created to compare the effect of the smoothing:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ab2.def &lt;-<span class="st"> </span><span class="kw">rep</span>(res.kr<span class="op">$</span>ab2, <span class="dv">2</span>)
 apprho.def &lt;-<span class="st"> </span><span class="kw">vector</span>(<span class="st">'numeric'</span>, <span class="dt">length =</span> <span class="dv">36</span>)
 apprho.def[<span class="dv">1</span><span class="op">:</span><span class="dv">18</span>] &lt;-<span class="st"> </span>res.kr<span class="op">$</span>apprho
@@ -217,6 +228,7 @@ meas.type[<span class="dv">1</span><span class="op">:</span><span class="dv">18<
 meas.type[<span class="dv">19</span><span class="op">:</span><span class="dv">36</span>] &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="st">"raw"</span>, <span class="dv">18</span>)
 res.kr.df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">ab2 =</span> ab2.def, <span class="dt">apprho =</span> apprho.def, 
                         <span class="dt">type =</span> <span class="kw">as.factor</span>(meas.type))</code></pre></div>
+<p>and the results are plotted:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p.kr &lt;-<span class="st"> </span><span class="kw">ggplot</span>() <span class="op">+</span><span class="st"> </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">x =</span> ab2, <span class="dt">y =</span> apprho, <span class="dt">color =</span> type), 
                               <span class="dt">data =</span> res.kr.df) <span class="op">+</span>
 <span class="st">  </span><span class="kw">scale_x_log10</span>() <span class="op">+</span><span class="st"> </span>
@@ -224,24 +236,29 @@ res.kr.df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span
 <span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">'Comparison'</span>) <span class="op">+</span>
 <span class="st">  </span><span class="kw">theme_bw</span>()
 <span class="kw">print</span>(p.kr)  </code></pre></div>
-<p><img src="rves-smoothing_files/figure-html/plot_kernelregression-1.png" width="672" style="display: block; margin: auto;"></p>
+<p><img src="rves-smoothing_files/figure-html/plot_kernelregression-1.png" width="672" style="display: block; margin: auto;"> As seen in the smooth.spline case, the effect of the filtering is visible for intermediate to large spacings. With the filtered values, a new ves object is defined:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sev1kr &lt;-<span class="st"> </span><span class="kw"><a href="../reference/ves.html">ves</a></span>(<span class="dt">id =</span> <span class="st">"Sounding 1-Kernel Regression"</span>, <span class="dt">ab2 =</span> res.kr<span class="op">$</span>ab2, 
               <span class="dt">apprho =</span> res.kr<span class="op">$</span>apprho)</code></pre></div>
+<p>and the estimates of the real resistivities and thicknesses is obtained:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">res.kr.nls &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calibrate_nls.html">calibrate_nls</a></span>(sev1kr, par0, <span class="dt">iterations =</span> <span class="dv">10</span>, <span class="dt">ireport =</span> <span class="dv">5</span>)
 <span class="co">#&gt; iteration, RSS, Rel Error =  0 0.002041967 2.584166 </span>
 <span class="co">#&gt; iteration, RSS, Rel Error =  5 0.0002895334 0.9670573 </span>
 <span class="co">#&gt; iteration, RSS, Rel Error =  9 0.0001384567 0.6277856</span></code></pre></div>
+<p>The calibration results are assigned to the ves object using</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sev1kr<span class="op">$</span>rhopar &lt;-<span class="st"> </span>res.kr.nls<span class="op">$</span>rho
 sev1kr<span class="op">$</span>thickpar &lt;-<span class="st"> </span>res.kr.nls<span class="op">$</span>thickness
 sev1kr<span class="op">$</span>interpreted &lt;-<span class="st"> </span><span class="ot">TRUE</span></code></pre></div>
+<p>and the results are finally plotted:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p4 &lt;-<span class="st"> </span><span class="kw">plot</span>(sev1kr, <span class="dt">type =</span> <span class="st">"ves"</span>)
 <span class="kw">print</span>(p4)</code></pre></div>
-<p><img src="rves-smoothing_files/figure-html/plot_sevkr-1.png" width="576" style="display: block; margin: auto;"></p>
+<p><img src="rves-smoothing_files/figure-html/plot_sevkr-1.png" width="576" style="display: block; margin: auto;"> Again the effect of the smoothing is seen in the reduction of the RMS obtained during the calibration that now reaches a values of <span class="math inline">\(0.628\)</span> (down from <span class="math inline">\(1.35\)</span>). The number of layers did no change but there are small differences in the resistivities obtained during the calibration step when compared to the results of the smoothing spline and no smoothing.</p>
 </div>
 <div id="wavelet-smoothing" class="section level3">
 <h3 class="hasAnchor">
 <a href="#wavelet-smoothing" class="anchor"></a>Wavelet Smoothing</h3>
+<p>The third method for ves smoothing is wavelet thresholding which is applied in a similar manner to the previously explained methods:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">res.wv &lt;-<span class="st"> </span><span class="kw"><a href="../reference/smoothing_ves.html">smoothing_ves</a></span>(sev1a, <span class="dt">method =</span> <span class="st">"wavelet"</span>)</code></pre></div>
+<p>The results of the smoothing are assigned to a data.frame for visual comparison with the original values</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ab2.def &lt;-<span class="st"> </span><span class="kw">rep</span>(res.wv<span class="op">$</span>ab2, <span class="dv">2</span>)
 apprho.def &lt;-<span class="st"> </span><span class="kw">vector</span>(<span class="st">'numeric'</span>, <span class="dt">length =</span> <span class="dv">36</span>)
 apprho.def[<span class="dv">1</span><span class="op">:</span><span class="dv">18</span>] &lt;-<span class="st"> </span>res.wv<span class="op">$</span>apprho
@@ -251,6 +268,7 @@ meas.type[<span class="dv">1</span><span class="op">:</span><span class="dv">18<
 meas.type[<span class="dv">19</span><span class="op">:</span><span class="dv">36</span>] &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="st">"raw"</span>, <span class="dv">18</span>)
 res.wv.df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">ab2 =</span> ab2.def, <span class="dt">apprho =</span> apprho.def, 
                         <span class="dt">type =</span> <span class="kw">as.factor</span>(meas.type))</code></pre></div>
+<p>and this data.frame is plotted</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p.wv &lt;-<span class="st"> </span><span class="kw">ggplot</span>() <span class="op">+</span><span class="st"> </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">x =</span> ab2, <span class="dt">y =</span> apprho, <span class="dt">color =</span> type), 
                               <span class="dt">data =</span> res.wv.df) <span class="op">+</span>
 <span class="st">  </span><span class="kw">scale_x_log10</span>() <span class="op">+</span><span class="st"> </span>
@@ -259,18 +277,23 @@ res.wv.df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span
 <span class="st">  </span><span class="kw">theme_bw</span>()
 <span class="kw">print</span>(p.wv)  </code></pre></div>
 <p><img src="rves-smoothing_files/figure-html/wave2-1.png" width="576" style="display: block; margin: auto;"></p>
+<p>where it is clear that the smoothing modified values for all spacings. These results are used to define a new ves object:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sev1wv &lt;-<span class="st"> </span><span class="kw"><a href="../reference/ves.html">ves</a></span>(<span class="dt">id =</span> <span class="st">"Sounding 1-Wavelet Thresholding"</span>, <span class="dt">ab2 =</span> res.wv<span class="op">$</span>ab2, 
               <span class="dt">apprho =</span> res.wv<span class="op">$</span>apprho)</code></pre></div>
+<p>which in turn is used to estimate the layer parameters:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">res.wv.nls &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calibrate_nls.html">calibrate_nls</a></span>(sev1wv, par0, <span class="dt">iterations =</span> <span class="dv">10</span>, <span class="dt">ireport =</span> <span class="dv">5</span>)
 <span class="co">#&gt; iteration, RSS, Rel Error =  0 0.002179202 2.449921 </span>
 <span class="co">#&gt; iteration, RSS, Rel Error =  5 0.0002837838 0.9449526 </span>
 <span class="co">#&gt; iteration, RSS, Rel Error =  9 0.0001236067 0.6023878</span></code></pre></div>
+<p>The results of the calibration are assigned again to the ves object:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sev1wv<span class="op">$</span>rhopar &lt;-<span class="st"> </span>res.wv.nls<span class="op">$</span>rho
 sev1wv<span class="op">$</span>thickpar &lt;-<span class="st"> </span>res.wv.nls<span class="op">$</span>thickness
 sev1wv<span class="op">$</span>interpreted &lt;-<span class="st"> </span><span class="ot">TRUE</span></code></pre></div>
+<p>and finally the results are plotted.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p5 &lt;-<span class="st"> </span><span class="kw">plot</span>(sev1wv, <span class="dt">type =</span> <span class="st">"ves"</span>)
 <span class="kw">print</span>(p5)</code></pre></div>
 <p><img src="rves-smoothing_files/figure-html/wave6-1.png" width="576" style="display: block; margin: auto;"></p>
+<p>The effect of the smoothing is seen in the reduction of the RMS to a value of <span class="math inline">\(0.602\)</span>, which is the smallest rms value obtained so far. In addition the resistivity of the third layer is less than the corresponding value estimated with the smoothing spline, kernel regression and no smoothing; whereas there is an increase in the true resistivity of the second layer. Despite these differences, the layered model did not change in a significant way.</p>
 </div>
 </div>
 </div>
