@@ -1,0 +1,41 @@
+---
+title: "VES Report"
+output: word_document
+params:
+  current.ves: NA
+---
+
+```{r load_lib,echo=FALSE}
+# The `params` object is available in the document.
+library(rves)
+library(knitr)
+```
+
+The VES data is included in the following table:
+```{r table_data,echo=FALSE}
+spacing <- params$current.ves$ab2
+apprho <- params$current.ves$appres
+ves.df <- data.frame("AB/2" = spacing, "ApparentResitivity" = apprho)
+kable(ves.df)
+```
+A plot of current.ves object.
+
+```{r}
+plot(params$current.ves, type = "ves")
+``` 
+
+```{r def_values,echo=FALSE}
+rho.true <- params$current.ves$rhopar
+thickness <- params$current.ves$thickpar
+interpretation.ves <- cbind(rho.true, thickness)
+interpretation.ves.df <- as.data.frame(interpretation.ves)
+names(interpretation.ves.df) <- c("TrueResistivity", "Thickness")
+nlayers <- length(rho.true)
+layers.id <- vector("character", length = nlayers)
+for(i in 1:nlayers){
+  layers.id[i] <- paste0("Layer", as.character(i))
+}
+row.names(interpretation.ves.df) <- layers.id
+kable(interpretation.ves.df, digits = 3, align = c('l','r'), 
+      caption = "ESTIMATED MODEL")
+```
