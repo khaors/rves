@@ -393,7 +393,7 @@ calibrate_nls <- function(ves, par0, iterations = 100, ireport = 10){
     cres <- f_model(cpar, spacing)
     current.error <- mean((cres-measured)**2)
     old.error <- current.error1
-    current.error1 <- 100*mean(abs(measured-cres)/measured)
+    current.error1 <- 100*sqrt(mean(((measured-cres)/measured)^2))
     cal.error[iter+1,1] <- current.error
     cal.error[iter+1,2] <- current.error1
     if(current.error1 > old.error){

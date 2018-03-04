@@ -40,8 +40,8 @@ dbSidebar <- dashboardSidebar(
     menuItem("Automatic Inversion", tabName = "automatic", icon = icon("fighter-jet")),
     menuItem("Automatic Sequential Inversion", tabName = "automaticSeq",
              icon = icon("space-shuttle")),
-    #menuItem("Reports", tabName = "reports", icon = icon("cogs")),
     menuItem("Model Diagnostic", tabName = "diagnostic", icon = icon("wrench")),
+    menuItem("Reports", tabName = "reports", icon = icon("cogs")),
     menuItem("Source Code", icon = icon("code"), href = "https://github.com/khaors/rves")
   )
 )
@@ -380,36 +380,21 @@ diagnosticTab <- tabItem(
 reportsTab <- tabItem(
   tabName = "reports",
   h2("Reports"),
-  "Notes:",
   br(),
-  "1. This tab allows the automatic generation and download of some preconfigured graphs and data ",
-  "tables given the selected RDF and slot on the sidebar menu.",
+  "This tab allows the automatic generation and download of some preconfigured graphs and data ",
+  "tables given the selected options in the menu.",
   br(),
-  "2. Automatic generation of the reports for all the slots in a given RDF will be programmed at a ",
-  "later time. ",
-  br(),
-  "3. This tab will also have options to generate a preconfigured set of graphs and analysis ",
-  "typicaly produced for the USBR UC & LC operations and planning models. The idea is to ",
-  "make the report generator smart enough to know from the RDF metadata whether to allow ",
-  "the generation of 24MS, MTOM, or CRSS reports.",
   br(),br(),
   fluidRow(
     box(
-      "Using the selected RDF and slot, ",
-      "generate and download a zip file of the raw time-series, percentile envelope, ",
-      "and percent exceedance graphs shown on the Graphs tab along with a csv file of the raw",
-      "data.",
-      br(),br(),
-      "The selected graph options on the Graphs tab is used to generate the saved graphs. ",
-      br(),br(),
-      uiOutput("reportDownloadButton")
+      selectInput(inputId = "report.format", label = "Report Format",
+                  choices = c("None", "html", "word"), selected = "None"),
+      selectInput(inputId = "report.lang", label = "Language",
+                  choices = c("None", "English", 'Spanish'), selected = "None"),
+      downloadButton("report", "Generate report")
     )
   ),
-  br(),
-  div(
-    style = 'overflow-x: scroll',
-    DT::dataTableOutput("tableProbabilityData")
-  )
+  br()
 )
 #
 userInterface <- dashboardPage(
@@ -427,9 +412,10 @@ userInterface <- dashboardPage(
       filterTab,
       transformationTab,
       manualTab,
-      automaticTab, #,reportsTab
+      automaticTab,
       automaticSeqTab,
-      diagnosticTab
+      diagnosticTab,
+      reportsTab
     )
   )
 )

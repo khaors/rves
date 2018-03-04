@@ -22,6 +22,7 @@ shinyServer(function(input, output, session) {
   original.ves <- NULL
   first <- FALSE
   filtered <- FALSE
+  rmd.report.file <- NULL
   # Panel 'Import data'
   dInput <- reactive({
     in.file <- input$file1
@@ -263,11 +264,11 @@ shinyServer(function(input, output, session) {
       nlayers <- isolate(as.numeric(input$manual_nlayers))
       rho <- isolate(as.numeric(unlist(strsplit(input$manual_res,","))))
       thick <- isolate(as.numeric(unlist(strsplit(input$manual_thick,","))))
-      validate(
-        need(nlayers !=1, "Earth model with a single layer"),
-        need(length(rho) == nlayers, "Resistivities do not match"),
-        need(length(thick) == nlayers, "Thicknesses do not match")
-      )
+      #validate(
+      #  need(nlayers !=1, "Earth model with a single layer"),
+      #  need(length(rho) == nlayers, "Resistivities do not match"),
+      #  need(length(thick) == nlayers, "Thicknesses do not match")
+      #)
       if(nlayers != length(rho)){
         return(NULL)
       }
@@ -309,7 +310,8 @@ shinyServer(function(input, output, session) {
                                               spacing = spacing)
         #print(cal.app.rho$appres)
         #print(meas.app.rho)
-        rel.err <- 100*mean(abs(log10(cal.app.rho$appres)-log10(meas.app.rho))/log10(meas.app.rho))
+        rerr.num <- ((log10(cal.app.rho$appres)-log10(meas.app.rho))/log10(meas.app.rho))^2
+        rel.err <- 100*sqrt(mean(rerr.num))
         mse <- mean((log10(cal.app.rho$appres)-log10(meas.app.rho))^2)
         str1 <- "<h3>Results Parameter Estimation</h3><br>"
         str2 <- paste("<b>Relative Error(%)= </b>", format(rel.err, digits = 3), "<br>", sep = " ")
@@ -636,7 +638,8 @@ shinyServer(function(input, output, session) {
                                               spacing = spacing)
         #print(cal.app.rho$appres)
         #print(meas.app.rho)
-        rel.err <- 100*mean(abs(cal.app.rho$appres-meas.app.rho)/meas.app.rho)
+        rerr.num <- ((log10(cal.app.rho$appres)-log10(meas.app.rho))/log10(meas.app.rho))^2
+        rel.err <- 100*sqrt(mean(rerr.num))
         mse <- mean((cal.app.rho$appres-meas.app.rho)^2)
         str1 <- "<h3>Results Parameter Estimation</h3><br>"
         str2 <- paste("<b>Relative Error(%)= </b>", format(rel.err, digits = 3), "<br>", sep = " ")
@@ -769,7 +772,8 @@ shinyServer(function(input, output, session) {
                                             spacing = spacing)
       #print(cal.app.rho$appres)
       #print(meas.app.rho)
-      rel.err <- 100*mean(abs(cal.app.rho$appres-meas.app.rho)/meas.app.rho)
+      rerr.num <- ((log10(cal.app.rho$appres)-log10(meas.app.rho))/log10(meas.app.rho))^2
+      rel.err <- 100*sqrt(mean(rerr.num))
       mse <- mean((cal.app.rho$appres-meas.app.rho)^2)
       str1 <- "<h3>Results Parameter Estimation</h3><br>"
       str2 <- paste("<b>Relative Error(%)= </b>", format(rel.err, digits = 3), "<br>", sep = " ")
@@ -865,4 +869,61 @@ shinyServer(function(input, output, session) {
       print(ptot)
     }
   })
+  ########################################################################################
+  #                           Report Generator Tab
+  ########################################################################################
+  #
+  output$report <- downloadHandler(
+    filename = define_report_files(),
+    content = function(file) {
+      tempReport <- file.path(tempdir(), server.env$rmd.report.file)
+      file.copy(server.env$rmd.report.file, tempReport, overwrite = TRUE)
+      # Set up parameters to pass to Rmd document
+      if(!is.null(server.env$current.ves)){
+        params <- list(current.ves = server.env$current.ves)
+      }
+      else{
+        #params <- list(current.ves = NULL)
+        return(NULL)
+      }
+      # Knit the document, passing in the `params` list, and eval it in a
+      # child of the global environment (this isolates the code in the document
+      # from the code in this app).
+      rmarkdown::render(tempReport, output_file = file,
+                        params = params,
+                        envir = new.env(parent = globalenv())
+      )
+    }
+  )
+  #
+  define_report_files1 <- reactive({
+    current.format <- input$report.format
+    current.language <- input$report.lang
+    #print(current.language)
+    current.language1 <- NULL
+    if(current.format == "None"){
+      return(NULL)
+    }
+    if(current.language == "None"){
+      return(NULL)
+    }
+    else if(current.language == "English"){
+      current.language1 <- "eng"
+    }
+    else{
+      current.language1 <- "spa"
+    }
+    output.report.file <- paste0("report_", current.format, "_", current.language1, ".",
+                                 current.format)
+    print(output.report.file)
+    rmd.report.file <- paste0("report_", current.format, "_", current.language1, ".Rmd")
+    server.env$rmd.report.file <- rmd.report.file
+    return(output.report.file)
+  })
+  #
+  define_report_files <- function(){
+    res <- define_report_files1()
+    return(res)
+  }
+
 })
