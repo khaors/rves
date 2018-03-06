@@ -1,6 +1,8 @@
 ---
-title: "VES Results"
-output: html_document
+title: "VES Interpretation Results"
+output: 
+    html_document:
+         number_sections: true
 params:
   current.ves: NA
 ---
@@ -9,33 +11,59 @@ params:
 # The `params` object is available in the document.
 library(rves)
 library(knitr)
+library(grid)
+library(gridExtra)
 ```
 
-The VES data is included in the following table:
+# Basic information about the sounding
+
+The VES  `r params$current.ves$id[[1]]` dataset contains `r length(params$current.ves$ab2)` measurements as show in the following table:
 ```{r table_data,echo=FALSE}
 spacing <- params$current.ves$ab2
 apprho <- params$current.ves$appres
 ves.df <- data.frame("AB/2" = spacing, "ApparentResitivity" = apprho)
 kable(ves.df, format = "html", digits = 3, align = c('c','c'), caption = "VES DATA")
 ```
-A plot of current.ves object.
 
-```{r}
+The min and max values of the spacing are `r min(params$current.ves$ab2)` and `r max(params$current.ves$ab2)`   meters respectively, and some of summary statistics of the apparent resistivity are presented in the following table:
+```{r appres_summary,echo=FALSE}
+summary(params$current.ves$appres)
+```
+
+# Interpretation Results
+
+A plot of current VES with the corresponding interpretation is shown in the following figure:
+
+```{r plotves,echo=FALSE}
 plot(params$current.ves, type = "ves")
 ``` 
+
 
 ```{r def_values,echo=FALSE}
 rho.true <- params$current.ves$rhopar
 thickness <- params$current.ves$thickpar
 interpretation.ves <- cbind(rho.true, thickness)
 interpretation.ves.df <- as.data.frame(interpretation.ves)
-names(interpretation.ves.df) <- c("TrueResistivity", "Thickness")
+names(interpretation.ves.df) <- c("TrueRes", "Thickness")
 nlayers <- length(rho.true)
 layers.id <- vector("character", length = nlayers)
 for(i in 1:nlayers){
   layers.id[i] <- paste0("Layer", as.character(i))
 }
 row.names(interpretation.ves.df) <- layers.id
-kable(interpretation.ves.df, format = "html", digits = 3, align = c('l','r'), 
+```
+
+The interpreted model is composed of `r nlayers` layers with the following properties:
+
+```{r table,echo=FALSE}
+kable(interpretation.ves.df, format = "html", digits = 3, align = c('r','r'), 
       caption = "ESTIMATED MODEL")
+```
+
+# Model Diagnostic
+
+
+```{r plot_diagnostic,echo=FALSE,message=FALSE,warnings=FALSE}
+p1 <- plot(params$current.ves, type = "diagnostic")
+grid.draw(p1)
 ```

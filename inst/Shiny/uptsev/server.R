@@ -873,11 +873,80 @@ shinyServer(function(input, output, session) {
   #                           Report Generator Tab
   ########################################################################################
   #
-  output$report <- downloadHandler(
-    filename = define_report_files(),
+  output$report.html.eng <- downloadHandler(
+    filename = "report_eng.html",
+    content = function(file) {
+      tempReport <- file.path(tempdir(), "report_html_eng.Rmd")
+      file.copy("report_html_eng.Rmd", tempReport, overwrite = TRUE)
+      # Set up parameters to pass to Rmd document
+      if(!is.null(server.env$current.ves)){
+        params <- list(current.ves = server.env$current.ves)
+      }
+      else{
+        #params <- list(current.ves = NULL)
+        return(NULL)
+      }
+      # Knit the document, passing in the `params` list, and eval it in a
+      # child of the global environment (this isolates the code in the document
+      # from the code in this app).
+      rmarkdown::render(tempReport, output_file = file,
+                        params = params,
+                        envir = new.env(parent = globalenv())
+      )
+    }
+  )
+  #
+  output$report.html.spa <- downloadHandler(
+    filename = "report_spa.html",
     content = function(file) {
       tempReport <- file.path(tempdir(), server.env$rmd.report.file)
-      file.copy(server.env$rmd.report.file, tempReport, overwrite = TRUE)
+      file.copy("report_html_spa.Rmd", tempReport, overwrite = TRUE)
+      # Set up parameters to pass to Rmd document
+      if(!is.null(server.env$current.ves)){
+        params <- list(current.ves = server.env$current.ves)
+      }
+      else{
+        #params <- list(current.ves = NULL)
+        return(NULL)
+      }
+      # Knit the document, passing in the `params` list, and eval it in a
+      # child of the global environment (this isolates the code in the document
+      # from the code in this app).
+      rmarkdown::render(tempReport, output_file = file,
+                        params = params,
+                        envir = new.env(parent = globalenv())
+      )
+    }
+  )
+  #
+  output$report.word.eng <- downloadHandler(
+    filename = "report_eng.doc",
+    content = function(file) {
+      tempReport <- file.path(tempdir(), server.env$rmd.report.file)
+      file.copy("report_word_eng.Rmd", tempReport, overwrite = TRUE)
+      # Set up parameters to pass to Rmd document
+      if(!is.null(server.env$current.ves)){
+        params <- list(current.ves = server.env$current.ves)
+      }
+      else{
+        #params <- list(current.ves = NULL)
+        return(NULL)
+      }
+      # Knit the document, passing in the `params` list, and eval it in a
+      # child of the global environment (this isolates the code in the document
+      # from the code in this app).
+      rmarkdown::render(tempReport, output_file = file,
+                        params = params,
+                        envir = new.env(parent = globalenv())
+      )
+    }
+  )
+  #
+  output$report.word.spa <- downloadHandler(
+    filename = "report_spa.doc",
+    content = function(file) {
+      tempReport <- file.path(tempdir(), server.env$rmd.report.file)
+      file.copy("report_word_spa.Rmd", tempReport, overwrite = TRUE)
       # Set up parameters to pass to Rmd document
       if(!is.null(server.env$current.ves)){
         params <- list(current.ves = server.env$current.ves)

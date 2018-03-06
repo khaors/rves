@@ -381,17 +381,16 @@ reportsTab <- tabItem(
   tabName = "reports",
   h2("Reports"),
   br(),
-  "This tab allows the automatic generation and download of some preconfigured graphs and data ",
-  "tables given the selected options in the menu.",
+  "This tab allows the automatic generation and download of some preconfigured reports with
+  tables and graphs in English and Spanish.",
   br(),
   br(),br(),
   fluidRow(
     box(
-      selectInput(inputId = "report.format", label = "Report Format",
-                  choices = c("None", "html", "word"), selected = "None"),
-      selectInput(inputId = "report.lang", label = "Language",
-                  choices = c("None", "English", 'Spanish'), selected = "None"),
-      downloadButton("report", "Generate report")
+      downloadButton(outputId = "report.html.eng", label = "Generate report: html - English"),
+      downloadButton(outputId = "report.word.eng", label = "Generate report: word - English"),
+      downloadButton(outputId = "report.html.spa", label = "Generate report: html - Spanish"),
+      downloadButton(outputId = "report.word.spa", label = "Generate report: word - Spanish")
     )
   ),
   br()
