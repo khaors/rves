@@ -4,8 +4,8 @@
 \alias{plot.ves}
 \title{plot.ves}
 \usage{
-\method{plot}{ves}(x, main = NULL, type = c("ves", "transformation"),
-  trans.type = c("direct", "scaling"), ...)
+\method{plot}{ves}(x, main = NULL, type = c("ves", "transformation",
+  "diagnostic"), trans.type = c("direct", "scaling"), ...)
 }
 \arguments{
 \item{x}{A VES object}
@@ -13,7 +13,7 @@
 \item{main}{Title of the plot}
 
 \item{type}{A character string specifying the plot type. Currently only ves (measurements and
-earth model) and transformation (resistivity-depth transformation) are supported.}
+earth model), transformation (resistivity-depth transformation) and diagnostic are supported.}
 
 \item{trans.type}{A character string specifying the transformation type. Only direct and scaling
 are currently supported.}

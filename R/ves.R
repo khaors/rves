@@ -91,12 +91,12 @@ print.ves <- function(x, ...){
 #' @param x A VES object
 #' @param main Title of the plot
 #' @param type A character string specifying the plot type. Currently only ves (measurements and
-#' earth model) and transformation (resistivity-depth transformation) are supported.
+#' earth model), transformation (resistivity-depth transformation) and diagnostic are supported.
 #' @param trans.type A character string specifying the transformation type. Only direct and scaling
 #' are currently supported.
 #' @param ... Additional parameters to be passed to the plot function
 #' @export
-plot.ves <- function(x, main = NULL, type = c("ves","transformation"),
+plot.ves <- function(x, main = NULL, type = c("ves", "transformation", "diagnostic"),
                      trans.type = c("direct", "scaling"), ...){
   if(class(x) != 'ves'){
     stop('A VES object is required as input')
@@ -107,6 +107,9 @@ plot.ves <- function(x, main = NULL, type = c("ves","transformation"),
   }
   else if(type == "transformation"){
     pres <- plot_transformation(x, trans.type = trans.type)
+  }
+  else if(type == "diagnostic"){
+    pres <- plot_diagnostic(x)
   }
   return(pres)
 }
@@ -304,4 +307,68 @@ plot_transformation <- function(x, trans.type = c("direct", "scaling",
   }
   #
   return(p)
+}
+#' @title
+#' plot_diagnostic
+#' @description
+#' Function to create an estimation diagnostic plot composed of:
+#' \itemize{
+#' \item Scatterplot between the measured and calculated apparement resistivity
+#' \item Scatterplot between calculated apparent resistivity and the residuals
+#' \item Scatterplot between the calculated apparent resistivity and the standarized residuals
+#' \item QQplot of the residuals
+#' }
+#' @param x A VES object, The VES must be intepreted.
+#' @return
+#' This function returns a ggplot2 object
+#' @author
+#' Oscar Garcia-Cabrejo, \email{khaors@gmail.com}
+#' @export
+#' @importFrom ggplot2 ggplot geom_point geom_smooth coord_equal geom_qq
+#' @importFrom gridExtra grid.arrange
+plot_diagnostic <- function(x){
+  if(class(x) != 'ves'){
+    stop('A VES object is required as input')
+  }
+  current.ves <- x
+  if(!current.ves$interpreted){
+    stop("An interpreted VES is required as input")
+  }
+  rho <- current.ves$rhopar
+  thick <- current.ves$thickpar
+  spacing <- current.ves$ab2
+  meas.app.rho <- current.ves$appres
+  cal.app.rho <- apparent_resistivities(rho, thick, filt = rves::filt$V1,
+                                        spacing = spacing)
+  residuals.rho <- meas.app.rho-cal.app.rho$appres
+  abs.residuals.rho <- sqrt(abs(residuals.rho))
+  # Define global variables
+  measured <- NULL
+  calculated <- NULL
+  residuals <- NULL
+  abs.residuals <- NULL
+  # Plot measured rho vs calculated rho
+  df1 <- data.frame(measured = meas.app.rho, calculated = cal.app.rho$appres,
+                    residuals = residuals.rho,
+                    abs.residuals = abs.residuals.rho)
+  p1 <- ggplot() + geom_point(aes(x = measured, y = calculated), data = df1,
+                              color = "red") +
+    coord_equal() +
+    ggtitle("a) Measured vs Calculated")
+  #
+  p2 <- ggplot(data = df1, aes(x = calculated, y = residuals)) +
+    geom_point(color = "red") +
+    geom_smooth() +
+    ggtitle("b) Residuals")
+  #
+  p3 <- ggplot(data = df1, aes(x = calculated, y = abs.residuals)) +
+    geom_point(color = "red") +
+    geom_smooth() +
+    ggtitle("c) Absolute Residuals")
+  #
+  p4 <- ggplot(data = df1, aes(sample = residuals)) + geom_qq(color = "red") +
+    ggtitle("d) QQ plot")
+  ptot <- arrangeGrob(p1, p2, p3, p4, ncol = 2)
+  #ptot <- grid.arrange(p1, p2, p3, p4, ncol = 2)
+  return(ptot)
 }
