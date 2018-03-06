@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>plot.ves — plot.ves • rves</title>
+<title>plot_diagnostic — plot_diagnostic • rves</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -93,47 +93,32 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>plot.ves</h1>
+    <h1>plot_diagnostic</h1>
     </div>
 
     
-    <p>Function to plot the Vertical Electric Sounding data. This function can create two different
-types of plots: resistivity and interpretation. The resistivity plot includes the
-apparent resistivity vs electrode spacing. In the interpretation plot, the values of the
-apparent resistivity vs electrode spacing and the thickness and real resisitivity of the
-layers are included.</p>
+    <p>Function to create an estimation diagnostic plot composed of:</p><ul>
+<li><p>Scatterplot between the measured and calculated apparement resistivity</p></li>
+<li><p>Scatterplot between calculated apparent resistivity and the residuals</p></li>
+<li><p>Scatterplot between the calculated apparent resistivity and the standarized residuals</p></li>
+<li><p>QQplot of the residuals</p></li>
+</ul>
     
 
-    <pre class="usage"><span class='co'># S3 method for ves</span>
-<span class='fu'>plot</span>(<span class='no'>x</span>, <span class='kw'>main</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"ves"</span>, <span class='st'>"transformation"</span>,
-  <span class='st'>"diagnostic"</span>), <span class='kw'>trans.type</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"direct"</span>, <span class='st'>"scaling"</span>), <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>plot_diagnostic</span>(<span class='no'>x</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>A VES object</p></td>
-    </tr>
-    <tr>
-      <th>main</th>
-      <td><p>Title of the plot</p></td>
-    </tr>
-    <tr>
-      <th>type</th>
-      <td><p>A character string specifying the plot type. Currently only ves (measurements and
-earth model), transformation (resistivity-depth transformation) and diagnostic are supported.</p></td>
-    </tr>
-    <tr>
-      <th>trans.type</th>
-      <td><p>A character string specifying the transformation type. Only direct and scaling
-are currently supported.</p></td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td><p>Additional parameters to be passed to the plot function</p></td>
+      <td><p>A VES object, The VES must be intepreted.</p></td>
     </tr>
     </table>
+    
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>This function returns a ggplot2 object</p>
     
 
   </div>
@@ -141,7 +126,13 @@ are currently supported.</p></td>
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-                </ul>
+      
+      <li><a href="#value">Value</a></li>
+          </ul>
+
+    <h2>Author</h2>
+    
+Oscar Garcia-Cabrejo, <a href='mailto:khaors@gmail.com'>khaors@gmail.com</a>
 
   </div>
 </div>

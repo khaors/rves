@@ -71,7 +71,7 @@
       <h1>RVES Tutorial: Vertical Electrical Sounding interpretation using R</h1>
                         <h4 class="author">Oscar Garcia-Cabrejo</h4>
             
-            <h4 class="date">2018-03-04</h4>
+            <h4 class="date">2018-03-06</h4>
           </div>
 
     
@@ -189,11 +189,11 @@ rerr &lt;-<span class="st"> </span><span class="dv">100</span><span class="op">*
 <p>The relative error is still larger than 10% and therefore a proper estimation method is required. The first method to be used in the parameter estimation of the Earth model is the nonlinear least squares, which is a fast method and a small number of iterations is required:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">par0 &lt;-<span class="st"> </span><span class="kw">c</span>(rho, thick)
 res.nls &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calibrate_nls.html">calibrate_nls</a></span>(sev1a, par0, <span class="dt">iterations =</span> <span class="dv">10</span>, <span class="dt">ireport =</span> <span class="dv">5</span>)
-<span class="co">#&gt; iteration, RSS, Rel Error =  0 0.0026274 2.806841 </span>
-<span class="co">#&gt; iteration, RSS, Rel Error =  5 0.000757266 1.358926 </span>
-<span class="co">#&gt; Final step  7 , Error=  1.349501</span>
+<span class="co">#&gt; iteration, RSS, Rel Error =  0 0.0026274 3.394969 </span>
+<span class="co">#&gt; iteration, RSS, Rel Error =  5 0.000757266 1.782435 </span>
+<span class="co">#&gt; iteration, RSS, Rel Error =  9 0.0005737962 1.563724</span>
 rel.err.nls &lt;-<span class="st"> </span><span class="kw">format</span>(res.nls<span class="op">$</span>rel.err, <span class="dt">digits =</span> <span class="dv">3</span>)</code></pre></div>
-<p>After 10 iterations the relative error is of 1.35% which can be considered as a good model. Now these estimated parameters are assigned to the VES object:</p>
+<p>After 10 iterations the relative error is of 1.56% which can be considered as a good model. Now these estimated parameters are assigned to the VES object:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sev1a<span class="op">$</span>rhopar &lt;-<span class="st"> </span>res.nls<span class="op">$</span>rho
 sev1a<span class="op">$</span>thickpar &lt;-<span class="st"> </span>res.nls<span class="op">$</span>thickness
 sev1a<span class="op">$</span>interpreted &lt;-<span class="st"> </span><span class="ot">TRUE</span></code></pre></div>

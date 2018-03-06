@@ -71,7 +71,7 @@
       <h1>VES Smoothing using the rves package</h1>
                         <h4 class="author">Oscar Garcia-Cabrejo</h4>
             
-            <h4 class="date">2018-03-04</h4>
+            <h4 class="date">2018-03-06</h4>
           </div>
 
     
@@ -200,9 +200,9 @@ thick &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">2
 par0 &lt;-<span class="st"> </span><span class="kw">c</span>(rho, thick)</code></pre></div>
 <p>and the true resistivities and layer thicknesses are estimated using the conventional nonlinear least-squares approach:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">res.ss.nls &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calibrate_nls.html">calibrate_nls</a></span>(sev1ss, par0, <span class="dt">iterations =</span> <span class="dv">10</span>, <span class="dt">ireport =</span> <span class="dv">5</span>)
-<span class="co">#&gt; iteration, RSS, Rel Error =  0 0.002201384 2.654601 </span>
-<span class="co">#&gt; iteration, RSS, Rel Error =  5 0.0003970715 1.093091 </span>
-<span class="co">#&gt; iteration, RSS, Rel Error =  9 0.0002212703 0.8111669</span></code></pre></div>
+<span class="co">#&gt; iteration, RSS, Rel Error =  0 0.002201384 3.110148 </span>
+<span class="co">#&gt; iteration, RSS, Rel Error =  5 0.0003970715 1.267168 </span>
+<span class="co">#&gt; iteration, RSS, Rel Error =  9 0.0002212703 0.9438456</span></code></pre></div>
 <p>The results of the calibration are assigned to the ves object</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sev1ss<span class="op">$</span>rhopar &lt;-<span class="st"> </span>res.ss.nls<span class="op">$</span>rho
 sev1ss<span class="op">$</span>thickpar &lt;-<span class="st"> </span>res.ss.nls<span class="op">$</span>thickness
@@ -241,9 +241,9 @@ res.kr.df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span
               <span class="dt">apprho =</span> res.kr<span class="op">$</span>apprho)</code></pre></div>
 <p>and the estimates of the real resistivities and thicknesses is obtained:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">res.kr.nls &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calibrate_nls.html">calibrate_nls</a></span>(sev1kr, par0, <span class="dt">iterations =</span> <span class="dv">10</span>, <span class="dt">ireport =</span> <span class="dv">5</span>)
-<span class="co">#&gt; iteration, RSS, Rel Error =  0 0.002041967 2.584166 </span>
-<span class="co">#&gt; iteration, RSS, Rel Error =  5 0.0002895334 0.9670573 </span>
-<span class="co">#&gt; iteration, RSS, Rel Error =  9 0.0001384567 0.6277856</span></code></pre></div>
+<span class="co">#&gt; iteration, RSS, Rel Error =  0 0.002041967 3.017298 </span>
+<span class="co">#&gt; iteration, RSS, Rel Error =  5 0.0002895334 1.084667 </span>
+<span class="co">#&gt; iteration, RSS, Rel Error =  9 0.0001384567 0.7404027</span></code></pre></div>
 <p>The calibration results are assigned to the ves object using</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sev1kr<span class="op">$</span>rhopar &lt;-<span class="st"> </span>res.kr.nls<span class="op">$</span>rho
 sev1kr<span class="op">$</span>thickpar &lt;-<span class="st"> </span>res.kr.nls<span class="op">$</span>thickness
@@ -282,9 +282,9 @@ res.wv.df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span
               <span class="dt">apprho =</span> res.wv<span class="op">$</span>apprho)</code></pre></div>
 <p>which in turn is used to estimate the layer parameters:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">res.wv.nls &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calibrate_nls.html">calibrate_nls</a></span>(sev1wv, par0, <span class="dt">iterations =</span> <span class="dv">10</span>, <span class="dt">ireport =</span> <span class="dv">5</span>)
-<span class="co">#&gt; iteration, RSS, Rel Error =  0 0.002179202 2.449921 </span>
-<span class="co">#&gt; iteration, RSS, Rel Error =  5 0.0002837838 0.9449526 </span>
-<span class="co">#&gt; iteration, RSS, Rel Error =  9 0.0001236067 0.6023878</span></code></pre></div>
+<span class="co">#&gt; iteration, RSS, Rel Error =  0 0.002179202 3.100372 </span>
+<span class="co">#&gt; iteration, RSS, Rel Error =  5 0.0002837838 1.13349 </span>
+<span class="co">#&gt; iteration, RSS, Rel Error =  9 0.0001236067 0.7099613</span></code></pre></div>
 <p>The results of the calibration are assigned again to the ves object:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sev1wv<span class="op">$</span>rhopar &lt;-<span class="st"> </span>res.wv.nls<span class="op">$</span>rho
 sev1wv<span class="op">$</span>thickpar &lt;-<span class="st"> </span>res.wv.nls<span class="op">$</span>thickness
