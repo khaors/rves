@@ -1,6 +1,8 @@
 ---
 title: "Interpretación de Sondeo Eléctrico Vertical"
-output: html_document
+output: 
+    html_document:
+         number_sections: true
 params:
   current.ves: NA
 ---
@@ -20,7 +22,7 @@ Las mediciones realizadas en el sondeo  `r params$current.ves$id[[1]]` estan con
 ```{r table_data,echo=FALSE}
 spacing <- params$current.ves$ab2
 apprho <- params$current.ves$appres
-ves.df <- data.frame("AB/2" = spacing, "ApparentResitivity" = apprho)
+ves.df <- data.frame("AB/2" = spacing, "Resitividad.Aparente" = apprho)
 kable(ves.df, format = "html", digits = 3, align = c('c','c'), caption = "SONDEO ELECTRICO VERTICAL") %>%
   kable_styling(bootstrap_options = "striped", full_width = F)
 ```
@@ -44,11 +46,11 @@ rho.true <- params$current.ves$rhopar
 thickness <- params$current.ves$thickpar
 interpretation.ves <- cbind(rho.true, thickness)
 interpretation.ves.df <- as.data.frame(interpretation.ves)
-names(interpretation.ves.df) <- c("TrueResistivity", "Thickness")
+names(interpretation.ves.df) <- c("Resistividad.Real", "Espesor")
 nlayers <- length(rho.true)
 layers.id <- vector("character", length = nlayers)
 for(i in 1:nlayers){
-  layers.id[i] <- paste0("Layer", as.character(i))
+  layers.id[i] <- paste0("Capa", as.character(i))
 }
 row.names(interpretation.ves.df) <- layers.id
 ```

@@ -1,6 +1,8 @@
 ---
 title: "VES Report"
-output: word_document
+output: 
+    word_document:
+         number_sections: true
 params:
   current.ves: NA
 ---
