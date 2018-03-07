@@ -730,6 +730,18 @@ shinyServer(function(input, output, session) {
     return(current.res)
   }
   #
+  observeEvent(input$seq_plot,{
+    output$seq_plot <- renderPlot({
+      current.ves <- server.env$current.ves
+      validate(
+        need(!is.null(current.ves), "The VES object is not defined")
+      )
+      current.ves$interpreted <- FALSE
+      plot(current.ves, type = "ves")
+    })
+  })
+
+  #
   observeEvent(input$seqRun, {
     output$seq_plot <- renderPlot({
       current.ves <- server.env$current.ves
@@ -899,7 +911,7 @@ shinyServer(function(input, output, session) {
   output$report.html.spa <- downloadHandler(
     filename = "report_spa.html",
     content = function(file) {
-      tempReport <- file.path(tempdir(), server.env$rmd.report.file)
+      tempReport <- file.path(tempdir(), "report_html_spa.Rmd")
       file.copy("report_html_spa.Rmd", tempReport, overwrite = TRUE)
       # Set up parameters to pass to Rmd document
       if(!is.null(server.env$current.ves)){
@@ -922,7 +934,7 @@ shinyServer(function(input, output, session) {
   output$report.word.eng <- downloadHandler(
     filename = "report_eng.doc",
     content = function(file) {
-      tempReport <- file.path(tempdir(), server.env$rmd.report.file)
+      tempReport <- file.path(tempdir(), "report_word_eng.Rmd")
       file.copy("report_word_eng.Rmd", tempReport, overwrite = TRUE)
       # Set up parameters to pass to Rmd document
       if(!is.null(server.env$current.ves)){
@@ -945,7 +957,7 @@ shinyServer(function(input, output, session) {
   output$report.word.spa <- downloadHandler(
     filename = "report_spa.doc",
     content = function(file) {
-      tempReport <- file.path(tempdir(), server.env$rmd.report.file)
+      tempReport <- file.path(tempdir(), "report_word_spa.Rmd")
       file.copy("report_word_spa.Rmd", tempReport, overwrite = TRUE)
       # Set up parameters to pass to Rmd document
       if(!is.null(server.env$current.ves)){

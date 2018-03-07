@@ -388,8 +388,11 @@ reportsTab <- tabItem(
   fluidRow(
     box(
       downloadButton(outputId = "report.html.eng", label = "Generate report: html - English"),
+      br(),
       downloadButton(outputId = "report.word.eng", label = "Generate report: word - English"),
+      br(),
       downloadButton(outputId = "report.html.spa", label = "Generate report: html - Spanish"),
+      br(),
       downloadButton(outputId = "report.word.spa", label = "Generate report: word - Spanish")
     )
   ),
