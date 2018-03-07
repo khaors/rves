@@ -25,9 +25,19 @@ ves <- function(id = character(0), ab2 = NULL, apprho = NULL){
   if(class(ab2) != 'numeric' | class(apprho) != 'numeric'){
     stop('A numeric vector is required as input')
   }
+  #
+  ab2a <- NULL
+  apprhoa <- NULL
+  pos.valid <- ab2 >= 3.0
+  if(sum(pos.valid) > 1){
+    ab2a <- ab2[pos.valid]
+    apprhoa <- apprho[pos.valid]
+    warning("Modifying some of the original data.")
+  }
+  #
   res <- list(id = id,
-              ab2 = ab2,
-              appres = apprho,
+              ab2 = ab2a,
+              appres = apprhoa,
               interpreted = FALSE,
               rhopar = NULL,
               thickpar = NULL,
@@ -325,7 +335,7 @@ plot_transformation <- function(x, trans.type = c("direct", "scaling",
 #' Oscar Garcia-Cabrejo, \email{khaors@gmail.com}
 #' @export
 #' @importFrom ggplot2 ggplot geom_point geom_smooth coord_equal geom_qq
-#' @importFrom gridExtra grid.arrange
+#' @importFrom gridExtra grid.arrange arrangeGrob
 plot_diagnostic <- function(x){
   if(class(x) != 'ves'){
     stop('A VES object is required as input')
