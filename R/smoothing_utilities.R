@@ -49,13 +49,25 @@ smoothing_ves <- function(ves, method = c("smooth.spline", "kernel.regression",
     tmp <- smooth.spline(log10(ab2), log10(appres))
     ab2.s <- 10^tmp$x
     rho.s <- 10^tmp$y
+    if(sum(is.na(ab2.s)) >= 1 | sum(is.na(rho.s)) >= 1){
+      warning("The smoothing method has numerical instabilities. No smoothing applied.")
+      ab2.s <- ab2
+      rho.s <- appres
+    }
     res <- list(ab2 = ab2.s, apprho = rho.s)
   }
   else if(method == "kernel.regression"){
     lab2 <- log10(ab2)
     lapprho <- log10(appres)
     tmp <- locCuadSmootherC(lab2, lapprho, lab2, bw = bw, EpaK)
-    res <- list(ab2 = 10^tmp$x, apprho = 10^tmp$beta0)
+    ab2.s <- 10^tmp$x
+    rho.s <- 10^tmp$beta0
+    if(sum(is.na(tmp$x)) >= 1 | sum(is.na(tmp$beta0)) >= 1){
+      warning("The smoothing method has numerical instabilities. No smoothing applied.")
+      ab2.s <- ab2
+      rho.s <- appres
+    }
+    res <- list(ab2 = ab2.s, apprho = rho.s)
   }
   else if(method == "wavelet"){
     ab2.out <- logseq(min(log10(ab2)), max(log10(ab2)), 32)
@@ -69,6 +81,10 @@ smoothing_ves <- function(ves, method = c("smooth.spline", "kernel.regression",
     xout <- c(1.01*ab2[1],ab2[2:(ndat-1)],0.99*ab2[ndat])
     soft <- interp1(ab2.out, s.soft, xi = xout)
     hard <- interp1(ab2.out, s.hard, xi = xout)
+    if(sum(is.na(soft)) >= 1){
+      warning("The smoothing method has numerical instabilities. No smoothing applied.")
+      soft <- log10(appres)
+    }
     res <- list(ab2 = ab2, apprho = 10^soft)
   }
   return(res)
