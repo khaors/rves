@@ -13,6 +13,7 @@ library(rves)
 library(knitr)
 library(grid)
 library(gridExtra)
+library(kableExtra)
 ```
 
 # Basic information about the sounding
@@ -22,10 +23,11 @@ The VES  `r params$current.ves$id[[1]]` dataset contains `r length(params$curren
 spacing <- params$current.ves$ab2
 apprho <- params$current.ves$appres
 ves.df <- data.frame("AB/2" = spacing, "ApparentResitivity" = apprho)
-kable(ves.df, format = "html", digits = 3, align = c('c','c'), caption = "VES DATA")
+kable(ves.df, format = "html", digits = 3, align = c('c','c'), caption = "VES DATA") %>%
+  kable_styling(bootstrap_options = "striped", full_width = F)
 ```
 
-The min and max values of the spacing are `r min(params$current.ves$ab2)` and `r max(params$current.ves$ab2)`   meters respectively, and some of summary statistics of the apparent resistivity are presented in the following table:
+The min and max values of the spacing are `r min(params$current.ves$ab2)` and `r max(params$current.ves$ab2)`  meters respectively, and some of summary statistics of the apparent resistivity are presented in the following table:
 ```{r appres_summary,echo=FALSE}
 summary(params$current.ves$appres)
 ```
@@ -44,7 +46,7 @@ rho.true <- params$current.ves$rhopar
 thickness <- params$current.ves$thickpar
 interpretation.ves <- cbind(rho.true, thickness)
 interpretation.ves.df <- as.data.frame(interpretation.ves)
-names(interpretation.ves.df) <- c("TrueRes", "Thickness")
+names(interpretation.ves.df) <- c("TrueResistivity", "Thickness")
 nlayers <- length(rho.true)
 layers.id <- vector("character", length = nlayers)
 for(i in 1:nlayers){
@@ -57,11 +59,13 @@ The interpreted model is composed of `r nlayers` layers with the following prope
 
 ```{r table,echo=FALSE}
 kable(interpretation.ves.df, format = "html", digits = 3, align = c('r','r'), 
-      caption = "ESTIMATED MODEL")
+      caption = "ESTIMATED MODEL") %>%
+  kable_styling(bootstrap_options = "striped", full_width = F)
 ```
 
 # Model Diagnostic
 
+The quality of the estimated model can be checked using the following figure:
 
 ```{r plot_diagnostic,echo=FALSE,message=FALSE,warnings=FALSE}
 p1 <- plot(params$current.ves, type = "diagnostic")
