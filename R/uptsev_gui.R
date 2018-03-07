@@ -11,6 +11,6 @@ uptsev_gui <- function() {
   if (appDir == "") {
     stop("Could not find example directory. Try re-installing `rves`.", call. = FALSE)
   }
-  shiny::runApp(appDir, display.mode = "normal")
+  shiny::runApp(appDir, display.mode = "normal", launch.browser = TRUE)
 }
 
