@@ -355,6 +355,9 @@ calibrate_nls <- function(ves, par0, iterations = 100, ireport = 10){
   f_model <- function(x, spacing){
     par <- 10^x
     res <- apparent_resistivities_simple(par, rves::filt$V1, spacing)
+    #pos.valid <- !is.na(res) & res > 0.0
+    #res <- res[pos.valid]
+    #tryCatch(log10(res), finally = print(res))
     return(log10(res))
   }
   #
@@ -376,6 +379,12 @@ calibrate_nls <- function(ves, par0, iterations = 100, ireport = 10){
   while(iter < niter){
     # Data difference
     cres <- f_model(cpar, spacing)
+    pos.invalid <- is.na(cres)
+    if(sum(pos.invalid) >= 1){
+      current.error1 <- old.error
+      cpar <- old.par
+      break
+    }
     d <- as.matrix((cres-measured), length(measured), 1)
     # Calculate jacobian matrix
     J <- jacobian(f_model, x = cpar, spacing = spacing)
@@ -391,6 +400,12 @@ calibrate_nls <- function(ves, par0, iterations = 100, ireport = 10){
     cpar1 <- cpar1 - x
     cpar <- as.numeric(cpar1)
     cres <- f_model(cpar, spacing)
+    pos.invalid <- is.na(cres)
+    if(sum(pos.invalid) >= 1){
+      current.error1 <- old.error
+      cpar <- old.par
+      break
+    }
     current.error <- mean((cres-measured)**2)
     old.error <- current.error1
     current.error1 <- 100*sqrt(mean(((measured-cres)/measured)^2))
@@ -669,9 +684,17 @@ calibrate_seq_nls <- function(ves, iterations = 100, ireport = 10,
   current.err <- 0.1
   max.err <- 100
   depth <- ves$ab2/2.3
+  thick <- diff(depth)
   for(ilay in 2:max.layers){
-    pos <- round(seq(1, length(depth), length.out = (ilay +1)))
-    current.par <- c(rep(mean(ves$appres), ilay), diff(depth[pos]))
+    cat(paste0("Current model: ", as.character(ilay), " Layers \n"))
+    pos <- vector("numeric", length = ilay+1)
+    if(ilay <= length(thick)){
+     pos <- round(seq(1, length(thick), length.out = (ilay+1)))
+    }
+    else{
+     pos <- c(seq(1, length(thick)), rep(length(thick), (ilay-length(thick)+1) ))
+    }
+    current.par <- c(rep(mean(ves$appres), ilay), thick[pos])
     current.res <- calibrate_nls(ves, par0 = current.par, iterations = iterations,
                                  ireport = ireport)
     current.err <- current.res$rel.error
