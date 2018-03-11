@@ -71,7 +71,7 @@
       <h1>Resistivity-Depth Transformations using the rves package</h1>
                         <h4 class="author">Oscar Garcia-Cabrejo</h4>
             
-            <h4 class="date">2018-03-06</h4>
+            <h4 class="date">2018-03-11</h4>
           </div>
 
     
@@ -204,7 +204,9 @@ f_{i}^{(j)}=f_{i}^{(j-1)} \times \left( 1 + \frac{c_{i}^{(j)}}{c_{i}^{(j-1)}}\ri
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ab2 &lt;-<span class="st"> </span>ves_data1<span class="op">$</span>ab2
 apprho &lt;-<span class="st"> </span>ves_data1<span class="op">$</span>apprho</code></pre></div>
 <p>and these are used to define the VES object inside R:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sev1a &lt;-<span class="st"> </span><span class="kw"><a href="../reference/ves.html">ves</a></span>(<span class="dt">id=</span> <span class="st">"VES1"</span>, <span class="dt">ab2 =</span> ab2, <span class="dt">apprho =</span> apprho)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sev1a &lt;-<span class="st"> </span><span class="kw"><a href="../reference/ves.html">ves</a></span>(<span class="dt">id=</span> <span class="st">"VES1"</span>, <span class="dt">ab2 =</span> ab2, <span class="dt">apprho =</span> apprho)
+<span class="co">#&gt; Warning in ves(id = "VES1", ab2 = ab2, apprho = apprho): Modifying some of</span>
+<span class="co">#&gt; the original data.</span></code></pre></div>
 <p>The plot of the VES used as example can be seen in the following plot:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p1 &lt;-<span class="st"> </span><span class="kw">plot</span>(sev1a, <span class="dt">type =</span> <span class="st">"ves"</span>)</code></pre></div>
 <p>Let’s define an initial model (four real resistivities and thicknesses) and use the <em>calibrate_nls</em> to refine it until a low RMS is obtained:</p>
