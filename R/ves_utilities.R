@@ -102,6 +102,7 @@ apparent_resistivities <- function(rho, thick, filt, spacing) {
   }
   #
   if(!missing(spacing)){
+    appres1 <- NULL
     appres1 <- interp1(x = ab2, y = appres, xi = spacing)
     ab2 <- spacing
     appres <- appres1

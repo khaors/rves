@@ -184,7 +184,9 @@ plot_ves <- function(x, main = NULL, ...){
     rho <- ves$rhopar
     thick <- ves$thickpar
     spacing <- ves$ab2
+    max.depth <- max(spacing/2.3)
     nlayers <- length(rho)
+    thick[nlayers] <- max.depth - thick[nlayers-1]
     depth <- 1.0 + cumsum(thick)
     sp <- pracma::logseq(min(spacing), max(spacing), 2*length(ves$ab2))
     res.model <- apparent_resistivities(rho, thick, rves::filt$V1, sp)
