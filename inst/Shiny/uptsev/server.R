@@ -57,6 +57,8 @@ shinyServer(function(input, output, session) {
     if (ncol(d.input)>input$ncol.preview)
       d.input <- d.input[,1:input$ncol.preview]
     fname <- input$file1
+    pos.valid <- !duplicated(d.input[,1])
+    d.input <- d.input[pos.valid,]
     ves <- ves(fname, ab2 =d.input[,1],apprho= d.input[,2])
     server.env$current.ves <- ves
     server.env$original.ves <- ves
@@ -717,6 +719,7 @@ shinyServer(function(input, output, session) {
       return(NULL)
     }
     # Sequential estimation using NLS
+    #print(current.ves)
     current.res <- calibrate_seq_nls(current.ves,
                                  iterations = niterations,
                                  ireport = nreport,
