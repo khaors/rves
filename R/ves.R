@@ -32,6 +32,8 @@ ves <- function(id = character(0), ab2 = NULL, apprho = NULL){
   if(sum(pos.valid) > 1){
     ab2a <- ab2[pos.valid]
     apprhoa <- apprho[pos.valid]
+  }
+  else {
     warning("Modifying some of the original data.")
   }
   #
