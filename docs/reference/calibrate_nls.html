@@ -131,7 +131,12 @@ proposed by Roy(1999).</p>
 <li><p>value: The value or the RSS (Residual sum of squares)</p></li>
 <li><p>rel.error: The value of the relative error (in percentage)</p></li>
 <li><p>cal.error: A matrix with the RSS and relative error at each iteration</p></li>
-<li><p>hessian: First order approximation of the Hessian matrix. This is calculate using the Jacobian matrix.</p></li>
+<li><p>residual: A vector with the residuals (original scale)</p></li>
+<li><p>var.residual: The variance of the residuals (log transformed scale)</p></li>
+<li><p>hessian: First order approximation of the Hessian matrix. This is calculated using the Jacobian matrix.</p></li>
+<li><p>cov.matrix: Covariance matrix of the estimated parameters calculated as the inverse of the
+hessian matrix.</p></li>
+<li><p>corr.matrix: Correlation matrix of the estimated parameters.</p></li>
 </ul>
 
     

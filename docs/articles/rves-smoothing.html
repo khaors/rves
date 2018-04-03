@@ -71,7 +71,7 @@
       <h1>VES Smoothing using the rves package</h1>
                         <h4 class="author">Oscar Garcia-Cabrejo</h4>
             
-            <h4 class="date">2018-03-11</h4>
+            <h4 class="date">2018-04-03</h4>
           </div>
 
     
@@ -163,9 +163,7 @@ D[U,\lambda]=\text{sgn}{(U)} \max{(0,|U|-\lambda)}
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ab2 &lt;-<span class="st"> </span>ves_data1<span class="op">$</span>ab2
 apprho &lt;-<span class="st"> </span>ves_data1<span class="op">$</span>apprho</code></pre></div>
 <p>and these are used to define the VES object inside R:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sev1a &lt;-<span class="st"> </span><span class="kw"><a href="../reference/ves.html">ves</a></span>(<span class="dt">id=</span> <span class="st">"VES1"</span>, <span class="dt">ab2 =</span> ab2, <span class="dt">apprho =</span> apprho)
-<span class="co">#&gt; Warning in ves(id = "VES1", ab2 = ab2, apprho = apprho): Modifying some of</span>
-<span class="co">#&gt; the original data.</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sev1a &lt;-<span class="st"> </span><span class="kw"><a href="../reference/ves.html">ves</a></span>(<span class="dt">id=</span> <span class="st">"VES1"</span>, <span class="dt">ab2 =</span> ab2, <span class="dt">apprho =</span> apprho)</code></pre></div>
 <p>The plot of the VES used as example can be seen in the following plot:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p1 &lt;-<span class="st"> </span><span class="kw">plot</span>(sev1a, <span class="dt">type =</span> <span class="st">"ves"</span>)</code></pre></div>
 <div id="smoothing-via-splines-1" class="section level3">
@@ -195,9 +193,7 @@ res.ss.df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span
 <span class="kw">print</span>(p.ss)  </code></pre></div>
 <p><img src="rves-smoothing_files/figure-html/plot_smoothspline-1.png" width="576" style="display: block; margin: auto;"> Now, the smoothed resistivity values are used to define a new ves object:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sev1ss &lt;-<span class="st"> </span><span class="kw"><a href="../reference/ves.html">ves</a></span>(<span class="dt">id =</span> <span class="st">"Sounding 1-Smoothing Spline"</span>, <span class="dt">ab2 =</span> res.ss<span class="op">$</span>ab2, 
-              <span class="dt">apprho =</span> res.ss<span class="op">$</span>apprho)
-<span class="co">#&gt; Warning in ves(id = "Sounding 1-Smoothing Spline", ab2 = res.ss$ab2, apprho</span>
-<span class="co">#&gt; = res.ss$apprho): Modifying some of the original data.</span></code></pre></div>
+              <span class="dt">apprho =</span> res.ss<span class="op">$</span>apprho)</code></pre></div>
 <p>The initial solution for the calibration procedure are defined as follows:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rho &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">40</span>,<span class="dv">70</span>,<span class="dv">30</span>, <span class="dv">20</span>)
 thick &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">2</span>,<span class="dv">10</span>,<span class="dv">50</span>,<span class="dv">500</span>)
@@ -242,9 +238,7 @@ res.kr.df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span
 <span class="kw">print</span>(p.kr)  </code></pre></div>
 <p><img src="rves-smoothing_files/figure-html/plot_kernelregression-1.png" width="672" style="display: block; margin: auto;"> As seen in the smooth.spline case, the effect of the filtering is visible for intermediate to large spacings. With the filtered values, a new ves object is defined:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sev1kr &lt;-<span class="st"> </span><span class="kw"><a href="../reference/ves.html">ves</a></span>(<span class="dt">id =</span> <span class="st">"Sounding 1-Kernel Regression"</span>, <span class="dt">ab2 =</span> res.kr<span class="op">$</span>ab2, 
-              <span class="dt">apprho =</span> res.kr<span class="op">$</span>apprho)
-<span class="co">#&gt; Warning in ves(id = "Sounding 1-Kernel Regression", ab2 = res.kr$ab2,</span>
-<span class="co">#&gt; apprho = res.kr$apprho): Modifying some of the original data.</span></code></pre></div>
+              <span class="dt">apprho =</span> res.kr<span class="op">$</span>apprho)</code></pre></div>
 <p>and the estimates of the real resistivities and thicknesses is obtained:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">res.kr.nls &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calibrate_nls.html">calibrate_nls</a></span>(sev1kr, par0, <span class="dt">iterations =</span> <span class="dv">10</span>, <span class="dt">ireport =</span> <span class="dv">5</span>)
 <span class="co">#&gt; iteration, RSS, Rel Error =  0 0.002041967 3.017298 </span>
@@ -285,9 +279,7 @@ res.wv.df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span
 <p><img src="rves-smoothing_files/figure-html/wave2-1.png" width="576" style="display: block; margin: auto;"></p>
 <p>where it is clear that the smoothing modified values for all spacings. These results are used to define a new ves object:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sev1wv &lt;-<span class="st"> </span><span class="kw"><a href="../reference/ves.html">ves</a></span>(<span class="dt">id =</span> <span class="st">"Sounding 1-Wavelet Thresholding"</span>, <span class="dt">ab2 =</span> res.wv<span class="op">$</span>ab2, 
-              <span class="dt">apprho =</span> res.wv<span class="op">$</span>apprho)
-<span class="co">#&gt; Warning in ves(id = "Sounding 1-Wavelet Thresholding", ab2 = res.wv$ab2, :</span>
-<span class="co">#&gt; Modifying some of the original data.</span></code></pre></div>
+              <span class="dt">apprho =</span> res.wv<span class="op">$</span>apprho)</code></pre></div>
 <p>which in turn is used to estimate the layer parameters:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">res.wv.nls &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calibrate_nls.html">calibrate_nls</a></span>(sev1wv, par0, <span class="dt">iterations =</span> <span class="dv">10</span>, <span class="dt">ireport =</span> <span class="dv">5</span>)
 <span class="co">#&gt; iteration, RSS, Rel Error =  0 0.002179202 3.100372 </span>
