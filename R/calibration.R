@@ -336,7 +336,12 @@ calibrate <- function(ves, opt.method = c("L-BFGS-B", "SA", "GA", "PSO", "DE"),
 #' \item value: The value or the RSS (Residual sum of squares)
 #' \item rel.error: The value of the relative error (in percentage)
 #' \item cal.error: A matrix with the RSS and relative error at each iteration
-#' \item hessian: First order approximation of the Hessian matrix. This is calculate using the Jacobian matrix.
+#' \item residual: A vector with the residuals (original scale)
+#' \item var.residual: The variance of the residuals (log transformed scale)
+#' \item hessian: First order approximation of the Hessian matrix. This is calculated using the Jacobian matrix.
+#' \item cov.matrix: Covariance matrix of the estimated parameters calculated as the inverse of the
+#' hessian matrix.
+#' \item corr.matrix: Correlation matrix of the estimated parameters.
 #' }
 #' @author
 #' Oscar Garcia-Cabrejo \email{khaors@gmail.com}
@@ -346,6 +351,7 @@ calibrate <- function(ves, opt.method = c("L-BFGS-B", "SA", "GA", "PSO", "DE"),
 #' @family calibration functions
 #' @importFrom numDeriv jacobian
 #' @importFrom pracma mod
+#' @importFrom stats var
 #' @export
 calibrate_nls <- function(ves, par0, iterations = 100, ireport = 10){
   if(class(ves) != "ves"){
@@ -442,9 +448,28 @@ calibrate_nls <- function(ves, par0, iterations = 100, ireport = 10){
     iter <- iter+1
   }
   J <- jacobian(f_model, x = cpar, spacing = spacing)
-  res <- list(par = 10^cpar, value = current.error, rel.error = current.error1,
+  cres <- f_model(cpar, spacing)
+  residual.res <- (10^measured -10^cres)
+  var.residual <- var(measured-cres) #var(residual.res)
+  cov.matrix <- pracma::inv(t(J)%*%J + 1e-10*pracma::eye(length(cpar)))*var.residual
+  nr <- nrow(cov.matrix)
+  corr.matrix <- matrix(0.0, nrow = nr, ncol = nr)
+  sd.par <- sqrt(diag(cov.matrix))
+  for(i in 1:nr){
+    for(j in i:nr){
+      corr.matrix[i,j] <- cov.matrix[i,j]/(sd.par[i]*sd.par[j])
+      corr.matrix[j,i] <- corr.matrix[i,j]
+    }
+  }
+  res <- list(par = 10^cpar, value = current.error,
+              rel.error = current.error1,
               cal.error = cal.error, rho = 10^cpar[1:nparh],
-              thickness = 10^cpar[(nparh+1):npar], hessian = t(J)%*%J)
+              thickness = 10^cpar[(nparh+1):npar],
+              hessian = t(J)%*%J,
+              cov.matrix = cov.matrix,
+              residual = residual.res,
+              var.residual = var.residual,
+              corr.matrix = corr.matrix)
   return(res)
 }
 #' @title
@@ -682,14 +707,18 @@ calibrate_seq_nls <- function(ves, iterations = 100, ireport = 10,
   current.par <- NULL
   best.res <- NULL
   current.err <- 0.1
+  current.aic <- 1e10
+  max.aic <- 1e12
   max.err <- 100
   depth <- ves$ab2/2.3
   thick <- diff(depth)
+  n <- length(depth)
   for(ilay in 2:max.layers){
     cat(paste0("Current model: ", as.character(ilay), " Layers \n"))
     pos <- vector("numeric", length = ilay+1)
     if(ilay <= length(thick)){
      pos <- round(seq(1, length(thick), length.out = (ilay+1)))
+     #pos <- round(seq(1, length(thick), length.out = (ilay)))
     }
     else{
      pos <- c(seq(1, length(thick)), rep(length(thick), (ilay-length(thick)+1) ))
@@ -698,9 +727,16 @@ calibrate_seq_nls <- function(ves, iterations = 100, ireport = 10,
     current.res <- calibrate_nls(ves, par0 = current.par, iterations = iterations,
                                  ireport = ireport)
     current.err <- current.res$rel.error
-    if(current.err < max.err){
+    current.lik <- -(n/2)*log(2*pi)-(n/2)*log(current.res$value)
+    current.aic <- 2*(2*ilay-1)-2*current.lik
+    current.bic <- log(n)*(2*ilay-1)-2*current.lik
+    #if(current.err < max.err){
+    #  best.res <- current.res
+    #  max.err <- current.err
+    #}
+    if(current.aic < max.aic){
       best.res <- current.res
-      max.err <- current.err
+      max.aic <- current.aic
     }
   }
   res <- best.res
@@ -737,13 +773,25 @@ calibrate_seq <- function(ves, opt.method, max.layers = 10, lower = 1, upper = 5
   current.err <- 0.1
   max.err <- 100
   depth <- ves$ab2/2.3
+  thick <- diff(depth)
+  n <- length(depth)
   for(ilay in 2:max.layers){
-    pos <- round(seq(1, length(depth), length.out = (ilay +1)))
-    current.par <- c(rep(mean(ves$appres), ilay), diff(depth[pos]))
+    if(ilay <= length(thick)){
+      pos <- round(seq(1, length(thick), length.out = ilay))
+    }
+    else{
+      pos <- c(seq(1, length(thick)), rep(length(thick), (ilay-length(thick)+1) ))
+    }
+    current.par <- c(rep(mean(ves$appres), ilay), thick[pos])
+    print(ilay)
+    print(pos)
+    print(current.par)
     lowerlim <- rep(rep(lower, ilay), 2)
     upperlim <- rep(rep(upper, ilay), 2)
-    current.res <- calibrate(ves, par0 = current.par, opt.method = opt.method,
-                             obj.fn = "log_rss", lower = lowerlim,
+    current.res <- calibrate(ves, par0 = current.par,
+                             opt.method = opt.method,
+                             obj.fn = "log_rss",
+                             lower = lowerlim,
                              upper = upperlim)
     current.err <- current.res$rel.err
     if(current.err < max.err){

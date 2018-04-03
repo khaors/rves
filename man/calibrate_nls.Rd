@@ -22,7 +22,12 @@ A list with the following entries:
 \item value: The value or the RSS (Residual sum of squares)
 \item rel.error: The value of the relative error (in percentage)
 \item cal.error: A matrix with the RSS and relative error at each iteration
-\item hessian: First order approximation of the Hessian matrix. This is calculate using the Jacobian matrix.
+\item residual: A vector with the residuals (original scale)
+\item var.residual: The variance of the residuals (log transformed scale)
+\item hessian: First order approximation of the Hessian matrix. This is calculated using the Jacobian matrix.
+\item cov.matrix: Covariance matrix of the estimated parameters calculated as the inverse of the
+hessian matrix.
+\item corr.matrix: Correlation matrix of the estimated parameters.
 }
 }
 \description{
