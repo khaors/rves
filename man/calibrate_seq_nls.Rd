@@ -4,7 +4,8 @@
 \alias{calibrate_seq_nls}
 \title{calibrate_seq_nls}
 \usage{
-calibrate_seq_nls(ves, iterations = 100, ireport = 10, max.layers = 10)
+calibrate_seq_nls(ves, iterations = 100, ireport = 10, max.layers = 10,
+  fit.measure = "rss")
 }
 \arguments{
 \item{ves}{A VES object}
@@ -15,12 +16,21 @@ calibrate_seq_nls(ves, iterations = 100, ireport = 10, max.layers = 10)
 
 \item{max.layers}{An integer specifying the maximum number of layers to include in the
 sequential estimation.}
+
+\item{fit.measure}{A character string specifying the criteria used to define the best
+model from the set of models tried during the sequential estimation. Available options
+are:
+\itemize{
+\item rss: (default) sum of residual squares
+\item aic: Akaike Information Criteria
+\item bic; Bayesian Information Criteria
+}}
 }
 \value{
 This function returns a list with the following entries:
 \itemize{
 \item par: A numeric vector with the values of the layer resistivities and thicknesses
-\item value: The value or the RSS (Residual sum of squares)
+\item value: The value or the RSS (ResiduSpatial Data Analysis in Ecology and Agricultureal sum of squares)
 \item rel.error: The value of the relative error (in percentage)
 \item cal.error: A matrix with the RSS and relative error at each iteration
 }

@@ -685,11 +685,19 @@ calibrate_ilsqp <- function(ves, iterations = 100, ireport = 10){
 #' @param ireport An integer specifying the report interval
 #' @param max.layers An integer specifying the maximum number of layers to include in the
 #' sequential estimation.
+#' @param fit.measure A character string specifying the criteria used to define the best
+#' model from the set of models tried during the sequential estimation. Available options
+#' are:
+#' \itemize{
+#' \item rss: (default) sum of residual squares
+#' \item aic: Akaike Information Criteria
+#' \item bic; Bayesian Information Criteria
+#' }
 #' @return
 #' This function returns a list with the following entries:
 #' \itemize{
 #' \item par: A numeric vector with the values of the layer resistivities and thicknesses
-#' \item value: The value or the RSS (Residual sum of squares)
+#' \item value: The value or the RSS (ResiduSpatial Data Analysis in Ecology and Agricultureal sum of squares)
 #' \item rel.error: The value of the relative error (in percentage)
 #' \item cal.error: A matrix with the RSS and relative error at each iteration
 #' }
@@ -698,7 +706,7 @@ calibrate_ilsqp <- function(ves, iterations = 100, ireport = 10){
 #' @family calibration functions
 #' @export
 calibrate_seq_nls <- function(ves, iterations = 100, ireport = 10,
-                              max.layers = 10){
+                              max.layers = 10, fit.measure = "rss"){
   if(class(ves) != "ves"){
     stop('ERROR: A VES object is required as input')
   }
@@ -709,6 +717,7 @@ calibrate_seq_nls <- function(ves, iterations = 100, ireport = 10,
   current.err <- 0.1
   current.aic <- 1e10
   max.aic <- 1e12
+  max.bic <- 1e12
   max.err <- 100
   depth <- ves$ab2/2.3
   thick <- diff(depth)
@@ -730,13 +739,23 @@ calibrate_seq_nls <- function(ves, iterations = 100, ireport = 10,
     current.lik <- -(n/2)*log(2*pi)-(n/2)*log(current.res$value)
     current.aic <- 2*(2*ilay-1)-2*current.lik
     current.bic <- log(n)*(2*ilay-1)-2*current.lik
-    #if(current.err < max.err){
-    #  best.res <- current.res
-    #  max.err <- current.err
-    #}
-    if(current.aic < max.aic){
-      best.res <- current.res
-      max.aic <- current.aic
+    if(fit.measure == "rss"){
+      if(current.err < max.err){
+        best.res <- current.res
+        max.err <- current.err
+      }
+    }
+    else if(fit.measure == "aic"){
+      if(current.aic < max.aic){
+        best.res <- current.res
+        max.aic <- current.aic
+      }
+    }
+    else if(fit.measure == "bic"){
+      if(current.bic < max.bic){
+        best.res <- current.res
+        max.bic <- current.bic
+      }
     }
   }
   res <- best.res
