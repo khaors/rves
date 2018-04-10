@@ -100,7 +100,8 @@
     <p>Sequential estimation of true resistivities and thicknesses of a VES.</p>
     
 
-    <pre class="usage"><span class='fu'>calibrate_seq_nls</span>(<span class='no'>ves</span>, <span class='kw'>iterations</span> <span class='kw'>=</span> <span class='fl'>100</span>, <span class='kw'>ireport</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>max.layers</span> <span class='kw'>=</span> <span class='fl'>10</span>)</pre>
+    <pre class="usage"><span class='fu'>calibrate_seq_nls</span>(<span class='no'>ves</span>, <span class='kw'>iterations</span> <span class='kw'>=</span> <span class='fl'>100</span>, <span class='kw'>ireport</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>max.layers</span> <span class='kw'>=</span> <span class='fl'>10</span>,
+  <span class='kw'>select.measure</span> <span class='kw'>=</span> <span class='st'>"rss"</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
@@ -122,13 +123,23 @@
       <td><p>An integer specifying the maximum number of layers to include in the
 sequential estimation.</p></td>
     </tr>
+    <tr>
+      <th>select.measure</th>
+      <td><p>A character string specifying the criteria used to select the best
+model from the set of models tried during the sequential estimation. Available options
+are:</p><ul>
+<li><p>rss: (default) sum of residual squares</p></li>
+<li><p>aic: Akaike Information Criteria</p></li>
+<li><p>bic; Bayesian Information Criteria</p></li>
+</ul></td>
+    </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>This function returns a list with the following entries:</p><ul>
 <li><p>par: A numeric vector with the values of the layer resistivities and thicknesses</p></li>
-<li><p>value: The value or the RSS (Residual sum of squares)</p></li>
+<li><p>value: The value or the RSS (ResiduSpatial Data Analysis in Ecology and Agricultureal sum of squares)</p></li>
 <li><p>rel.error: The value of the relative error (in percentage)</p></li>
 <li><p>cal.error: A matrix with the RSS and relative error at each iteration</p></li>
 </ul>

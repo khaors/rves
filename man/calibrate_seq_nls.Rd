@@ -5,7 +5,7 @@
 \title{calibrate_seq_nls}
 \usage{
 calibrate_seq_nls(ves, iterations = 100, ireport = 10, max.layers = 10,
-  fit.measure = "rss")
+  select.measure = "rss")
 }
 \arguments{
 \item{ves}{A VES object}
@@ -17,7 +17,7 @@ calibrate_seq_nls(ves, iterations = 100, ireport = 10, max.layers = 10,
 \item{max.layers}{An integer specifying the maximum number of layers to include in the
 sequential estimation.}
 
-\item{fit.measure}{A character string specifying the criteria used to define the best
+\item{select.measure}{A character string specifying the criteria used to select the best
 model from the set of models tried during the sequential estimation. Available options
 are:
 \itemize{

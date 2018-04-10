@@ -685,7 +685,7 @@ calibrate_ilsqp <- function(ves, iterations = 100, ireport = 10){
 #' @param ireport An integer specifying the report interval
 #' @param max.layers An integer specifying the maximum number of layers to include in the
 #' sequential estimation.
-#' @param fit.measure A character string specifying the criteria used to define the best
+#' @param select.measure A character string specifying the criteria used to select the best
 #' model from the set of models tried during the sequential estimation. Available options
 #' are:
 #' \itemize{
@@ -706,7 +706,7 @@ calibrate_ilsqp <- function(ves, iterations = 100, ireport = 10){
 #' @family calibration functions
 #' @export
 calibrate_seq_nls <- function(ves, iterations = 100, ireport = 10,
-                              max.layers = 10, fit.measure = "rss"){
+                              max.layers = 10, select.measure = "rss"){
   if(class(ves) != "ves"){
     stop('ERROR: A VES object is required as input')
   }
@@ -739,19 +739,19 @@ calibrate_seq_nls <- function(ves, iterations = 100, ireport = 10,
     current.lik <- -(n/2)*log(2*pi)-(n/2)*log(current.res$value)
     current.aic <- 2*(2*ilay-1)-2*current.lik
     current.bic <- log(n)*(2*ilay-1)-2*current.lik
-    if(fit.measure == "rss"){
+    if(select.measure == "rss"){
       if(current.err < max.err){
         best.res <- current.res
         max.err <- current.err
       }
     }
-    else if(fit.measure == "aic"){
+    else if(select.measure == "aic"){
       if(current.aic < max.aic){
         best.res <- current.res
         max.aic <- current.aic
       }
     }
-    else if(fit.measure == "bic"){
+    else if(select.measure == "bic"){
       if(current.bic < max.bic){
         best.res <- current.res
         max.bic <- current.bic
