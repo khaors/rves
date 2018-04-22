@@ -38,7 +38,7 @@ dbSidebar <- dashboardSidebar(
     menuItem("Transform Data", tabName = "transformation", icon = icon("key")),
     menuItem("Graphical Inversion", tabName = "manual", icon = icon("hand-spock-o")),
     menuItem("Automatic Inversion", tabName = "automatic", icon = icon("fighter-jet")),
-    menuItem("Automatic Sequential Inversion", tabName = "automaticSeq",
+    menuItem("Automatic Stepwise Inversion", tabName = "automaticSeq",
              icon = icon("space-shuttle")),
     menuItem("Model Diagnostic", tabName = "diagnostic", icon = icon("wrench")),
     menuItem("Reports", tabName = "reports", icon = icon("cogs")),
@@ -316,7 +316,7 @@ automaticTab <- tabItem(
 #########################################################################################
 automaticSeqTab <- tabItem(
   tabName = "automaticSeq",
-  h3("VES Inversion: Automatic Sequential Method"),
+  h3("VES Inversion: Automatic Stepwise Method"),
   br(),
   br(),
   fluidRow(
