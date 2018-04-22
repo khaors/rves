@@ -720,7 +720,7 @@ shinyServer(function(input, output, session) {
     }
     # Sequential estimation using NLS
     #print(current.ves)
-    current.res <- calibrate_seq_nls(current.ves,
+    current.res <- calibrate_step_nls(current.ves,
                                  iterations = niterations,
                                  ireport = nreport,
                                  max.layers = max.layers)
@@ -793,7 +793,7 @@ shinyServer(function(input, output, session) {
       str1 <- "<h3>Results Parameter Estimation</h3><br>"
       str2 <- paste("<b>Relative Error(%)= </b>", format(rel.err, digits = 3), "<br>", sep = " ")
       str3 <- paste("<b>Mean Squared Error= </b>", format(mse, digits = 3), "<br>", sep = " ")
-      str4 <- paste("<b>Optimization Method= </b>", "NLS Sequential", "<br><br>", sep = " ")
+      str4 <- paste("<b>Optimization Method= </b>", "NLS Stepwise", "<br><br>", sep = " ")
       HTML(paste(str1, str2, str3, str4))
     })
     #
