@@ -2,7 +2,8 @@
 #'
 #' This section includes all the functions required for the estimation of the thicknesses and real resitivities from the VES data. The functions included here are:
 #'
-#' rss_resisitivity, log_rss_resistivity, mnad_resistivity, log_mnad_resistivity, mxad_resistivity, log_mxad_resistivity, calibrate, calibrate_nls, calibrate_svd
+#' rss_resisitivity, log_rss_resistivity, mnad_resistivity, log_mnad_resistivity, mxad_resistivity, log_mxad_resistivity, calibrate, calibrate_nls, calibrate_svd,
+#' calibrate_step_nls, calibrate_step
 #'
 #' @docType package
 #' @name rves
@@ -677,9 +678,9 @@ calibrate_ilsqp <- function(ves, iterations = 100, ireport = 10){
   return(res.current.layer)
 }
 #' @title
-#' calibrate_seq_nls
+#' calibrate_step_nls
 #' @description
-#' Sequential estimation of true resistivities and thicknesses of a VES.
+#' Stepwise estimation of true resistivities and thicknesses of a VES.
 #' @param ves A VES object
 #' @param iterations An integer specifying the maximum number of iterations
 #' @param ireport An integer specifying the report interval
@@ -705,7 +706,7 @@ calibrate_ilsqp <- function(ves, iterations = 100, ireport = 10){
 #' Oscar Garcia-Cabrejo \email{khaors@gmail.com}
 #' @family calibration functions
 #' @export
-calibrate_seq_nls <- function(ves, iterations = 100, ireport = 10,
+calibrate_step_nls <- function(ves, iterations = 100, ireport = 10,
                               max.layers = 10, select.measure = "rss"){
   if(class(ves) != "ves"){
     stop('ERROR: A VES object is required as input')
@@ -762,9 +763,9 @@ calibrate_seq_nls <- function(ves, iterations = 100, ireport = 10,
   return(best.res)
 }
 #' @title
-#' calibrate_seq
+#' calibrate_step
 #' @description
-#' Sequential VES inversion using different optimization algorithms
+#' Stepwise VES inversion using different optimization algorithms
 #' @param ves A VES object
 #' @param opt.method A character string specifying the optimization method to be used
 #' @param max.layers An integer with the maximum number of layers to be testsed
@@ -782,7 +783,7 @@ calibrate_seq_nls <- function(ves, iterations = 100, ireport = 10,
 #' Oscar Garcia-Cabrejo \email{khaors@gmail.com}
 #' @family calibration functions
 #' @export
-calibrate_seq <- function(ves, opt.method, max.layers = 10, lower = 1, upper = 500){
+calibrate_step <- function(ves, opt.method, max.layers = 10, lower = 1, upper = 500){
   if(class(ves) != "ves"){
     stop('ERROR: A VES object is required as input')
   }
