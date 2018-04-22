@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>smoothing.ves — smoothing.ves • rves</title>
+<title>calibrate_step — calibrate_step • rves</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -68,6 +68,15 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
+      <a href="../articles/rves-modelselection.html">VES Stepwise Estimation and Model selection using the rves package</a>
+    </li>
+    <li>
+      <a href="../articles/rves-smoothing.html">VES Smoothing using the rves package</a>
+    </li>
+    <li>
+      <a href="../articles/rves-transformation.html">Resistivity-Depth Transformations using the rves package</a>
+    </li>
+    <li>
       <a href="../articles/rves-tutorial.html">RVES Tutorial: Vertical Electrical Sounding interpretation using R</a>
     </li>
   </ul>
@@ -87,42 +96,65 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>smoothing.ves</h1>
+    <h1>calibrate_step</h1>
     </div>
 
     
-    <p>Function to smooth the measurements of the apparent resistivity of a VES</p>
+    <p>Stepwise VES inversion using different optimization algorithms</p>
     
 
-    <pre class="usage"><span class='fu'>smoothing.ves</span>(<span class='no'>ves</span>, <span class='kw'>method</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"smooth.spline"</span>, <span class='st'>"kernel.regression"</span>), <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>calibrate_step</span>(<span class='no'>ves</span>, <span class='no'>opt.method</span>, <span class='kw'>max.layers</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>lower</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>upper</span> <span class='kw'>=</span> <span class='fl'>500</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>ves</th>
-      <td><p>A Vertical Electric Sounding objet</p></td>
+      <td><p>A VES object</p></td>
     </tr>
     <tr>
-      <th>method</th>
-      <td><p>A character string specifying the smoothing method. Currently the following methods are implemented:</p><ul>
-<li><p>smooth.spline</p></li>
-<li><p>kernel.regression</p></li>
-</ul></td>
+      <th>opt.method</th>
+      <td><p>A character string specifying the optimization method to be used</p></td>
     </tr>
     <tr>
-      <th>...</th>
-      <td><p>Additional parameters required for the smoothing method</p></td>
+      <th>max.layers</th>
+      <td><p>An integer with the maximum number of layers to be testsed</p></td>
+    </tr>
+    <tr>
+      <th>lower</th>
+      <td><p>A numeric value</p></td>
+    </tr>
+    <tr>
+      <th>upper</th>
+      <td><p>A numeric value</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>This function returns a list with the following entries:</p><ul>
-<li><p>ab2: Values of the electrode separation</p></li>
-<li><p>apprho: Values of the smoothed apparent resistivity</p></li>
+<li><p>par: A numeric vector with the values of the layer resistivities and thicknesses</p></li>
+<li><p>value: The value or the RSS (Residual sum of squares)</p></li>
+<li><p>rel.error: The value of the relative error (in percentage)</p></li>
+<li><p>cal.error: A matrix with the RSS and relative error at each iteration</p></li>
 </ul>
 
+    
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <p>Other calibration functions: <code><a href='calibrate_ilsqp.html'>calibrate_ilsqp</a></code>,
+  <code><a href='calibrate_joint_nls.html'>calibrate_joint_nls</a></code>,
+  <code><a href='calibrate_nls.html'>calibrate_nls</a></code>,
+  <code><a href='calibrate_seq_joint_nls.html'>calibrate_seq_joint_nls</a></code>,
+  <code><a href='calibrate_step_nls.html'>calibrate_step_nls</a></code>,
+  <code><a href='calibrate_svd.html'>calibrate_svd</a></code>, <code><a href='calibrate.html'>calibrate</a></code>,
+  <code><a href='log_mnad_resistivity.html'>log_mnad_resistivity</a></code>,
+  <code><a href='log_mxad_resistivity.html'>log_mxad_resistivity</a></code>,
+  <code><a href='log_rss_resistivity.html'>log_rss_resistivity</a></code>,
+  <code><a href='mnad_resistivity.html'>mnad_resistivity</a></code>,
+  <code><a href='mxad_resistivity.html'>mxad_resistivity</a></code>,
+  <code><a href='relative_error_resitivity.html'>relative_error_resitivity</a></code>,
+  <code><a href='rss_resistivity.html'>rss_resistivity</a></code></p>
     
 
   </div>
@@ -132,6 +164,8 @@
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
+
+      <li><a href="#see-also">See also</a></li>
           </ul>
 
     <h2>Author</h2>
