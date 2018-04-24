@@ -68,7 +68,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/rves-modelselection.html">VES Stepwise Estimation and Model selection using the rves package</a>
+      <a href="../articles/rves-modelselection.html">Stepwise Estimation and Model selection of VES parameters using the rves package</a>
     </li>
     <li>
       <a href="../articles/rves-smoothing.html">VES Smoothing using the rves package</a>
@@ -103,7 +103,8 @@
     <p>Stepwise VES inversion using different optimization algorithms</p>
     
 
-    <pre class="usage"><span class='fu'>calibrate_step</span>(<span class='no'>ves</span>, <span class='no'>opt.method</span>, <span class='kw'>max.layers</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>lower</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>upper</span> <span class='kw'>=</span> <span class='fl'>500</span>)</pre>
+    <pre class="usage"><span class='fu'>calibrate_step</span>(<span class='no'>ves</span>, <span class='no'>opt.method</span>, <span class='kw'>max.layers</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>lower</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>upper</span> <span class='kw'>=</span> <span class='fl'>500</span>,
+  <span class='kw'>select.measure</span> <span class='kw'>=</span> <span class='st'>"rss"</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
@@ -127,6 +128,16 @@
     <tr>
       <th>upper</th>
       <td><p>A numeric value</p></td>
+    </tr>
+    <tr>
+      <th>select.measure</th>
+      <td><p>A character string specifying the criteria used to select the best
+model from the set of models tried during the sequential estimation. Available options
+are:</p><ul>
+<li><p>rss: (default) sum of residual squares</p></li>
+<li><p>aic: Akaike Information Criteria</p></li>
+<li><p>bic; Bayesian Information Criteria</p></li>
+</ul></td>
     </tr>
     </table>
     

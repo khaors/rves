@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VES Stepwise Estimation and Model selection using the rves package • rves</title>
+<title>Stepwise Estimation and Model selection of VES parameters using the rves package • rves</title>
 <!-- jquery --><script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script><!-- Font Awesome icons --><link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
 <!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
@@ -45,7 +45,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/rves-modelselection.html">VES Stepwise Estimation and Model selection using the rves package</a>
+      <a href="../articles/rves-modelselection.html">Stepwise Estimation and Model selection of VES parameters using the rves package</a>
     </li>
     <li>
       <a href="../articles/rves-smoothing.html">VES Smoothing using the rves package</a>
@@ -71,10 +71,10 @@
       </header><div class="row">
   <div class="col-md-9">
     <div class="page-header toc-ignore">
-      <h1>VES Stepwise Estimation and Model selection using the rves package</h1>
+      <h1>Stepwise Estimation and Model selection of VES parameters using the rves package</h1>
                         <h4 class="author">Oscar Garcia-Cabrejo</h4>
             
-            <h4 class="date">2018-04-22</h4>
+            <h4 class="date">2018-04-24</h4>
           </div>
 
     
@@ -83,8 +83,13 @@
 <div id="introduction" class="section level1">
 <h1 class="hasAnchor">
 <a href="#introduction" class="anchor"></a>Introduction</h1>
-<p>The Vertical Electrical Sounding (VES) is one of the oldest resistivity methods, and it is based on the measurements of the electrical apparent resistivity of the geological medium when the distance between the electrical source and the measurement nodes is increased.</p>
-<p>Main problem: Main use of VES is to define an Earth model composed of different layers with defined electrical resistivies and thicknesses, but the main problem with this procedure is the objective definition of the <em>number of layers</em> to be used in this parameter estimation. This means that the <em>number of layers</em> can be considered as another parameter to be estimated but this makes the whole estimation approach more difficult. A simple strategy used since the early days is to identify the inflection points in the apparent resistivity curve and the number of these define the numbers of layers to be estimated. This approach is based on the geometrical characteristics of the geoelectrical response of simple layered models and, although. it is easy to apply, it lacks of a proper foundation on estimation theory. In reality, <em>the number of layers</em> is a redundant parameter since it defines the number of resistivities and thicknesses to be estimated, and therefore its specification is not required as long as the resistivities and thicknesses are correctly specified.</p>
+<p>The Vertical Electrical Sounding (VES) is one of the oldest resistivity methods, and it is based on the measurements of the electrical apparent resistivity of the geological medium when the distance between the electrical source and the measurement nodes is increased. The main advantages of the VES include:</p>
+<ul>
+<li>low cost due to its minimal requirements for equipment and personal.</li>
+<li>large investigation depth as required in some specific problems such as groundwater exploration.</li>
+</ul>
+<p>The main use of VES is to define an Earth model composed of different layers with defined electrical resistivies and thicknesses, but the main problem with this procedure is the objective definition of the <em>number of layers</em> to be used in this parameter estimation. This means that the <em>number of layers</em> can be considered as another parameter to be estimated but this makes the whole estimation approach more difficult. A simple strategy used since the early days is to identify the inflection points in the apparent resistivity curve and the number of these define the numbers of layers to be estimated. This approach is based on the geometrical characteristics of the geoelectrical response of simple layered models and, although. it is easy to apply, it lacks of a proper foundation on estimation theory. In reality, <em>the number of layers</em> is a redundant parameter since it defines the number of resistivities and thicknesses to be estimated, and therefore its specification is not required as long as the resistivities and thicknesses are correctly specified.</p>
+<p>In this document, the basic concepts of the stepwise parameter estimation of VES and model selection are introduced and two examples using the rves package are presented.</p>
 </div>
 <div id="stepwise-estimation-and-model-selection" class="section level1">
 <h1 class="hasAnchor">
@@ -129,9 +134,13 @@
 <div id="example" class="section level1">
 <h1 class="hasAnchor">
 <a href="#example" class="anchor"></a>Example</h1>
-<div id="ves-1" class="section level2">
+<div id="simple-ves" class="section level2">
 <h2 class="hasAnchor">
-<a href="#ves-1" class="anchor"></a>VES 1</h2>
+<a href="#simple-ves" class="anchor"></a>Simple VES</h2>
+</div>
+<div id="complex-ves" class="section level2">
+<h2 class="hasAnchor">
+<a href="#complex-ves" class="anchor"></a>Complex VES</h2>
 </div>
 </div>
 </div>
@@ -151,7 +160,8 @@
 </li>
       <li>
 <a href="#example">Example</a><ul class="nav nav-pills nav-stacked">
-<li><a href="#ves-1">VES 1</a></li>
+<li><a href="#simple-ves">Simple VES</a></li>
+      <li><a href="#complex-ves">Complex VES</a></li>
       </ul>
 </li>
       </ul>
