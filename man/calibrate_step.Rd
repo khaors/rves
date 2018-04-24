@@ -4,7 +4,8 @@
 \alias{calibrate_step}
 \title{calibrate_step}
 \usage{
-calibrate_step(ves, opt.method, max.layers = 10, lower = 1, upper = 500)
+calibrate_step(ves, opt.method, max.layers = 10, lower = 1, upper = 500,
+  select.measure = "rss")
 }
 \arguments{
 \item{ves}{A VES object}
@@ -16,6 +17,15 @@ calibrate_step(ves, opt.method, max.layers = 10, lower = 1, upper = 500)
 \item{lower}{A numeric value}
 
 \item{upper}{A numeric value}
+
+\item{select.measure}{A character string specifying the criteria used to select the best
+model from the set of models tried during the sequential estimation. Available options
+are:
+\itemize{
+\item rss: (default) sum of residual squares
+\item aic: Akaike Information Criteria
+\item bic; Bayesian Information Criteria
+}}
 }
 \value{
 This function returns a list with the following entries:

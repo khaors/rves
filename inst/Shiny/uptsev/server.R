@@ -355,8 +355,8 @@ shinyServer(function(input, output, session) {
         tmp <- wellPanel(
           h3("NLS Options"),
           br(),
-          textInput(inputId = "nls_niter", label = "Number Iterations= ", value = 100),
-          textInput(inputId = "nls_nreport", label = "Number Iter Report= ", value = 10)
+          textInput(inputId = "nls_niter", label = "Number Iterations= ", value = 30),
+          textInput(inputId = "nls_nreport", label = "Number Iter Report= ", value = 5)
         )
       }
       else if(input$automatic_method == "L-BFGS-B"){
@@ -697,7 +697,7 @@ shinyServer(function(input, output, session) {
     #
     niterations <- isolate(as.numeric(input$seqIterations))
     validate(
-      need(niterations > 9, "Sequential Estimation: Number of iterations too low")
+      need(niterations > 9, "Stepwise Estimation: Number of iterations too low")
     )
     if(niterations < 9){
       return(NULL)
@@ -705,7 +705,7 @@ shinyServer(function(input, output, session) {
     #
     nreport <- isolate(as.numeric(input$seqReport))
     validate(
-      need(nreport > 0 & nreport < niterations, "Sequential Estimation: Number of report iterations wrong")
+      need(nreport > 0 & nreport < niterations, "Stepwise Estimation: Number of report iterations wrong")
     )
     if(nreport == 1 & nreport == niterations){
       return(NULL)
@@ -713,17 +713,32 @@ shinyServer(function(input, output, session) {
     #
     max.layers <- isolate(as.numeric(input$seqMaxlayers))
     validate(
-      need(max.layers > 1, "Sequential Estimation: Number of layers must be greater than 1")
+      need(max.layers > 1, "Stepwise Estimation: Number of layers must be greater than 1")
     )
     if(max.layers == 1){
       return(NULL)
     }
-    # Sequential estimation using NLS
+    # Stepwise estimation using NLS
     #print(current.ves)
-    current.res <- calibrate_step_nls(current.ves,
-                                 iterations = niterations,
-                                 ireport = nreport,
-                                 max.layers = max.layers)
+    current.optMethod <- isolate(input$seqOptMethod)
+    current.res <- NULL
+    if(current.optMethod == "None"){
+      return(NULL)
+    }
+    else if(current.optMethod == "NLS"){
+      current.res <- calibrate_step_nls(current.ves,
+                                        iterations = niterations,
+                                        ireport = nreport,
+                                        max.layers = max.layers)
+    }
+    else if(current.optMethod != "NLS"){
+      lower.lim <- isolate(as.numeric(input$seqLowerLim))
+      upper.lim <- isolate(as.numeric(input$seqUpperLim))
+      current.res <- calibrate_step(current.ves, opt.method = current.optMethod,
+                                    max.layers = max.layers,
+                                    lower = lower.lim,
+                                    upper = upper.lim)
+    }
     #
     current.ves$rhopar <- current.res$rho
     current.ves$thickpar <- current.res$thickness
@@ -793,7 +808,8 @@ shinyServer(function(input, output, session) {
       str1 <- "<h3>Results Parameter Estimation</h3><br>"
       str2 <- paste("<b>Relative Error(%)= </b>", format(rel.err, digits = 3), "<br>", sep = " ")
       str3 <- paste("<b>Mean Squared Error= </b>", format(mse, digits = 3), "<br>", sep = " ")
-      str4 <- paste("<b>Optimization Method= </b>", "NLS Stepwise", "<br><br>", sep = " ")
+      opt.m <- paste(input$seqOptMethod, " Stepwise")
+      str4 <- paste("<b>Optimization Method= </b>", opt.m, "<br><br>", sep = " ")
       HTML(paste(str1, str2, str3, str4))
     })
     #

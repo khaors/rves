@@ -229,12 +229,8 @@ transformationTab <- tabItem(
       br(),
       dataTableOutput("transform_results")
     )
-
-
   )
-
 )
-
 #########################################################################################
 #                                    Graphical Inversion Tab
 #########################################################################################
@@ -321,19 +317,31 @@ automaticSeqTab <- tabItem(
   br(),
   fluidRow(
     tags$em("On this tab you can estimate the Earth model (real resisivities and thicknesses),
-             whithout specifying an initial model, using different optimization techniques an Earth model with minimum error is found.
+             whithout specifying an initial model, using different optimization techniques an
+             Earth model with minimum error is found.
             Some fitness measures of the estimated model are presented below the plot.")
   ),
   br(),
   br(),
   sidebarLayout(
     sidebarPanel(
+      selectInput(inputId = "seqOptMethod", label = "Optimization Method",
+                  choices = c("None","NLS", "SA", "GA", "DE", "PSO"),
+                  selected = "None"),
+      br(),
       textInput(inputId = "seqIterations", label = "Maximum Number of Iterations", value = "10"),
       br(),
       textInput(inputId = "seqReport", label = "Report Iterations", value = "2"),
       br(),
       textInput(inputId = "seqMaxlayers", label = "Maximum Number of Layers", value = "10"),
       br(),
+      conditionalPanel(
+        condition = "input.seqOptMethod != 'None' & input.seqOptMethod !='NLS' ",
+        textInput(inputId = "seqLowerLim", label = "Resistivity,Thickness Lower limit",
+                  value = "1.0"),
+        textInput(inputId = "seqUpperLim", label = "Resistivity,Thickness Upper limit",
+                  value = "1000.0")
+      ),
       actionButton(inputId = "seq_plot", label = "Plot"),
       actionButton(inputId = "seqRun", label = "Run (a lot) VES Run (a lot)",
                    icon = icon("bicycle"))

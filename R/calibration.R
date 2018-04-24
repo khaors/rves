@@ -771,6 +771,14 @@ calibrate_step_nls <- function(ves, iterations = 100, ireport = 10,
 #' @param max.layers An integer with the maximum number of layers to be testsed
 #' @param lower A numeric value
 #' @param upper A numeric value
+#' @param select.measure  A character string specifying the criteria used to select the best
+#' model from the set of models tried during the sequential estimation. Available options
+#' are:
+#' \itemize{
+#' \item rss: (default) sum of residual squares
+#' \item aic: Akaike Information Criteria
+#' \item bic; Bayesian Information Criteria
+#' }
 #' @return
 #' This function returns a list with the following entries:
 #' \itemize{
@@ -783,7 +791,8 @@ calibrate_step_nls <- function(ves, iterations = 100, ireport = 10,
 #' Oscar Garcia-Cabrejo \email{khaors@gmail.com}
 #' @family calibration functions
 #' @export
-calibrate_step <- function(ves, opt.method, max.layers = 10, lower = 1, upper = 500){
+calibrate_step <- function(ves, opt.method, max.layers = 10, lower = 1, upper = 500,
+                           select.measure = "rss"){
   if(class(ves) != "ves"){
     stop('ERROR: A VES object is required as input')
   }
@@ -791,10 +800,14 @@ calibrate_step <- function(ves, opt.method, max.layers = 10, lower = 1, upper = 
   current.par <- NULL
   best.res <- NULL
   current.err <- 0.1
+  current.aic <- 1e10
+  max.aic <- 1e12
+  max.bic <- 1e12
   max.err <- 100
   depth <- ves$ab2/2.3
   thick <- diff(depth)
   n <- length(depth)
+  cat(paste0("Optimization Method: ", opt.method, "\n"))
   for(ilay in 2:max.layers){
     if(ilay <= length(thick)){
       pos <- round(seq(1, length(thick), length.out = ilay))
@@ -803,9 +816,10 @@ calibrate_step <- function(ves, opt.method, max.layers = 10, lower = 1, upper = 
       pos <- c(seq(1, length(thick)), rep(length(thick), (ilay-length(thick)+1) ))
     }
     current.par <- c(rep(mean(ves$appres), ilay), thick[pos])
-    print(ilay)
-    print(pos)
-    print(current.par)
+    cat(paste0("Current model: ", as.character(ilay), " Layers \n"))
+    #print(ilay)
+    #print(pos)
+    #print(current.par)
     lowerlim <- rep(rep(lower, ilay), 2)
     upperlim <- rep(rep(upper, ilay), 2)
     current.res <- calibrate(ves, par0 = current.par,
@@ -814,15 +828,30 @@ calibrate_step <- function(ves, opt.method, max.layers = 10, lower = 1, upper = 
                              lower = lowerlim,
                              upper = upperlim)
     current.err <- current.res$rel.err
-    if(current.err < max.err){
-      best.res <- current.res
-      max.err <- current.err
+    current.lik <- -(n/2)*log(2*pi)-(n/2)*log(current.res$value)
+    current.aic <- 2*(2*ilay-1)-2*current.lik
+    current.bic <- log(n)*(2*ilay-1)-2*current.lik
+    if(select.measure == "rss"){
+      if(current.err < max.err){
+        best.res <- current.res
+        max.err <- current.err
+      }
+    }
+    else if(select.measure == "aic"){
+      if(current.aic < max.aic){
+        best.res <- current.res
+        max.aic <- current.aic
+      }
+    }
+    else if(select.measure == "bic"){
+      if(current.bic < max.bic){
+        best.res <- current.res
+        max.bic <- current.bic
+      }
     }
   }
   res <- best.res
   return(best.res)
-
-
 }
 #' @title
 #' calibrate_joint_nls
