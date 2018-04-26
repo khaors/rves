@@ -70,15 +70,18 @@ smoothing_ves <- function(ves, method = c("smooth.spline", "kernel.regression",
     res <- list(ab2 = ab2.s, apprho = rho.s)
   }
   else if(method == "wavelet"){
-    ab2.out <- logseq(min(log10(ab2)), max(log10(ab2)), 32)
+    current.power <- floor(log(ndat)/log(2))+1
+    ab2.out <- logseq(min(log10(ab2)), 0.99*max(log10(ab2)), 2**current.power)
     apprho.approx <- approx(log10(ab2),log10(appres),
                             xout = log10(ab2.out), method = 'linear')
+    pos.valid <- is.na(apprho.approx$y)
+    #if(sum(pos.valid) > 0)
     waveletwmap <- wd(apprho.approx$y, family="DaubLeAsymm", filter.number=10)
     softthreshwmap <- threshold(waveletwmap, type="soft", policy="universal")
     hardthreshwmap <- threshold(waveletwmap, type="hard", policy="universal")
     s.soft <- wr(softthreshwmap)
     s.hard <- wr(hardthreshwmap)
-    xout <- c(1.01*ab2[1],ab2[2:(ndat-1)],0.99*ab2[ndat])
+    xout <- c(1.01*ab2[1],ab2[2:(ndat-1)],0.99*max(ab2.out))
     soft <- interp1(ab2.out, s.soft, xi = xout)
     hard <- interp1(ab2.out, s.hard, xi = xout)
     if(sum(is.na(soft)) >= 1){
