@@ -69,9 +69,12 @@ shinyServer(function(input, output, session) {
   #                               Filter VES Tab
   ########################################################################################
   filter.ves <- function(){
-    current.ves <- server.env$current.ves
+    current.ves <- isolate(server.env$current.ves)
     if(is.null(current.ves))
       return(NULL)
+    if(server.env$filtered){
+      return(NULL)
+    }
     filterMethod <- isolate(input$filterMethod)
     validate(
       need(filterMethod != "None", "Please select a filter method")
@@ -86,6 +89,9 @@ shinyServer(function(input, output, session) {
       bw <- isolate(as.numeric(input$kernel_bw))
       res <- smoothing_ves(current.ves, method = filterMethod, bw = bw)
     }
+    else if(filterMethod == "wavelet"){
+      res <- smoothing_ves(current.ves, method = filterMethod)
+    }
     #
     current.ves$ab2 <- res$ab2
     current.ves$appres <- res$apprho
@@ -96,21 +102,28 @@ shinyServer(function(input, output, session) {
   #
   observeEvent(input$filterRun, {
     output$filterResultsPlot <- renderPlot({
-      current.ves <- server.env$current.ves
+      current.ves <- isolate(server.env$current.ves)
       validate(
-        need(!is.null(current.ves), "The VES is not defined. No filtering applied.")
+        need(!is.null(current.ves), "The VES is not defined.  No filtering applied.")
       )
       if(is.null(current.ves))
         return(NULL)
       validate(
         need(!server.env$filtered, "The VES is already filtered")
       )
-      ab2.original <- current.ves$ab2
-      appres.original <- current.ves$appres
+      if(server.env$filtered){
+        return(NULL)
+      }
+      ab2.original <- isolate(current.ves$ab2)
+      appres.original <- isolate(current.ves$appres)
       current.ves <- filter.ves()
       p1 <- plot(current.ves, type = "ves")
       original.df <- data.frame(ab2 = ab2.original, appres = appres.original)
-      p1 <- p1 + geom_point(aes(x = ab2, y = appres), data = original.df)
+      current.title <- paste0(current.ves$id, " Filtered (", input$filterMethod,")")
+      p1 <- p1 + geom_point(aes(x = ab2, y = appres), data = original.df, show.legend = T) +
+        ggtitle(current.title) #+
+        #scale_colour_manual(name="Line.Color",
+        #                    values=c(red="red", black="black"))
       print(p1)
     })
     #

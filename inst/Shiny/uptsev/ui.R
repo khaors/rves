@@ -169,7 +169,7 @@ filterTab <- tabItem(
   sidebarLayout(
     sidebarPanel(
       selectInput(inputId = "filterMethod", label = "Filter Method ",
-                  choices = c("None", "smooth.spline", "kernel.regression"),
+                  choices = c("None", "smooth.spline", "kernel.regression", "wavelet"),
                   selected = "None"),
       br(),
       conditionalPanel(
