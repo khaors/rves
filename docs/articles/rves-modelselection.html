@@ -74,7 +74,7 @@
       <h1>Stepwise Estimation and Model selection of VES parameters using the rves package</h1>
                         <h4 class="author">Oscar Garcia-Cabrejo</h4>
             
-            <h4 class="date">2018-04-24</h4>
+            <h4 class="date">2018-04-26</h4>
           </div>
 
     
@@ -97,7 +97,16 @@
 <div id="stepwise-estimation-of-ves-parameters" class="section level2">
 <h2 class="hasAnchor">
 <a href="#stepwise-estimation-of-ves-parameters" class="anchor"></a>Stepwise Estimation of VES parameters</h2>
-<p>Explanation of the procedure.</p>
+<p>The stepwise estimation is a method of estimating model parameters in which the choice of number of parameters and their values are carried out by an automatic procedure. The basic idea is to increase the number of parameters in a stepwise fashion and evaluate the resulting model using a specific criteria such as RMSE, Akaike Information Criteria nad/or Bayesian Information Criteria.</p>
+<p>In the specific case of VES, this stepwise estimation is composed of the following steps:</p>
+<ul>
+<li>From a model of 2 layers to a maximum number of layers
+<ul>
+<li>Define an initial set of values of real resistivities and thicknesses</li>
+<li>Apply an estimation procedure such as NLS or other optimization technique the initial solution</li>
+</ul>
+</li>
+</ul>
 </div>
 <div id="model-selection-basic-concepts" class="section level2">
 <h2 class="hasAnchor">
