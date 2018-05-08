@@ -1,0 +1,110 @@
+---
+title:  "Stepwise Estimation and Model selection of VES parameters using the rves package"
+author: "Oscar Garcia-Cabrejo"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: "references_model1.bib"
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+library(rves)
+library(knitcitations)
+cleanbib()
+options("citation_format" = "pandoc")
+```
+
+# Introduction
+
+The Vertical Electrical Sounding (VES) is one of the oldest resistivity methods, and it is based on the measurements of the electrical apparent resistivity of the geological medium when the distance between the electrical source and the measurement nodes is increased. The main advantages of the VES include: 
+
+- low cost due to its minimal requirements for equipment and personal.
+- large investigation depth as required in some specific problems such as groundwater exploration.
+
+The main use of VES is to define an Earth model composed of different layers with defined electrical resistivies and thicknesses, but  the main problem with this procedure is the objective definition of the _number of layers_ to be used in this parameter estimation. This means that the _number of layers_ can be considered as another parameter to be estimated but this makes the whole estimation approach more difficult. A simple strategy used since the early days is to identify the inflection points in the apparent resistivity curve and the number of these define the numbers of layers to be estimated. This approach is based on the geometrical characteristics of the geoelectrical response of simple layered models and, although. it is easy to apply, it lacks of a proper foundation on estimation theory. In reality, _the number of layers_ is a redundant parameter since it defines the number of resistivities and thicknesses to be estimated, and therefore its specification is not required as long as the resistivities and thicknesses are correctly specified.
+
+The 
+
+In this document, the basic concepts of the stepwise parameter estimation of VES and model selection are introduced and two examples using the rves package are presented.
+
+# Stepwise Estimation and Model Selection
+
+## Stepwise Estimation of VES parameters
+
+The stepwise estimation is a method of estimating model parameters in which the choice of number of parameters and their values are carried out by an automatic procedure. The basic idea is to increase the number of parameters in a stepwise fashion and evaluate the resulting model using a specific criteria such as RMSE, Akaike Information Criteria nad/or Bayesian Information Criteria. 
+
+In the specific case of VES, this stepwise estimation is composed of the following steps:
+
++ From a model of 2 layers to a maximum number of layers, repeat:
+    - Define an initial set of values of real resistivities and thicknesses $(\rho_{i}^{0},h_{i}^{0})$ where $i=1,\ldots,n$ with $n$ as the current number of layers. The initial resistivities are equal to the mean value of the apparent resistivities:
+$$
+\rho^{0}=\underbrace{(\bar{\rho}, \bar{\rho}, \ldots, \bar{\rho})}_{n \text{ times}}
+$$ 
+The initial thicknesses are equal to the first $n-1$ values of $\overline{ab}/2$ transformed to depth using $h_{i}=(\overline{ab}/2)/2.3, i =1,\ldots,n-1$, and the final value of depth is given by $h_{n}=max(\overline{ab}/2)/2.3$ 
+$$
+h^{0}=(h_{1},\ldots,h_{n})
+$$
+    - Apply an estimation procedure such as NLS or other optimization technique the initial solution
+    - Calculate a model fit measure such as the Residual Sum of Squares, Akaike Information Criterion, Bayesian Information Criterion 
++ Select the best model according to the calculated model fit measure.
+
+A similar approach has been proposed by `r citet("10.1016/S0926-9851(99)00015-4")` where the initial solution of a two layer model is defined using the geometric mean of the resistivity values, and the results of the previously estimated model is used as initial solution of the model with the increased number of layers. 
+
+## Model Selection: Basic concepts
+
+The model selection procedure can be defined as the selection a statistical model from a set of candidate models fitted to the same dataset. This situation is very common in geophysics where several models can properly describe the measurements equally well, and therefore it does not make sense to choose a single model as a representation of the subsurface conditions. However, this is the conventional approach where the model that best explain the geophysical measurements is used in the subsequent geological interpretation. Given the importance of this interpretation in the decision making process, it is important to use valid and objective scientific principles in the selection of the statistical model.
+
+The key question of the model selection problem is the objective definition of the _the best model_. In general this definition is based on the goodness of fit of the estimated model, that is, how close the model explain the observations obtained in the field. This sounds reasonable at the beginning, however, this approach might overfit the model in the sense that a model with a large number of parameters eventually will explain the observations. This problematic situation 
+
+### Akaike Information Criterion
+
+$$
+\text{AIC}=2k-2\log{(\hat{L})}
+$$
+
+Gaussian distribution error
+
+$$
+\log{[\hat{L}(\hat{\rho},\sigma_{e}^{2})]}=\frac{n}{2}\log{(2\pi)}-\frac{n}{2}\log{\sigma_{e}^{2}}-\frac{1}{2\sigma_{e}^{2}}\sum_{i=1}^{n}(\rho_{i}-\hat{\rho}_{i})^{2}
+$$
+
+### Bayesian Information Criterion 
+
+$$
+\text{BIC}=\log{n}k-2\log{(\hat{L})}
+$$
+
+Gaussian distribution error
+
+$$
+\text{BIC}=n \log{\sigma_{e}^{2}}+k \log{n}
+$$
+$$
+\text{BIC}=n\log{\left( \frac{\text{rss}}{n} \right)} + k\log{n}
+$$
+
+$$
+\text{rss}=\sum_{i}^{n}(\rho_{i} - \hat{\rho}_{i})^{2}
+$$
+
+
+# Example
+
+## Simple VES 
+
+
+## Complex VES
+
+
+## References
+
+```{r bib,echo=FALSE,message=FALSE}
+write.bibtex(file="references_model1.bib")
+```
