@@ -807,6 +807,7 @@ calibrate_step <- function(ves, opt.method, max.layers = 10, lower = 1, upper = 
   max.aic <- 1e12
   max.bic <- 1e12
   max.err <- 100
+  all.measures <- matrix(0.0, nrow = (max.layers-1), ncol = 3)
   depth <- ves$ab2/2.3
   thick <- diff(depth)
   n <- length(depth)
@@ -832,8 +833,9 @@ calibrate_step <- function(ves, opt.method, max.layers = 10, lower = 1, upper = 
                              upper = upperlim)
     current.err <- current.res$rel.err
     current.lik <- -(n/2)*log(2*pi)-(n/2)*log(current.res$value)
-    current.aic <- 2*(2*ilay-1)-2*current.lik
+    current.aic <- 2*(2*ilray-1)-2*current.lik
     current.bic <- log(n)*(2*ilay-1)-2*current.lik
+    all.measures[(ilay-1),] <- c(current.err, current.aic, current.bic)
     if(select.measure == "rss"){
       if(current.err < max.err){
         best.res <- current.res
@@ -853,6 +855,7 @@ calibrate_step <- function(ves, opt.method, max.layers = 10, lower = 1, upper = 
       }
     }
   }
+  best.res$all.measures <- all.measures
   res <- best.res
   return(best.res)
 }
