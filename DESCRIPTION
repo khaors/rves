@@ -17,3 +17,5 @@ Suggests: knitr,
     covr, 
     knitcitations
 VignetteBuilder: knitr
+URL: https://khaors.github.io/rves/index.html
+BugReports: https://github.com/khaors/rves/issues
