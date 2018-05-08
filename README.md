@@ -5,7 +5,6 @@
 [![Coverage Status](https://img.shields.io/codecov/c/github/khaors/rves/master.svg)](https://codecov.io/github/khaors/rves?branch=master)
 [![HitCount](http://hits.dwyl.io/khaors/rves.svg)](http://hits.dwyl.io/khaors/rves)
 [![Github All Releases](https://img.shields.io/github/downloads/khaors/rves/total.svg)]()
-[![Downloads badge](https://badged.co/khaors/rves)
 [![DOI](https://zenodo.org/badge/109721720.svg)](https://zenodo.org/badge/latestdoi/109721720)
 
 
