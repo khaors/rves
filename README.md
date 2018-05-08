@@ -4,7 +4,6 @@
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/khaors/rves?branch=master&svg=true)](https://ci.appveyor.com/project/khaors/rves)
 [![Coverage Status](https://img.shields.io/codecov/c/github/khaors/rves/master.svg)](https://codecov.io/github/khaors/rves?branch=master)
 [![HitCount](http://hits.dwyl.io/khaors/rves.svg)](http://hits.dwyl.io/khaors/rves)
-[![bitHound Overall Score](https://www.bithound.io/github/khaors/rves/badges/score.svg)](https://www.bithound.io/github/khaors/rves)
 [![Github All Releases](https://img.shields.io/github/downloads/khaors/rves/total.svg)]()
 [![DOI](https://zenodo.org/badge/109721720.svg)](https://zenodo.org/badge/latestdoi/109721720)
 
