@@ -833,7 +833,7 @@ calibrate_step <- function(ves, opt.method, max.layers = 10, lower = 1, upper = 
                              upper = upperlim)
     current.err <- current.res$rel.err
     current.lik <- -(n/2)*log(2*pi)-(n/2)*log(current.res$value)
-    current.aic <- 2*(2*ilray-1)-2*current.lik
+    current.aic <- 2*(2*ilay-1)-2*current.lik
     current.bic <- log(n)*(2*ilay-1)-2*current.lik
     all.measures[(ilay-1),] <- c(current.err, current.aic, current.bic)
     if(select.measure == "rss"){
