@@ -108,7 +108,7 @@ $$
 D[U,\lambda]=\text{sgn}{(U)} \max{(0,|U|-\lambda)}
 $$
 
-The action of this operator is to nullify the values of $U$ for which $|U| < \lambda$, and reduce the values of $U$ to $|U|-\lambda$ in the case that $|U| > \lambda$. The small values of $U$ are associated with the high frequency variations in the signals, in other words, this variations are called noise. 
+The action of this operator is to nullify the values of $U$ for which $|U| < \lambda$, and reduce the values of $U$ to $|U|-\lambda$ in the case that $|U| > \lambda$. The small values of $U$ are associated with the high frequency variations in the signals, in other words, this variations are called noise. A similar approach has been used by `r citep("10.1007/s40808-016-0091-0")` to denoise VES curves.
 
 # Example
 
