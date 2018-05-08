@@ -26,7 +26,7 @@ on_failure:
   - appveyor PushArtifact failure.zip
 
 on_success:
-  - Rscript -e "covr::codecov()"
+  - Rscript -e "covr::codecov(token='afe4fe06-6171-48b2-972f-8c0ff33868a3')"
 
 artifacts:
   - path: '*.Rcheck\**\*.log'
