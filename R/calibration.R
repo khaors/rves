@@ -354,7 +354,35 @@ calibrate <- function(ves, opt.method = c("L-BFGS-B", "SA", "GA", "PSO", "DE"),
 #' @importFrom pracma mod
 #' @importFrom stats var
 #' @export
-calibrate_nls <- function(ves, par0, iterations = 100, ireport = 10){
+#' @examples
+#' # Example 1
+#' data(ves_data1)
+#' ab2 <- ves_data1$ab2
+#' apprho <- ves_data1$apprho
+#' sev1a <- ves(id= "VES1", ab2 = ab2, apprho = apprho)
+#' # Let's fit a four layer model
+#' rho <- c(40, 70, 30, 20)
+#' thick <- c(2, 10, 50, 500)
+#' par0 <- c(rho, thick)
+#' res.nls1 <- calibrate_nls(sev1a, par0, iterations = 30, ireport = 5)
+#' sev1a$rhopar <- res.nls1$rho
+#' sev1a$thickpar <- res.nls1$thickness
+#' sev1a$interpreted <- TRUE
+#' plot(sev1a, type = "ves")
+#' # Example 2
+#' data(ves_data2)
+#' ab2 <- ves_data2$ab2
+#' apprho <- ves_data2$apprho
+#' sev2a <- ves(id = "TD76", ab2 = ab2, apprho = apprho)
+#' rho <- c(20, 50, 100, 10)
+#' thick <- c(10, 20, 500, 100)
+#' par0 <- c(rho, thick)
+#' res.nls2 <- calibrate_nls(sev2a, par0, iterations = 30, ireport = 5)
+#' sev2a$rhopar <- res.nls2$rho
+#' sev2a$thickpar <- res.nls2$thickness
+#' sev2a$interpreted <- TRUE
+#' plot(sev2a, type = "ves")
+calibrate_nls <- function(ves, par0, iterations = 30, ireport = 10){
   if(class(ves) != "ves"){
     stop('ERROR: A VES object is required as input')
   }
@@ -610,7 +638,7 @@ calibrate_svd <- function(ves, par0, iterations = 100, ireport = 10){
 #' @references
 #' Muiuane, E. & Pedersen, L. Automatic 1D interpretation of DC resistivity sounding
 #' data. Journal of Applied Geophysics, 42, 1, 35-45, 1999.
-calibrate_ilsqp <- function(ves, iterations = 100, ireport = 10){
+calibrate_ilsqp <- function(ves, iterations = 30, ireport = 10){
   if(class(ves) != "ves"){
     stop('ERROR: A VES object is required as input')
   }
@@ -706,7 +734,7 @@ calibrate_ilsqp <- function(ves, iterations = 100, ireport = 10){
 #' Oscar Garcia-Cabrejo \email{khaors@gmail.com}
 #' @family calibration functions
 #' @export
-calibrate_step_nls <- function(ves, iterations = 100, ireport = 10,
+calibrate_step_nls <- function(ves, iterations = 30, ireport = 10,
                               max.layers = 10, select.measure = "rss"){
   if(class(ves) != "ves"){
     stop('ERROR: A VES object is required as input')
@@ -880,7 +908,7 @@ calibrate_step <- function(ves, opt.method, max.layers = 10, lower = 1, upper = 
 #' @family calibration functions
 #' @importFrom pracma eye inv
 #' @export
-calibrate_joint_nls <- function(ves.list, par0, iterations = 100, ireport = 10){
+calibrate_joint_nls <- function(ves.list, par0, iterations = 30, ireport = 10){
   if(class(ves.list) != "list"){
     stop("ERROR: a list is required as input")
   }
@@ -1068,7 +1096,7 @@ calibrate_joint_nls <- function(ves.list, par0, iterations = 100, ireport = 10){
 #' Oscar Garcia-Cabrejo \email{khaors@gmail.com}
 #' @family calibration functions
 #' @export
-calibrate_seq_joint_nls <- function(ves.list, iterations = 100, ireport = 10,
+calibrate_seq_joint_nls <- function(ves.list, iterations = 30, ireport = 10,
                                     max.layers = 10){
   if(class(ves.list) != "list"){
     stop('ERROR: A list object is required as input')
