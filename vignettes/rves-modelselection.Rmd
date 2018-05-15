@@ -123,11 +123,12 @@ ves1 <- ves(id = "VES1", ab2 = ves_data1$ab2, apprho = ves_data1$apprho)
 ### RSS
 
 ```{r simple_stepwise_rss,echo=TRUE,eval=FALSE}
-res.rss <- calibrate_step_nls(ves1, max.layers = 10, iterations = 30, ireport = 5, 
-                              select.measure = "rss")
+res.rss <- calibrate_step_nls(ves1, max.layers = 10, iterations = 30, 
+                              ireport = 5, trace = FALSE)
 ```
 
-```{r simple_stepwise_rss1,echo=FALSE,eval=TRUE,message=FALSE,warning=FALSE}
+```{r simple_stepwise_all,echo=FALSE,eval=TRUE,message=FALSE,warning=FALSE}
+ves1.rss <- ves1
 rho.rss <- c(49.06263,  44.49187, 108.55586,  20.36878)
 thick.rss <-c(1.006542, 3.336569, 8.984935, 8.695652)
 all.measures <- matrix(0.0, nrow = 9, ncol = 3)
@@ -141,17 +142,50 @@ labels <- c("Layer1", "Layer2", "Layer3", "Layer4")
 rss.results <- cbind(labels, rho.rss, thick.rss)
 rss.results.df <- as.data.frame(rss.results)
 names(rss.results.df) <- c("Layer", "Resistivity", "Thickness")
-```
-
-```{r simple_plot_rss,fig.align='center',fig.height=4,fig.width=4}
 res.rss.df <- as.data.frame(all.measures)
 names(res.rss.df) <- c("RSS", "AIC", "BIC")
 res.rss.df$Layers <- seq(2, 10 , by = 1)
+ves1.rss$rhopar <- rho.rss
+ves1.rss$thickpar<- thick.rss
+ves1.rss$interpreted <- TRUE
+#
+ves1.aic <- ves1
+rho.aic <- c(43.08747, 81.52829, 20.18257)
+thick.aic <- c(2.822144, 13.388220,  8.695652)
+labels <- c("Layer1", "Layer2", "Layer3")
+aic.results <- cbind(labels, rho.aic, thick.aic)
+aic.results.df <- as.data.frame(aic.results)
+names(aic.results.df) <- c("Layer", "Resistivity", "Thickness")
+ves1.aic$rhopar <- rho.aic
+ves1.aic$thickpar<- thick.aic
+ves1.aic$interpreted <- TRUE
+#
+ves1.bic <- ves1
+rho.bic <- c(43.08747, 81.52829, 20.18257)
+thick.bic <- c(2.822144, 13.388220,  8.695652)
+labels <- c("Layer1", "Layer2", "Layer3")
+bic.results <- cbind(labels, rho.aic, thick.aic)
+bic.results.df <- as.data.frame(aic.results)
+names(bic.results.df) <- c("Layer", "Resistivity", "Thickness")
+ves1.bic$rhopar <- rho.bic
+ves1.bic$thickpar <- thick.bic
+ves1.bic$interpreted <- TRUE
+```
+
+```{r simple_plot_model,fig.align='center',fig.height=6,fig.width=6}
 p1 <- ggplot() + geom_line(aes(x = Layers, y = RSS),data = res.rss.df) + 
   xlab("Number of Layers") + 
   ylab("RSS") + 
   ggtitle("VES1: Residual Sum of Squares")
-print(p1)
+p2 <- ggplot() + geom_line(aes(x = Layers, y = AIC),data = res.rss.df) + 
+  xlab("Number of Layers") + 
+  ylab("AIC") + 
+  ggtitle("VES1: Akaike Information Criterion")
+p3 <- ggplot() + geom_line(aes(x = Layers, y = BIC),data = res.rss.df) + 
+  xlab("Number of Layers") + 
+  ylab("BIC") + 
+  ggtitle("VES1: Bayesian Information Criterion")
+grid.arrange(p1, p2 ,p3, ncol = 2)
 ```
 
 
@@ -160,90 +194,30 @@ knitr::kable(rss.results.df, format = "html") %>%
   kable_styling(position = "center")
 ```
 
-```{r simple_assign_results,echo=TRUE,eval=FALSE}
-ves1$rho <- res.rss$rho
-ves1$thickness <- res.rss$thickness
-ves1$interpreted <- TRUE
-```
 
-```{r simple_assign_results1,echo=FALSE,eval=TRUE}
-ves1$rhopar <- rho.rss
-ves1$thickpar<- thick.rss
-ves1$interpreted <- TRUE
-```
 
-```{r simple_plot_results,fig.height=4,fig.width=6,fig.align='center'}
-plot(ves1, type = "ves", main = "4 Layers, Model Selection (RSS)")
-```
 
-### AIC
-
-```{r simple_plot_aic,fig.align='center',fig.height=4,fig.width=4}
-res.rss.df <- as.data.frame(all.measures)
-names(res.rss.df) <- c("RSS", "AIC", "BIC")
-res.rss.df$Layers <- seq(2, 10 , by = 1)
-p2 <- ggplot() + geom_line(aes(x = Layers, y = AIC),data = res.rss.df) + 
-  xlab("Number of Layers") + 
-  ylab("AIC") + 
-  ggtitle("VES1: Akaike Information Criterion")
-print(p2)
+```{r simple_plot_results,fig.height=8,fig.width=6,fig.align='center'}
+p1rss <- plot(ves1.rss, type = "ves", main = "4 Layers, Model Selection (RSS)")
+p1aic <- plot(ves1.aic, type = "ves", main = "3 Layers, Model Selection (AIC)")
+p1bic <- plot(ves1.bic, type = "ves", main = "3 Layers, Model Selection (BIC)")
+grid.arrange(p1rss, p1aic, p1bic, ncol = 1)
 ```
 
 
-```{r simple_aic_results,echo=FALSE,eval=TRUE}
-rho.aic <- c(43.08747, 81.52829, 20.18257)
-thick.aic <- c(2.822144, 13.388220,  8.695652)
-labels <- c("Layer1", "Layer2", "Layer3")
-aic.results <- cbind(labels, rho.aic, thick.aic)
-aic.results.df <- as.data.frame(aic.results)
-names(aic.results.df) <- c("Layer", "Resistivity", "Thickness")
-```
+
 
 ```{r simple_aic_table,echo=TRUE}
 knitr::kable(aic.results.df, format = "html") %>%
   kable_styling(position = "center")
 ```
 
-```{r simple_assign_results2,echo=FALSE,eval=TRUE}
-ves1$rhopar <- rho.aic
-ves1$thickpar<- thick.aic
-ves1$interpreted <- TRUE
-```
-
-```{r simple_plot_results2,fig.height=4,fig.width=6,fig.align='center'}
-plot(ves1, type = "ves", main = "3 Layers, Model Selection (AIC)")
-```
-
-### Bayesian Information Criterion
-
-```{r simple_plot_bic,fig.align='center',fig.height=4,fig.width=4}
-res.rss.df <- as.data.frame(all.measures)
-names(res.rss.df) <- c("RSS", "AIC", "BIC")
-res.rss.df$Layers <- seq(2, 10 , by = 1)
-p3 <- ggplot() + geom_line(aes(x = Layers, y = BIC),data = res.rss.df) + 
-  xlab("Number of Layers") + 
-  ylab("BIC") + 
-  ggtitle("VES1: Bayesian Information Criterion")
-print(p3)
-```
 
 
-```{r simple_bic_results,echo=FALSE,eval=TRUE}
-rho.bic <- c(43.08747, 81.52829, 20.18257)
-thick.bic <- c(2.822144, 13.388220,  8.695652)
-labels <- c("Layer1", "Layer2", "Layer3")
-bic.results <- cbind(labels, rho.aic, thick.aic)
-bic.results.df <- as.data.frame(aic.results)
-names(bic.results.df) <- c("Layer", "Resistivity", "Thickness")
-```
 
 ```{r simple_bic_table,echo=TRUE}
 knitr::kable(bic.results.df, format = "html") %>%
   kable_styling(position = "center")
-```
-
-```{r simple_plot_results3,fig.height=4,fig.width=6,fig.align='center'}
-plot(ves1, type = "ves", main = "3 Layers, Model Selection (BIC)")
 ```
 
 ## Complex VES
@@ -258,17 +232,17 @@ ves.cmplx <- ves(id = "TD76", ab2 = ves_data2$ab2, apprho = ves_data2$apprho)
 plot(ves.cmplx, type = "ves")
 ```
 
-### RSS
 
 ```{r complex_stepwise_rss,echo=TRUE,eval=FALSE}
-res.cmplx.rss <- calibrate_step_nls(ves.cmplx, max.layers = 10, 
+res.cmplx <- calibrate_step_nls(ves.cmplx, max.layers = 10, 
                                     iterations = 30, 
                                     ireport = 5,
-                                    select.measure = "rss")
+                                    trace = FALSE)
 ```
 
 
 ```{r complex_res_rss,echo=FALSE,eval=TRUE}
+ves.cmplx.rss <- ves.cmplx
 cmplx.rho.rss <- c(41.35838, 37.661513, 46.788869, 60.973329, 71.382119, 47.843352,
                    156.645104, 9.891039)
 cmplx.thick.rss <- c(2.236968, 3.576888, 5.662676, 9.872395, 27.960167, 70.828327, 
@@ -285,13 +259,30 @@ cmplx.all.measures[,3] <- c(-32.33085, -25.97382, -86.56125, -83.00634,
 cmplx.all.measures.df <- as.data.frame(cmplx.all.measures)
 names(cmplx.all.measures.df) <- c("RSS", "AIC", "BIC")
 cmplx.all.measures.df$Layers <- seq(2, 10, by =1)
+ves.cmplx.rss$rhopar <- cmplx.rho.rss
+ves.cmplx.rss$thickpar <- cmplx.thick.rss
+ves.cmplx.rss$interpreted <- TRUE
+#
+ves.cmplx.aic <- ves.cmplx
+cmplx.rho.aic <- c(36.612874, 47.304857, 71.050388,  6.927041)
+cmplx.thick.aic <- c(3.38634,  16.24706, 438.38431,  55.66174)
+ves.cmplx.aic$rhopar <- cmplx.rho.aic
+ves.cmplx.aic$thickpar <- cmplx.thick.aic
+ves.cmplx.aic$interpreted <- TRUE
+#
+ves.cmplx.bic <- ves.cmplx
+cmplx.rho.bic <- c(36.612874, 47.304857, 71.050388,  6.927041)
+cmplx.thick.bic <- c(3.38634,  16.24706, 438.38431,  55.66174)
+ves.cmplx.bic$rhopar <- cmplx.rho.bic
+ves.cmplx.bic$thickpar <- cmplx.thick.bic
+ves.cmplx.bic$interpreted <- TRUE
 ```
 
 ```{r complex_plots_number_layers,echo=TRUE}
 pc1 <- ggplot() + geom_line(aes(x = Layers, y = RSS), data = cmplx.all.measures.df) + 
   xlab("Number of Layers") + 
   ylab("RSS") + 
-    ggtitle("a) Residual Sum of Squares")
+    ggtitle("a) Residual Sum of Squares") 
 pc2 <- ggplot() + geom_line(aes(x = Layers, y = AIC), data = cmplx.all.measures.df) + 
   xlab("Number of Layers") + 
   ylab("AIC")+ 
@@ -307,35 +298,14 @@ grid.arrange(pc1,pc2,pc3,ncol=2)
 ```
 
 
-### AIC
 
-```{r complex_stepwise_aic,echo=TRUE,eval=FALSE}
-ves.cmplx.aic <- ves.cmplx
-res.cmplx.aic <- calibrate_step_nls(ves.cmplx.aic, max.layers = 10, 
-                                    iterations = 30, 
-                                    ireport = 5,
-                                    select.measure = "aic")
+
+```{r complex_aic_results,fig.height=8,fig.width=6,fig.align='center'}
+p1cmplx <- plot(ves.cmplx.rss, type = "ves", main = "9 Layers, Model Selection (RSS)")
+p2cmplx <- plot(ves.cmplx.aic, type = "ves", main = "4 Layers, Model Selection (AIC)")
+p3cmplx <- plot(ves.cmplx.bic, type = "ves", main = "4 Layers, Model Selection (BIC)")
+grid.arrange(p1cmplx, p2cmplx, p3cmplx, nrow = 3)
 ```
-
-
-```{r complex_res_aic,echo=FALSE,eval=TRUE}
-ves.cmplx.aic <- ves.cmplx
-cmplx.rho.aic <- c(36.612874, 47.304857, 71.050388,  6.927041)
-cmplx.thick.aic <- c(3.38634,  16.24706, 438.38431,  55.66174)
-```
-
-```{r complex_aic_assign_results,echo=TRUE}
-ves.cmplx.aic$rhopar <- cmplx.rho.aic
-ves.cmplx.aic$thickpar <- cmplx.thick.aic
-ves.cmplx.aic$interpreted <- TRUE
-```
-
-```{r complex_aic_results,fig.height=4,fig.width=6,fig.align='center'}
-plot(ves.cmplx.aic,type="ves")
-```
-
-### BIC
-
 
 
 ## References

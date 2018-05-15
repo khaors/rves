@@ -175,17 +175,22 @@ ves1 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/ves.ht
 <div id="rss" class="section level3">
 <h3 class="hasAnchor">
 <a href="#rss" class="anchor"></a>RSS</h3>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">res.rss &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calibrate_step_nls.html">calibrate_step_nls</a></span>(ves1, <span class="dt">max.layers =</span> <span class="dv">10</span>, <span class="dt">iterations =</span> <span class="dv">30</span>, <span class="dt">ireport =</span> <span class="dv">5</span>, 
-                              <span class="dt">select.measure =</span> <span class="st">"rss"</span>)</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">res.rss.df &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>(all.measures)
-<span class="kw">names</span>(res.rss.df) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">"RSS"</span>, <span class="st">"AIC"</span>, <span class="st">"BIC"</span>)
-res.rss.df<span class="op">$</span>Layers &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">2</span>, <span class="dv">10</span> , <span class="dt">by =</span> <span class="dv">1</span>)
-p1 &lt;-<span class="st"> </span><span class="kw">ggplot</span>() <span class="op">+</span><span class="st"> </span><span class="kw">geom_line</span>(<span class="kw">aes</span>(<span class="dt">x =</span> Layers, <span class="dt">y =</span> RSS),<span class="dt">data =</span> res.rss.df) <span class="op">+</span><span class="st"> </span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">res.rss &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calibrate_step_nls.html">calibrate_step_nls</a></span>(ves1, <span class="dt">max.layers =</span> <span class="dv">10</span>, <span class="dt">iterations =</span> <span class="dv">30</span>, 
+                              <span class="dt">ireport =</span> <span class="dv">5</span>, <span class="dt">trace =</span> <span class="ot">FALSE</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p1 &lt;-<span class="st"> </span><span class="kw">ggplot</span>() <span class="op">+</span><span class="st"> </span><span class="kw">geom_line</span>(<span class="kw">aes</span>(<span class="dt">x =</span> Layers, <span class="dt">y =</span> RSS),<span class="dt">data =</span> res.rss.df) <span class="op">+</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">xlab</span>(<span class="st">"Number of Layers"</span>) <span class="op">+</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">ylab</span>(<span class="st">"RSS"</span>) <span class="op">+</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">"VES1: Residual Sum of Squares"</span>)
-<span class="kw">print</span>(p1)</code></pre></div>
-<p><img src="rves-modelselection_files/figure-html/simple_plot_rss-1.png" width="384" style="display: block; margin: auto;"></p>
+p2 &lt;-<span class="st"> </span><span class="kw">ggplot</span>() <span class="op">+</span><span class="st"> </span><span class="kw">geom_line</span>(<span class="kw">aes</span>(<span class="dt">x =</span> Layers, <span class="dt">y =</span> AIC),<span class="dt">data =</span> res.rss.df) <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">xlab</span>(<span class="st">"Number of Layers"</span>) <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">ylab</span>(<span class="st">"AIC"</span>) <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">"VES1: Akaike Information Criterion"</span>)
+p3 &lt;-<span class="st"> </span><span class="kw">ggplot</span>() <span class="op">+</span><span class="st"> </span><span class="kw">geom_line</span>(<span class="kw">aes</span>(<span class="dt">x =</span> Layers, <span class="dt">y =</span> BIC),<span class="dt">data =</span> res.rss.df) <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">xlab</span>(<span class="st">"Number of Layers"</span>) <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">ylab</span>(<span class="st">"BIC"</span>) <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">"VES1: Bayesian Information Criterion"</span>)
+<span class="kw">grid.arrange</span>(p1, p2 ,p3, <span class="dt">ncol =</span> <span class="dv">2</span>)</code></pre></div>
+<p><img src="rves-modelselection_files/figure-html/simple_plot_model-1.png" width="576" style="display: block; margin: auto;"></p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">knitr<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(rss.results.df, <span class="dt">format =</span> <span class="st">"html"</span>) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">kable_styling</span>(<span class="dt">position =</span> <span class="st">"center"</span>)</code></pre></div>
 <table class="table" style="margin-left: auto; margin-right: auto;">
@@ -247,24 +252,11 @@ Layer4
 </tr>
 </tbody>
 </table>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ves1<span class="op">$</span>rho &lt;-<span class="st"> </span>res.rss<span class="op">$</span>rho
-ves1<span class="op">$</span>thickness &lt;-<span class="st"> </span>res.rss<span class="op">$</span>thickness
-ves1<span class="op">$</span>interpreted &lt;-<span class="st"> </span><span class="ot">TRUE</span></code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(ves1, <span class="dt">type =</span> <span class="st">"ves"</span>, <span class="dt">main =</span> <span class="st">"4 Layers, Model Selection (RSS)"</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p1rss &lt;-<span class="st"> </span><span class="kw">plot</span>(ves1.rss, <span class="dt">type =</span> <span class="st">"ves"</span>, <span class="dt">main =</span> <span class="st">"4 Layers, Model Selection (RSS)"</span>)
+p1aic &lt;-<span class="st"> </span><span class="kw">plot</span>(ves1.aic, <span class="dt">type =</span> <span class="st">"ves"</span>, <span class="dt">main =</span> <span class="st">"3 Layers, Model Selection (AIC)"</span>)
+p1bic &lt;-<span class="st"> </span><span class="kw">plot</span>(ves1.bic, <span class="dt">type =</span> <span class="st">"ves"</span>, <span class="dt">main =</span> <span class="st">"3 Layers, Model Selection (BIC)"</span>)
+<span class="kw">grid.arrange</span>(p1rss, p1aic, p1bic, <span class="dt">ncol =</span> <span class="dv">1</span>)</code></pre></div>
 <p><img src="rves-modelselection_files/figure-html/simple_plot_results-1.png" width="576" style="display: block; margin: auto;"></p>
-</div>
-<div id="aic" class="section level3">
-<h3 class="hasAnchor">
-<a href="#aic" class="anchor"></a>AIC</h3>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">res.rss.df &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>(all.measures)
-<span class="kw">names</span>(res.rss.df) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">"RSS"</span>, <span class="st">"AIC"</span>, <span class="st">"BIC"</span>)
-res.rss.df<span class="op">$</span>Layers &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">2</span>, <span class="dv">10</span> , <span class="dt">by =</span> <span class="dv">1</span>)
-p2 &lt;-<span class="st"> </span><span class="kw">ggplot</span>() <span class="op">+</span><span class="st"> </span><span class="kw">geom_line</span>(<span class="kw">aes</span>(<span class="dt">x =</span> Layers, <span class="dt">y =</span> AIC),<span class="dt">data =</span> res.rss.df) <span class="op">+</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">xlab</span>(<span class="st">"Number of Layers"</span>) <span class="op">+</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">ylab</span>(<span class="st">"AIC"</span>) <span class="op">+</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">"VES1: Akaike Information Criterion"</span>)
-<span class="kw">print</span>(p2)</code></pre></div>
-<p><img src="rves-modelselection_files/figure-html/simple_plot_aic-1.png" width="384" style="display: block; margin: auto;"></p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">knitr<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(aic.results.df, <span class="dt">format =</span> <span class="st">"html"</span>) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">kable_styling</span>(<span class="dt">position =</span> <span class="st">"center"</span>)</code></pre></div>
 <table class="table" style="margin-left: auto; margin-right: auto;">
@@ -315,21 +307,6 @@ Layer3
 </tr>
 </tbody>
 </table>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(ves1, <span class="dt">type =</span> <span class="st">"ves"</span>, <span class="dt">main =</span> <span class="st">"3 Layers, Model Selection (AIC)"</span>)</code></pre></div>
-<p><img src="rves-modelselection_files/figure-html/simple_plot_results2-1.png" width="576" style="display: block; margin: auto;"></p>
-</div>
-<div id="bayesian-information-criterion-1" class="section level3">
-<h3 class="hasAnchor">
-<a href="#bayesian-information-criterion-1" class="anchor"></a>Bayesian Information Criterion</h3>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">res.rss.df &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>(all.measures)
-<span class="kw">names</span>(res.rss.df) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">"RSS"</span>, <span class="st">"AIC"</span>, <span class="st">"BIC"</span>)
-res.rss.df<span class="op">$</span>Layers &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">2</span>, <span class="dv">10</span> , <span class="dt">by =</span> <span class="dv">1</span>)
-p3 &lt;-<span class="st"> </span><span class="kw">ggplot</span>() <span class="op">+</span><span class="st"> </span><span class="kw">geom_line</span>(<span class="kw">aes</span>(<span class="dt">x =</span> Layers, <span class="dt">y =</span> BIC),<span class="dt">data =</span> res.rss.df) <span class="op">+</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">xlab</span>(<span class="st">"Number of Layers"</span>) <span class="op">+</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">ylab</span>(<span class="st">"BIC"</span>) <span class="op">+</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">"VES1: Bayesian Information Criterion"</span>)
-<span class="kw">print</span>(p3)</code></pre></div>
-<p><img src="rves-modelselection_files/figure-html/simple_plot_bic-1.png" width="384" style="display: block; margin: auto;"></p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">knitr<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(bic.results.df, <span class="dt">format =</span> <span class="st">"html"</span>) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">kable_styling</span>(<span class="dt">position =</span> <span class="st">"center"</span>)</code></pre></div>
 <table class="table" style="margin-left: auto; margin-right: auto;">
@@ -380,8 +357,6 @@ Layer3
 </tr>
 </tbody>
 </table>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(ves1, <span class="dt">type =</span> <span class="st">"ves"</span>, <span class="dt">main =</span> <span class="st">"3 Layers, Model Selection (BIC)"</span>)</code></pre></div>
-<p><img src="rves-modelselection_files/figure-html/simple_plot_results3-1.png" width="576" style="display: block; margin: auto;"></p>
 </div>
 </div>
 <div id="complex-ves" class="section level2">
@@ -391,17 +366,14 @@ Layer3
 ves.cmplx &lt;-<span class="st"> </span><span class="kw"><a href="../reference/ves.html">ves</a></span>(<span class="dt">id =</span> <span class="st">"TD76"</span>, <span class="dt">ab2 =</span> ves_data2<span class="op">$</span>ab2, <span class="dt">apprho =</span> ves_data2<span class="op">$</span>apprho) </code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(ves.cmplx, <span class="dt">type =</span> <span class="st">"ves"</span>)</code></pre></div>
 <p><img src="rves-modelselection_files/figure-html/complex_plot1-1.png" width="576" style="display: block; margin: auto;"></p>
-<div id="rss-1" class="section level3">
-<h3 class="hasAnchor">
-<a href="#rss-1" class="anchor"></a>RSS</h3>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">res.cmplx.rss &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calibrate_step_nls.html">calibrate_step_nls</a></span>(ves.cmplx, <span class="dt">max.layers =</span> <span class="dv">10</span>, 
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">res.cmplx &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calibrate_step_nls.html">calibrate_step_nls</a></span>(ves.cmplx, <span class="dt">max.layers =</span> <span class="dv">10</span>, 
                                     <span class="dt">iterations =</span> <span class="dv">30</span>, 
                                     <span class="dt">ireport =</span> <span class="dv">5</span>,
-                                    <span class="dt">select.measure =</span> <span class="st">"rss"</span>)</code></pre></div>
+                                    <span class="dt">trace =</span> <span class="ot">FALSE</span>)</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pc1 &lt;-<span class="st"> </span><span class="kw">ggplot</span>() <span class="op">+</span><span class="st"> </span><span class="kw">geom_line</span>(<span class="kw">aes</span>(<span class="dt">x =</span> Layers, <span class="dt">y =</span> RSS), <span class="dt">data =</span> cmplx.all.measures.df) <span class="op">+</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">xlab</span>(<span class="st">"Number of Layers"</span>) <span class="op">+</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">ylab</span>(<span class="st">"RSS"</span>) <span class="op">+</span><span class="st"> </span>
-<span class="st">    </span><span class="kw">ggtitle</span>(<span class="st">"a) Residual Sum of Squares"</span>)
+<span class="st">    </span><span class="kw">ggtitle</span>(<span class="st">"a) Residual Sum of Squares"</span>) 
 pc2 &lt;-<span class="st"> </span><span class="kw">ggplot</span>() <span class="op">+</span><span class="st"> </span><span class="kw">geom_line</span>(<span class="kw">aes</span>(<span class="dt">x =</span> Layers, <span class="dt">y =</span> AIC), <span class="dt">data =</span> cmplx.all.measures.df) <span class="op">+</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">xlab</span>(<span class="st">"Number of Layers"</span>) <span class="op">+</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">ylab</span>(<span class="st">"AIC"</span>)<span class="op">+</span><span class="st"> </span>
@@ -412,25 +384,11 @@ pc3 &lt;-<span class="st"> </span><span class="kw">ggplot</span>() <span class="
 <span class="st">    </span><span class="kw">ggtitle</span>(<span class="st">"c) Bayesian Information Crit."</span>)</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">grid.arrange</span>(pc1,pc2,pc3,<span class="dt">ncol=</span><span class="dv">2</span>)</code></pre></div>
 <p><img src="rves-modelselection_files/figure-html/cmplx_plots_number_layers1-1.png" width="576" style="display: block; margin: auto;"></p>
-</div>
-<div id="aic-1" class="section level3">
-<h3 class="hasAnchor">
-<a href="#aic-1" class="anchor"></a>AIC</h3>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ves.cmplx.aic &lt;-<span class="st"> </span>ves.cmplx
-res.cmplx.aic &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calibrate_step_nls.html">calibrate_step_nls</a></span>(ves.cmplx.aic, <span class="dt">max.layers =</span> <span class="dv">10</span>, 
-                                    <span class="dt">iterations =</span> <span class="dv">30</span>, 
-                                    <span class="dt">ireport =</span> <span class="dv">5</span>,
-                                    <span class="dt">select.measure =</span> <span class="st">"aic"</span>)</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ves.cmplx.aic<span class="op">$</span>rhopar &lt;-<span class="st"> </span>cmplx.rho.aic
-ves.cmplx.aic<span class="op">$</span>thickpar &lt;-<span class="st"> </span>cmplx.thick.aic
-ves.cmplx.aic<span class="op">$</span>interpreted &lt;-<span class="st"> </span><span class="ot">TRUE</span></code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(ves.cmplx.aic,<span class="dt">type=</span><span class="st">"ves"</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p1cmplx &lt;-<span class="st"> </span><span class="kw">plot</span>(ves.cmplx.rss, <span class="dt">type =</span> <span class="st">"ves"</span>, <span class="dt">main =</span> <span class="st">"9 Layers, Model Selection (RSS)"</span>)
+p2cmplx &lt;-<span class="st"> </span><span class="kw">plot</span>(ves.cmplx.aic, <span class="dt">type =</span> <span class="st">"ves"</span>, <span class="dt">main =</span> <span class="st">"4 Layers, Model Selection (AIC)"</span>)
+p3cmplx &lt;-<span class="st"> </span><span class="kw">plot</span>(ves.cmplx.bic, <span class="dt">type =</span> <span class="st">"ves"</span>, <span class="dt">main =</span> <span class="st">"4 Layers, Model Selection (BIC)"</span>)
+<span class="kw">grid.arrange</span>(p1cmplx, p2cmplx, p3cmplx, <span class="dt">nrow =</span> <span class="dv">3</span>)</code></pre></div>
 <p><img src="rves-modelselection_files/figure-html/complex_aic_results-1.png" width="576" style="display: block; margin: auto;"></p>
-</div>
-<div id="bic" class="section level3">
-<h3 class="hasAnchor">
-<a href="#bic" class="anchor"></a>BIC</h3>
-</div>
 </div>
 <div id="references" class="section level2 unnumbered">
 <h2 class="hasAnchor">

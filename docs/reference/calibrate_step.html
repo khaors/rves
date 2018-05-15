@@ -122,7 +122,7 @@
     </div>
 
     <pre class="usage"><span class='fu'>calibrate_step</span>(<span class='no'>ves</span>, <span class='no'>opt.method</span>, <span class='kw'>max.layers</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>lower</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>upper</span> <span class='kw'>=</span> <span class='fl'>500</span>,
-  <span class='kw'>select.measure</span> <span class='kw'>=</span> <span class='st'>"rss"</span>)</pre>
+  <span class='kw'>trace</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -148,14 +148,8 @@
       <td><p>A numeric value</p></td>
     </tr>
     <tr>
-      <th>select.measure</th>
-      <td><p>A character string specifying the criteria used to select the best
-model from the set of models tried during the sequential estimation. Available options
-are:</p><ul>
-<li><p>rss: (default) sum of residual squares</p></li>
-<li><p>aic: Akaike Information Criteria</p></li>
-<li><p>bic; Bayesian Information Criteria</p></li>
-</ul></td>
+      <th>trace</th>
+      <td><p>A logical flag indicating if optimization information must be shown</p></td>
     </tr>
     </table>
     
