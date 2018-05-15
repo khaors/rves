@@ -179,6 +179,9 @@ plot_ves <- function(x, main = NULL, ...){
     }
   }
   if(ves$interpreted){
+    if(is.null(ves$rhopar) || is.null(ves$thickpar)){
+      stop('ERROR: The interpreted VES has no real resistivities and/or thicknesses.')
+    }
     ymn <- 0.8*min(ves$appres, ves$rhopar)
     ymx <- 1.5*max(ves$appres, ves$rhopar)
     #print(c(ymn,ymx))
