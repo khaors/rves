@@ -7,7 +7,7 @@ vignette: >
   %\VignetteIndexEntry{Vignette Title}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
-bibliography: "references_model1.bib"
+bibliography: "references_model1.bib"  
 ---
 
 ```{r setup, include = FALSE}
@@ -19,6 +19,7 @@ library(rves)
 library(knitcitations)
 cleanbib()
 options("citation_format" = "pandoc")
+library(ggplot2)
 ```
 
 # Introduction
@@ -55,7 +56,7 @@ $$
     - Calculate a model fit measure such as the Residual Sum of Squares, Akaike Information Criterion, Bayesian Information Criterion 
 + Select the best model according to the calculated model fit measure.
 
-A similar approach has been proposed by `r citet("10.1016/S0926-9851(99)00015-4")` where the initial solution of a two layer model is defined using the geometric mean of the resistivity values, and the results of the previously estimated model is used as initial solution of the model with the increased number of layers. 
+A similar approach has been proposed by `r citet("10.1016/S0926-9851(99)00015-4")`  where the initial solution of a two layer model is defined using the geometric mean of the resistivity values, and the results of the previously estimated model is used as initial solution of the model with the increased number of layers. 
 
 ## Model Selection: Basic concepts
 
@@ -98,6 +99,132 @@ $$
 # Example
 
 ## Simple VES 
+
+
+```{r simple_define,echo=TRUE}
+data("ves_data1")
+ves1 <- ves(id = "VES1", ab2 = ves_data1$ab2, apprho = ves_data1$apprho)
+```
+
+### RSS
+
+```{r simple_stepwise_rss,echo=TRUE,eval=FALSE}
+res.rss <- calibrate_step_nls(ves1, max.layers = 10, iterations = 30, ireport = 5, 
+                              select.measure = "rss")
+```
+
+```{r simple_stepwise_rss1,echo=FALSE,eval=TRUE,message=FALSE,warning=FALSE}
+rho.rss <- c(49.06263,  44.49187, 108.55586,  20.36878)
+thick.rss <-c(1.006542, 3.336569, 8.984935, 8.695652)
+all.measures <- matrix(0.0, nrow = 9, ncol = 3)
+all.measures[,1] <- c(2.784224, 1.513741, 1.414793, 1.846105, 2.324617, 
+                      2.347320, 1.487248, 1.480523, 1.479165)
+all.measures[,2] <- c(-72.15779, -93.02688, -91.80565, -74.68620, -33.44304,  
+                       97.78786, -73.86698, -70.02291, -66.18881)
+all.measures[,3] <- c(-69.48667, -88.57503, -85.57305, -66.67286, -23.64895, 
+                      109.36270, -60.51140, -54.88659, -49.27175)
+labels <- c("Layer1", "Layer2", "Layer3", "Layer4")
+rss.results <- cbind(labels, rho.rss, thick.rss)
+rss.results.df <- as.data.frame(rss.results)
+names(rss.results.df) <- c("Layer", "Resistivity", "Thickness")
+```
+
+```{r simple_plot_rss,fig.align='center',fig.height=4,fig.width=4}
+res.rss.df <- as.data.frame(all.measures)
+names(res.rss.df) <- c("RSS", "AIC", "BIC")
+res.rss.df$Layers <- seq(2, 10 , by = 1)
+p1 <- ggplot() + geom_line(aes(x = Layers, y = RSS),data = res.rss.df) + 
+  xlab("Number of Layers") + 
+  ylab("RSS") + 
+  ggtitle("VES1: Residual Sum of Squares")
+print(p1)
+```
+
+
+```{r simple_results_table,echo=TRUE}
+knitr::kable(rss.results.df)
+```
+
+```{r simple_assign_results,echo=TRUE,eval=FALSE}
+ves1$rho <- res.rss$rho
+ves1$thickness <- res.rss$thickness
+ves1$interpreted <- TRUE
+```
+
+```{r simple_assign_results1,echo=FALSE,eval=TRUE}
+ves1$rhopar <- rho.rss
+ves1$thickpar<- thick.rss
+ves1$interpreted <- TRUE
+```
+
+```{r simple_plot_results,fig.height=4,fig.width=6,fig.align='center'}
+plot(ves1, type = "ves", main = "4 Layers, Model Selection (RSS)")
+```
+
+### AIC
+
+```{r simple_plot_aic,fig.align='center',fig.height=4,fig.width=4}
+res.rss.df <- as.data.frame(all.measures)
+names(res.rss.df) <- c("RSS", "AIC", "BIC")
+res.rss.df$Layers <- seq(2, 10 , by = 1)
+p2 <- ggplot() + geom_line(aes(x = Layers, y = AIC),data = res.rss.df) + 
+  xlab("Number of Layers") + 
+  ylab("AIC") + 
+  ggtitle("VES1: Akaike Information Criterion")
+print(p2)
+```
+
+
+```{r simple_aic_results,echo=FALSE,eval=TRUE}
+rho.aic <- c(43.08747, 81.52829, 20.18257)
+thick.aic <- c(2.822144, 13.388220,  8.695652)
+labels <- c("Layer1", "Layer2", "Layer3")
+aic.results <- cbind(labels, rho.aic, thick.aic)
+aic.results.df <- as.data.frame(aic.results)
+names(aic.results.df) <- c("Layer", "Resistivity", "Thickness")
+```
+
+```{r simple_aic_table,echo=TRUE}
+knitr::kable(aic.results.df)
+```
+
+```{r simple_assign_results2,echo=FALSE,eval=TRUE}
+ves1$rhopar <- rho.aic
+ves1$thickpar<- thick.aic
+ves1$interpreted <- TRUE
+```
+
+```{r simple_plot_results2,fig.height=4,fig.width=6,fig.align='center'}
+plot(ves1, type = "ves", main = "3 Layers, Model Selection (AIC)")
+```
+
+### Bayesian Information Criterion
+
+```{r simple_plot_bic,fig.align='center',fig.height=4,fig.width=4}
+res.rss.df <- as.data.frame(all.measures)
+names(res.rss.df) <- c("RSS", "AIC", "BIC")
+res.rss.df$Layers <- seq(2, 10 , by = 1)
+p3 <- ggplot() + geom_line(aes(x = Layers, y = BIC),data = res.rss.df) + 
+  xlab("Number of Layers") + 
+  ylab("BIC") + 
+  ggtitle("VES1: Bayesian Information Criterion")
+print(p3)
+```
+
+
+```{r simple_bic_results,echo=FALSE,eval=TRUE}
+rho.bic <- c(43.08747, 81.52829, 20.18257)
+thick.bic <- c(2.822144, 13.388220,  8.695652)
+labels <- c("Layer1", "Layer2", "Layer3")
+bic.results <- cbind(labels, rho.aic, thick.aic)
+bic.results.df <- as.data.frame(aic.results)
+names(bic.results.df) <- c("Layer", "Resistivity", "Thickness")
+```
+
+```{r simple_bic_table,echo=TRUE}
+knitr::kable(bic.results.df)
+```
+
 
 
 ## Complex VES
