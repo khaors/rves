@@ -131,7 +131,8 @@ layers are included.</p>
 
     <pre class="usage"><span class='co'># S3 method for ves</span>
 <span class='fu'>plot</span>(<span class='no'>x</span>, <span class='kw'>main</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"ves"</span>, <span class='st'>"transformation"</span>,
-  <span class='st'>"diagnostic"</span>), <span class='kw'>trans.type</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"direct"</span>, <span class='st'>"scaling"</span>), <span class='no'>...</span>)</pre>
+  <span class='st'>"diagnostic"</span>), <span class='kw'>trans.type</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"direct"</span>, <span class='st'>"scaling"</span>, <span class='st'>"zohdy"</span>,
+  <span class='st'>"zohdy.smoothed"</span>), <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -151,8 +152,8 @@ earth model), transformation (resistivity-depth transformation) and diagnostic a
     </tr>
     <tr>
       <th>trans.type</th>
-      <td><p>A character string specifying the transformation type. Only direct and scaling
-are currently supported.</p></td>
+      <td><p>A character string specifying the transformation type. Only direct, scaling,
+zohdy and zohdy.smoothed  are currently supported.</p></td>
     </tr>
     <tr>
       <th>...</th>
@@ -160,13 +161,55 @@ are currently supported.</p></td>
     </tr>
     </table>
     
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
+    <div class='dont-index'><p>Other base functions: <code><a href='print.ves.html'>print.ves</a></code>,
+  <code><a href='summary.ves.html'>summary.ves</a></code>, <code><a href='ves.html'>ves</a></code></p></div>
+    
+
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='fu'>data</span>(<span class='no'>ves_data1</span>)
+<span class='no'>ab2</span> <span class='kw'>&lt;-</span> <span class='no'>ves_data1</span>$<span class='no'>ab2</span>
+<span class='no'>apprho</span> <span class='kw'>&lt;-</span> <span class='no'>ves_data1</span>$<span class='no'>apprho</span>
+<span class='no'>sev1a</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='ves.html'>ves</a></span>(<span class='kw'>id</span><span class='kw'>=</span> <span class='st'>"VES1"</span>, <span class='kw'>ab2</span> <span class='kw'>=</span> <span class='no'>ab2</span>, <span class='kw'>apprho</span> <span class='kw'>=</span> <span class='no'>apprho</span>)
+<span class='co'># Conventional VES plot</span>
+<span class='fu'>plot</span>(<span class='no'>sev1a</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"ves"</span>)</div><div class='img'><img src='plot.ves-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'># Apply direct transformation to sev1a</span>
+<span class='fu'>plot</span>(<span class='no'>sev1a</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"transformation"</span>, <span class='kw'>trans.type</span> <span class='kw'>=</span> <span class='st'>"direct"</span>)</div><div class='img'><img src='plot.ves-2.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'># Apply scaling transformation to sev1a</span>
+<span class='fu'>plot</span>(<span class='no'>sev1a</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"transformation"</span>, <span class='kw'>trans.type</span> <span class='kw'>=</span> <span class='st'>"scaling"</span>)</div><div class='img'><img src='plot.ves-3.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'># Apply Zohdy transformation to sev1a</span>
+<span class='fu'>plot</span>(<span class='no'>sev1a</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"transformation"</span>, <span class='kw'>trans.type</span> <span class='kw'>=</span> <span class='st'>"zohdy"</span>)</div><div class='img'><img src='plot.ves-4.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'># Apply Zohdy smoothed transformation to sev1a</span>
+<span class='fu'>plot</span>(<span class='no'>sev1a</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"transformation"</span>, <span class='kw'>trans.type</span> <span class='kw'>=</span> <span class='st'>"scaling"</span>)</div><div class='img'><img src='plot.ves-5.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'># Diagnostic plot</span>
+<span class='no'>rho</span> <span class='kw'>&lt;-</span> <span class='fu'>c</span>(<span class='fl'>40</span>,<span class='fl'>70</span>,<span class='fl'>30</span>, <span class='fl'>20</span>)
+<span class='no'>thick</span> <span class='kw'>&lt;-</span> <span class='fu'>c</span>(<span class='fl'>2</span>,<span class='fl'>10</span>,<span class='fl'>50</span>,<span class='fl'>500</span>)
+<span class='no'>par0</span> <span class='kw'>&lt;-</span> <span class='fu'>c</span>(<span class='no'>rho</span>, <span class='no'>thick</span>)
+<span class='no'>res.nls</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='calibrate_nls.html'>calibrate_nls</a></span>(<span class='no'>sev1a</span>, <span class='no'>par0</span>, <span class='kw'>iterations</span> <span class='kw'>=</span> <span class='fl'>30</span>, <span class='kw'>ireport</span> <span class='kw'>=</span> <span class='fl'>5</span>)</div><div class='output co'>#&gt; iteration, RSS, Rel Error =  0 0.0026274 3.394969 
+#&gt; iteration, RSS, Rel Error =  5 0.000757266 1.782435 
+#&gt; iteration, RSS, Rel Error =  10 0.000557687 1.547716 
+#&gt; iteration, RSS, Rel Error =  15 0.0005190975 1.513008 
+#&gt; iteration, RSS, Rel Error =  20 0.0005036183 1.498741 
+#&gt; iteration, RSS, Rel Error =  25 0.0004935954 1.48755 
+#&gt; iteration, RSS, Rel Error =  29 0.0004873611 1.479721 </div><div class='input'><span class='no'>sev1a</span>$<span class='no'>rhopar</span> <span class='kw'>&lt;-</span> <span class='no'>res.nls</span>$<span class='no'>rho</span>
+<span class='no'>sev1a</span>$<span class='no'>thickpar</span> <span class='kw'>&lt;-</span> <span class='no'>res.nls</span>$<span class='no'>thickness</span>
+<span class='no'>sev1a</span>$<span class='no'>interpreted</span> <span class='kw'>&lt;-</span> <span class='fl'>TRUE</span>
+<span class='fu'>plot</span>(<span class='no'>sev1a</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"ves"</span>)</div><div class='img'><img src='plot.ves-6.png' alt='' width='700' height='433' /></div><div class='input'><span class='no'>p1</span> <span class='kw'>&lt;-</span> <span class='fu'>plot</span>(<span class='no'>sev1a</span>, <span class='kw'>type</span> <span class='kw'>=</span><span class='st'>"diagnostic"</span>)</div><div class='output co'>#&gt; <span class='message'>`geom_smooth()` using method = 'loess'</span></div><div class='output co'>#&gt; <span class='message'>`geom_smooth()` using method = 'loess'</span></div><div class='input'><span class='fu'>print</span>(<span class='no'>p1</span>)</div><div class='output co'>#&gt; TableGrob (2 x 2) "arrange": 4 grobs
+#&gt;   z     cells    name           grob
+#&gt; 1 1 (1-1,1-1) arrange gtable[layout]
+#&gt; 2 2 (1-1,2-2) arrange gtable[layout]
+#&gt; 3 3 (2-2,1-1) arrange gtable[layout]
+#&gt; 4 4 (2-2,2-2) arrange gtable[layout]</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-                </ul>
+      
+      <li><a href="#see-also">See also</a></li>
+      
+      <li><a href="#examples">Examples</a></li>
+    </ul>
+
+    <h2>Author</h2>
+    
+Oscar Garcia-Cabrejo <a href='mailto:khaors@gmail.com'>khaors@gmail.com</a>
 
   </div>
 </div>

@@ -81,7 +81,7 @@
       <h1>Stepwise Estimation and Model selection of VES parameters using the rves package</h1>
                         <h4 class="author">Oscar Garcia-Cabrejo</h4>
             
-            <h4 class="date">2018-05-14</h4>
+            <h4 class="date">2018-05-15</h4>
       
       
       <div class="hidden name"><code>rves-modelselection.Rmd</code></div>
@@ -135,27 +135,30 @@ h^{0}=(h_{1},\ldots,h_{n})
 <div id="akaike-information-criterion" class="section level3">
 <h3 class="hasAnchor">
 <a href="#akaike-information-criterion" class="anchor"></a>Akaike Information Criterion</h3>
+<p>The AIC is a statistical measure designed to choose the best model from a set of candidate models that depends on the trade off between the goodness of fit between the proposed model and the measurements and the number of estimated parameters <span class="citation">(Akaike 1974)</span>. Therefore this is an useful tool for model selection. The model with the minimum value of the AIC among a set of competing models is selected as the best.</p>
+<p>The estimator of the Akaike Information Criterion of a model with a maximum likelihood value of the likelihood function <span class="math inline">\(\hat{L}\)</span> and <span class="math inline">\(k\)</span> parameters is given by:</p>
 <p><span class="math display">\[
 \text{AIC}=2k-2\log{(\hat{L})}
 \]</span></p>
-<p>Gaussian distribution error</p>
-<p><span class="math display">\[
+<p>The previous expression can be simplified under the assumption of a Normal distribution for the residuals, which leads to the following expression for the Likelihood function:<br><span class="math display">\[
 \log{[\hat{L}(\hat{\rho},\sigma_{e}^{2})]}=\frac{n}{2}\log{(2\pi)}-\frac{n}{2}\log{\sigma_{e}^{2}}-\frac{1}{2\sigma_{e}^{2}}\sum_{i=1}^{n}(\rho_{i}-\hat{\rho}_{i})^{2}
-\]</span></p>
+\]</span> where <span class="math inline">\(\hat{\rho}\)</span> is the vector of the model parameters including the real resistivities and the layer thicknesses, <span class="math inline">\(\sigma_{e}^{2}\)</span> is the variance of the residuals, and <span class="math inline">\(n\)</span> is the number of data, <span class="math inline">\(\rho_{i}\)</span> are the measured apparent resistivities and <span class="math inline">\(\hat{\rho}_{i}\)</span> are the calculated apparent resistivities.</p>
 </div>
 <div id="bayesian-information-criterion" class="section level3">
 <h3 class="hasAnchor">
 <a href="#bayesian-information-criterion" class="anchor"></a>Bayesian Information Criterion</h3>
+<p>The Bayesian Information Criterion (also known as Schwarz Criterion) was developed by Gideon Schwarz <span class="citation">(Schwarz 1978)</span>, and it is based on the same idea as the AIC where the two terms are used in the model selection procedure: the first term is related to the goodness of fit of the model and the second term is related to a penalty for the number of the parameters in the model. In general, this penalty term is greater in the BIC than in the AIC.</p>
+<p>The estimator of the BIC is given by:</p>
 <p><span class="math display">\[
-\text{BIC}=\log{n}k-2\log{(\hat{L})}
-\]</span></p>
-<p>Gaussian distribution error</p>
+\text{BIC}=k\log{n}-2\log{(\hat{L})}
+\]</span> where <span class="math inline">\(\hat{L}\)</span> is the maximum likelihood obtained by the model, <span class="math inline">\(k\)</span> is the number of parameters and <span class="math inline">\(n\)</span> is the number of data used in the parameter estimation.</p>
+<p>When the residuals follow a Gaussian Distribution then the previous equation becomes:</p>
 <p><span class="math display">\[
 \text{BIC}=n \log{\sigma_{e}^{2}}+k \log{n}
-\]</span> <span class="math display">\[
-\text{BIC}=n\log{\left( \frac{\text{rss}}{n} \right)} + k\log{n}
-\]</span></p>
+\]</span> where <span class="math inline">\(\sigma_{e}^{2}\)</span> is the variance of the residuals. When the Residual Sum of Squares is used as goodness of fit measure then the previous equation is transformed into:</p>
 <p><span class="math display">\[
+\text{BIC}=n\log{\left( \frac{\text{rss}}{n} \right)} + k\log{n}
+\]</span> where the Residual Sum of Squares is given by: <span class="math display">\[
 \text{rss}=\sum_{i}^{n}(\rho_{i} - \hat{\rho}_{i})^{2}
 \]</span></p>
 </div>
@@ -183,33 +186,64 @@ p1 &lt;-<span class="st"> </span><span class="kw">ggplot</span>() <span class="o
 <span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">"VES1: Residual Sum of Squares"</span>)
 <span class="kw">print</span>(p1)</code></pre></div>
 <p><img src="rves-modelselection_files/figure-html/simple_plot_rss-1.png" width="384" style="display: block; margin: auto;"></p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">knitr<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(rss.results.df)</code></pre></div>
-<table class="table">
-<thead><tr class="header">
-<th align="left">Layer</th>
-<th align="left">Resistivity</th>
-<th align="left">Thickness</th>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">knitr<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(rss.results.df, <span class="dt">format =</span> <span class="st">"html"</span>) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">kable_styling</span>(<span class="dt">position =</span> <span class="st">"center"</span>)</code></pre></div>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<thead><tr>
+<th style="text-align:left;">
+Layer
+</th>
+<th style="text-align:left;">
+Resistivity
+</th>
+<th style="text-align:left;">
+Thickness
+</th>
 </tr></thead>
 <tbody>
-<tr class="odd">
-<td align="left">Layer1</td>
-<td align="left">49.06263</td>
-<td align="left">1.006542</td>
+<tr>
+<td style="text-align:left;">
+Layer1
+</td>
+<td style="text-align:left;">
+49.06263
+</td>
+<td style="text-align:left;">
+1.006542
+</td>
 </tr>
-<tr class="even">
-<td align="left">Layer2</td>
-<td align="left">44.49187</td>
-<td align="left">3.336569</td>
+<tr>
+<td style="text-align:left;">
+Layer2
+</td>
+<td style="text-align:left;">
+44.49187
+</td>
+<td style="text-align:left;">
+3.336569
+</td>
 </tr>
-<tr class="odd">
-<td align="left">Layer3</td>
-<td align="left">108.55586</td>
-<td align="left">8.984935</td>
+<tr>
+<td style="text-align:left;">
+Layer3
+</td>
+<td style="text-align:left;">
+108.55586
+</td>
+<td style="text-align:left;">
+8.984935
+</td>
 </tr>
-<tr class="even">
-<td align="left">Layer4</td>
-<td align="left">20.36878</td>
-<td align="left">8.695652</td>
+<tr>
+<td style="text-align:left;">
+Layer4
+</td>
+<td style="text-align:left;">
+20.36878
+</td>
+<td style="text-align:left;">
+8.695652
+</td>
 </tr>
 </tbody>
 </table>
@@ -231,28 +265,53 @@ p2 &lt;-<span class="st"> </span><span class="kw">ggplot</span>() <span class="o
 <span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">"VES1: Akaike Information Criterion"</span>)
 <span class="kw">print</span>(p2)</code></pre></div>
 <p><img src="rves-modelselection_files/figure-html/simple_plot_aic-1.png" width="384" style="display: block; margin: auto;"></p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">knitr<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(aic.results.df)</code></pre></div>
-<table class="table">
-<thead><tr class="header">
-<th align="left">Layer</th>
-<th align="left">Resistivity</th>
-<th align="left">Thickness</th>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">knitr<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(aic.results.df, <span class="dt">format =</span> <span class="st">"html"</span>) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">kable_styling</span>(<span class="dt">position =</span> <span class="st">"center"</span>)</code></pre></div>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<thead><tr>
+<th style="text-align:left;">
+Layer
+</th>
+<th style="text-align:left;">
+Resistivity
+</th>
+<th style="text-align:left;">
+Thickness
+</th>
 </tr></thead>
 <tbody>
-<tr class="odd">
-<td align="left">Layer1</td>
-<td align="left">43.08747</td>
-<td align="left">2.822144</td>
+<tr>
+<td style="text-align:left;">
+Layer1
+</td>
+<td style="text-align:left;">
+43.08747
+</td>
+<td style="text-align:left;">
+2.822144
+</td>
 </tr>
-<tr class="even">
-<td align="left">Layer2</td>
-<td align="left">81.52829</td>
-<td align="left">13.38822</td>
+<tr>
+<td style="text-align:left;">
+Layer2
+</td>
+<td style="text-align:left;">
+81.52829
+</td>
+<td style="text-align:left;">
+13.38822
+</td>
 </tr>
-<tr class="odd">
-<td align="left">Layer3</td>
-<td align="left">20.18257</td>
-<td align="left">8.695652</td>
+<tr>
+<td style="text-align:left;">
+Layer3
+</td>
+<td style="text-align:left;">
+20.18257
+</td>
+<td style="text-align:left;">
+8.695652
+</td>
 </tr>
 </tbody>
 </table>
@@ -262,18 +321,129 @@ p2 &lt;-<span class="st"> </span><span class="kw">ggplot</span>() <span class="o
 <div id="bayesian-information-criterion-1" class="section level3">
 <h3 class="hasAnchor">
 <a href="#bayesian-information-criterion-1" class="anchor"></a>Bayesian Information Criterion</h3>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">res.rss.df &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>(all.measures)
+<span class="kw">names</span>(res.rss.df) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">"RSS"</span>, <span class="st">"AIC"</span>, <span class="st">"BIC"</span>)
+res.rss.df<span class="op">$</span>Layers &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">2</span>, <span class="dv">10</span> , <span class="dt">by =</span> <span class="dv">1</span>)
+p3 &lt;-<span class="st"> </span><span class="kw">ggplot</span>() <span class="op">+</span><span class="st"> </span><span class="kw">geom_line</span>(<span class="kw">aes</span>(<span class="dt">x =</span> Layers, <span class="dt">y =</span> BIC),<span class="dt">data =</span> res.rss.df) <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">xlab</span>(<span class="st">"Number of Layers"</span>) <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">ylab</span>(<span class="st">"BIC"</span>) <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">"VES1: Bayesian Information Criterion"</span>)
+<span class="kw">print</span>(p3)</code></pre></div>
+<p><img src="rves-modelselection_files/figure-html/simple_plot_bic-1.png" width="384" style="display: block; margin: auto;"></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">knitr<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(bic.results.df, <span class="dt">format =</span> <span class="st">"html"</span>) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">kable_styling</span>(<span class="dt">position =</span> <span class="st">"center"</span>)</code></pre></div>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<thead><tr>
+<th style="text-align:left;">
+Layer
+</th>
+<th style="text-align:left;">
+Resistivity
+</th>
+<th style="text-align:left;">
+Thickness
+</th>
+</tr></thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Layer1
+</td>
+<td style="text-align:left;">
+43.08747
+</td>
+<td style="text-align:left;">
+2.822144
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Layer2
+</td>
+<td style="text-align:left;">
+81.52829
+</td>
+<td style="text-align:left;">
+13.38822
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Layer3
+</td>
+<td style="text-align:left;">
+20.18257
+</td>
+<td style="text-align:left;">
+8.695652
+</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(ves1, <span class="dt">type =</span> <span class="st">"ves"</span>, <span class="dt">main =</span> <span class="st">"3 Layers, Model Selection (BIC)"</span>)</code></pre></div>
+<p><img src="rves-modelselection_files/figure-html/simple_plot_results3-1.png" width="576" style="display: block; margin: auto;"></p>
 </div>
 </div>
 <div id="complex-ves" class="section level2">
 <h2 class="hasAnchor">
 <a href="#complex-ves" class="anchor"></a>Complex VES</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(<span class="st">"ves_data2"</span>)
+ves.cmplx &lt;-<span class="st"> </span><span class="kw"><a href="../reference/ves.html">ves</a></span>(<span class="dt">id =</span> <span class="st">"TD76"</span>, <span class="dt">ab2 =</span> ves_data2<span class="op">$</span>ab2, <span class="dt">apprho =</span> ves_data2<span class="op">$</span>apprho) </code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(ves.cmplx, <span class="dt">type =</span> <span class="st">"ves"</span>)</code></pre></div>
+<p><img src="rves-modelselection_files/figure-html/complex_plot1-1.png" width="576" style="display: block; margin: auto;"></p>
+<div id="rss-1" class="section level3">
+<h3 class="hasAnchor">
+<a href="#rss-1" class="anchor"></a>RSS</h3>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">res.cmplx.rss &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calibrate_step_nls.html">calibrate_step_nls</a></span>(ves.cmplx, <span class="dt">max.layers =</span> <span class="dv">10</span>, 
+                                    <span class="dt">iterations =</span> <span class="dv">30</span>, 
+                                    <span class="dt">ireport =</span> <span class="dv">5</span>,
+                                    <span class="dt">select.measure =</span> <span class="st">"rss"</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pc1 &lt;-<span class="st"> </span><span class="kw">ggplot</span>() <span class="op">+</span><span class="st"> </span><span class="kw">geom_line</span>(<span class="kw">aes</span>(<span class="dt">x =</span> Layers, <span class="dt">y =</span> RSS), <span class="dt">data =</span> cmplx.all.measures.df) <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">xlab</span>(<span class="st">"Number of Layers"</span>) <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">ylab</span>(<span class="st">"RSS"</span>) <span class="op">+</span><span class="st"> </span>
+<span class="st">    </span><span class="kw">ggtitle</span>(<span class="st">"a) Residual Sum of Squares"</span>)
+pc2 &lt;-<span class="st"> </span><span class="kw">ggplot</span>() <span class="op">+</span><span class="st"> </span><span class="kw">geom_line</span>(<span class="kw">aes</span>(<span class="dt">x =</span> Layers, <span class="dt">y =</span> AIC), <span class="dt">data =</span> cmplx.all.measures.df) <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">xlab</span>(<span class="st">"Number of Layers"</span>) <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">ylab</span>(<span class="st">"AIC"</span>)<span class="op">+</span><span class="st"> </span>
+<span class="st">    </span><span class="kw">ggtitle</span>(<span class="st">"b) Akaike Information Crit."</span>)
+pc3 &lt;-<span class="st"> </span><span class="kw">ggplot</span>() <span class="op">+</span><span class="st"> </span><span class="kw">geom_line</span>(<span class="kw">aes</span>(<span class="dt">x =</span> Layers, <span class="dt">y =</span> BIC), <span class="dt">data =</span> cmplx.all.measures.df) <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">xlab</span>(<span class="st">"Number of Layers"</span>) <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">ylab</span>(<span class="st">"BIC"</span>) <span class="op">+</span><span class="st"> </span>
+<span class="st">    </span><span class="kw">ggtitle</span>(<span class="st">"c) Bayesian Information Crit."</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">grid.arrange</span>(pc1,pc2,pc3,<span class="dt">ncol=</span><span class="dv">2</span>)</code></pre></div>
+<p><img src="rves-modelselection_files/figure-html/cmplx_plots_number_layers1-1.png" width="576" style="display: block; margin: auto;"></p>
+</div>
+<div id="aic-1" class="section level3">
+<h3 class="hasAnchor">
+<a href="#aic-1" class="anchor"></a>AIC</h3>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ves.cmplx.aic &lt;-<span class="st"> </span>ves.cmplx
+res.cmplx.aic &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calibrate_step_nls.html">calibrate_step_nls</a></span>(ves.cmplx.aic, <span class="dt">max.layers =</span> <span class="dv">10</span>, 
+                                    <span class="dt">iterations =</span> <span class="dv">30</span>, 
+                                    <span class="dt">ireport =</span> <span class="dv">5</span>,
+                                    <span class="dt">select.measure =</span> <span class="st">"aic"</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ves.cmplx.aic<span class="op">$</span>rhopar &lt;-<span class="st"> </span>cmplx.rho.aic
+ves.cmplx.aic<span class="op">$</span>thickpar &lt;-<span class="st"> </span>cmplx.thick.aic
+ves.cmplx.aic<span class="op">$</span>interpreted &lt;-<span class="st"> </span><span class="ot">TRUE</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(ves.cmplx.aic,<span class="dt">type=</span><span class="st">"ves"</span>)</code></pre></div>
+<p><img src="rves-modelselection_files/figure-html/complex_aic_results-1.png" width="576" style="display: block; margin: auto;"></p>
+</div>
+<div id="bic" class="section level3">
+<h3 class="hasAnchor">
+<a href="#bic" class="anchor"></a>BIC</h3>
+</div>
 </div>
 <div id="references" class="section level2 unnumbered">
 <h2 class="hasAnchor">
 <a href="#references" class="anchor"></a>References</h2>
 <div id="refs" class="references">
+<div id="ref-Akaike_1974">
+<p>Akaike, H. 1974. “A New Look at the Statistical Model Identification.” <em>IEEE Transactions on Automatic Control</em> 19 (6). Institute of Electrical; Electronics Engineers (IEEE): 716–23. doi:<a href="https://doi.org/10.1109/tac.1974.1100705">10.1109/tac.1974.1100705</a>.</p>
+</div>
 <div id="ref-Muiuane_1999">
 <p>Muiuane, E.A, and L.B Pedersen. 1999. “Automatic 1d Interpretation of DC Resistivity Sounding Data.” <em>Journal of Applied Geophysics</em> 42 (1). Elsevier BV: 35–45. doi:<a href="https://doi.org/10.1016/s0926-9851(99)00015-4">10.1016/s0926-9851(99)00015-4</a>.</p>
+</div>
+<div id="ref-Schwarz_1978">
+<p>Schwarz, Gideon. 1978. “Estimating the Dimension of a Model.” <em>The Annals of Statistics</em> 6 (2). Institute of Mathematical Statistics: 461–64. doi:<a href="https://doi.org/10.1214/aos/1176344136">10.1214/aos/1176344136</a>.</p>
 </div>
 </div>
 </div>

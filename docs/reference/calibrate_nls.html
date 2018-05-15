@@ -123,7 +123,7 @@ proposed by Roy(1999).</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>calibrate_nls</span>(<span class='no'>ves</span>, <span class='no'>par0</span>, <span class='kw'>iterations</span> <span class='kw'>=</span> <span class='fl'>100</span>, <span class='kw'>ireport</span> <span class='kw'>=</span> <span class='fl'>10</span>)</pre>
+    <pre class="usage"><span class='fu'>calibrate_nls</span>(<span class='no'>ves</span>, <span class='no'>par0</span>, <span class='kw'>iterations</span> <span class='kw'>=</span> <span class='fl'>30</span>, <span class='kw'>ireport</span> <span class='kw'>=</span> <span class='fl'>10</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -184,6 +184,41 @@ and IP sounding data. 1999. Geophysical Prospecting, 47, 4, 527-550.</p>
   <code><a href='rss_resistivity.html'>rss_resistivity</a></code></p></div>
     
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='co'># Example 1</span>
+<span class='fu'>data</span>(<span class='no'>ves_data1</span>)
+<span class='no'>ab2</span> <span class='kw'>&lt;-</span> <span class='no'>ves_data1</span>$<span class='no'>ab2</span>
+<span class='no'>apprho</span> <span class='kw'>&lt;-</span> <span class='no'>ves_data1</span>$<span class='no'>apprho</span>
+<span class='no'>sev1a</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='ves.html'>ves</a></span>(<span class='kw'>id</span><span class='kw'>=</span> <span class='st'>"VES1"</span>, <span class='kw'>ab2</span> <span class='kw'>=</span> <span class='no'>ab2</span>, <span class='kw'>apprho</span> <span class='kw'>=</span> <span class='no'>apprho</span>)
+<span class='co'># Let's fit a four layer model</span>
+<span class='no'>rho</span> <span class='kw'>&lt;-</span> <span class='fu'>c</span>(<span class='fl'>40</span>, <span class='fl'>70</span>, <span class='fl'>30</span>, <span class='fl'>20</span>)
+<span class='no'>thick</span> <span class='kw'>&lt;-</span> <span class='fu'>c</span>(<span class='fl'>2</span>, <span class='fl'>10</span>, <span class='fl'>50</span>, <span class='fl'>500</span>)
+<span class='no'>par0</span> <span class='kw'>&lt;-</span> <span class='fu'>c</span>(<span class='no'>rho</span>, <span class='no'>thick</span>)
+<span class='no'>res.nls1</span> <span class='kw'>&lt;-</span> <span class='fu'>calibrate_nls</span>(<span class='no'>sev1a</span>, <span class='no'>par0</span>, <span class='kw'>iterations</span> <span class='kw'>=</span> <span class='fl'>30</span>, <span class='kw'>ireport</span> <span class='kw'>=</span> <span class='fl'>5</span>)</div><div class='output co'>#&gt; iteration, RSS, Rel Error =  0 0.0026274 3.394969 
+#&gt; iteration, RSS, Rel Error =  5 0.000757266 1.782435 
+#&gt; iteration, RSS, Rel Error =  10 0.000557687 1.547716 
+#&gt; iteration, RSS, Rel Error =  15 0.0005190975 1.513008 
+#&gt; iteration, RSS, Rel Error =  20 0.0005036183 1.498741 
+#&gt; iteration, RSS, Rel Error =  25 0.0004935954 1.48755 
+#&gt; iteration, RSS, Rel Error =  29 0.0004873611 1.479721 </div><div class='input'><span class='no'>sev1a</span>$<span class='no'>rhopar</span> <span class='kw'>&lt;-</span> <span class='no'>res.nls1</span>$<span class='no'>rho</span>
+<span class='no'>sev1a</span>$<span class='no'>thickpar</span> <span class='kw'>&lt;-</span> <span class='no'>res.nls1</span>$<span class='no'>thickness</span>
+<span class='no'>sev1a</span>$<span class='no'>interpreted</span> <span class='kw'>&lt;-</span> <span class='fl'>TRUE</span>
+<span class='fu'>plot</span>(<span class='no'>sev1a</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"ves"</span>)</div><div class='img'><img src='calibrate_nls-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'># Example 2</span>
+<span class='fu'>data</span>(<span class='no'>ves_data2</span>)
+<span class='no'>ab2</span> <span class='kw'>&lt;-</span> <span class='no'>ves_data2</span>$<span class='no'>ab2</span>
+<span class='no'>apprho</span> <span class='kw'>&lt;-</span> <span class='no'>ves_data2</span>$<span class='no'>apprho</span>
+<span class='no'>sev2a</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='ves.html'>ves</a></span>(<span class='kw'>id</span> <span class='kw'>=</span> <span class='st'>"TD76"</span>, <span class='kw'>ab2</span> <span class='kw'>=</span> <span class='no'>ab2</span>, <span class='kw'>apprho</span> <span class='kw'>=</span> <span class='no'>apprho</span>)
+<span class='no'>rho</span> <span class='kw'>&lt;-</span> <span class='fu'>c</span>(<span class='fl'>20</span>, <span class='fl'>50</span>, <span class='fl'>100</span>, <span class='fl'>10</span>)
+<span class='no'>thick</span> <span class='kw'>&lt;-</span> <span class='fu'>c</span>(<span class='fl'>10</span>, <span class='fl'>20</span>, <span class='fl'>500</span>, <span class='fl'>100</span>)
+<span class='no'>par0</span> <span class='kw'>&lt;-</span> <span class='fu'>c</span>(<span class='no'>rho</span>, <span class='no'>thick</span>)
+<span class='no'>res.nls2</span> <span class='kw'>&lt;-</span> <span class='fu'>calibrate_nls</span>(<span class='no'>sev2a</span>, <span class='no'>par0</span>, <span class='kw'>iterations</span> <span class='kw'>=</span> <span class='fl'>30</span>, <span class='kw'>ireport</span> <span class='kw'>=</span> <span class='fl'>5</span>)</div><div class='output co'>#&gt; iteration, RSS, Rel Error =  0 0.01825262 8.73894 
+#&gt; iteration, RSS, Rel Error =  5 0.001753651 2.543372 
+#&gt; iteration, RSS, Rel Error =  10 0.001706588 2.517702 
+#&gt; iteration, RSS, Rel Error =  15 0.001693322 2.514937 
+#&gt; Final step  19 , Error=  2.51471 </div><div class='input'><span class='no'>sev2a</span>$<span class='no'>rhopar</span> <span class='kw'>&lt;-</span> <span class='no'>res.nls2</span>$<span class='no'>rho</span>
+<span class='no'>sev2a</span>$<span class='no'>thickpar</span> <span class='kw'>&lt;-</span> <span class='no'>res.nls2</span>$<span class='no'>thickness</span>
+<span class='no'>sev2a</span>$<span class='no'>interpreted</span> <span class='kw'>&lt;-</span> <span class='fl'>TRUE</span>
+<span class='fu'>plot</span>(<span class='no'>sev2a</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"ves"</span>)</div><div class='img'><img src='calibrate_nls-2.png' alt='' width='700' height='433' /></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
@@ -195,7 +230,9 @@ and IP sounding data. 1999. Geophysical Prospecting, 47, 4, 527-550.</p>
       <li><a href="#references">References</a></li>
 
       <li><a href="#see-also">See also</a></li>
-          </ul>
+      
+      <li><a href="#examples">Examples</a></li>
+    </ul>
 
     <h2>Author</h2>
     

@@ -20,6 +20,8 @@ library(knitcitations)
 cleanbib()
 options("citation_format" = "pandoc")
 library(ggplot2)
+library(gridExtra)
+library(kableExtra)
 ```
 
 # Introduction
@@ -66,31 +68,43 @@ The key question of the model selection problem is the objective definition of t
 
 ### Akaike Information Criterion
 
+The AIC is a statistical measure designed to choose the best model from a set of candidate models that depends on the trade off between the goodness of fit between the proposed model and the measurements and the number of estimated parameters `r citep("10.1109/TAC.1974.1100705")`. Therefore this is an useful tool for model selection. The model with the minimum value of the AIC among a set of competing models is selected as the best.
+
+The estimator of the Akaike Information Criterion of a model with a maximum likelihood value of the likelihood function $\hat{L}$ and $k$ parameters is given by: 
+
 $$
 \text{AIC}=2k-2\log{(\hat{L})}
 $$
 
-Gaussian distribution error
-
+The previous expression can be simplified under the assumption of a Normal distribution for the residuals, which leads to the following expression for the Likelihood function:  
 $$
 \log{[\hat{L}(\hat{\rho},\sigma_{e}^{2})]}=\frac{n}{2}\log{(2\pi)}-\frac{n}{2}\log{\sigma_{e}^{2}}-\frac{1}{2\sigma_{e}^{2}}\sum_{i=1}^{n}(\rho_{i}-\hat{\rho}_{i})^{2}
 $$
+where $\hat{\rho}$ is the vector of the model parameters including the real resistivities and the layer thicknesses, $\sigma_{e}^{2}$ is the variance of the residuals, and $n$ is the number of data, $\rho_{i}$ are the measured apparent resistivities and $\hat{\rho}_{i}$ are the calculated apparent resistivities.
 
 ### Bayesian Information Criterion 
 
-$$
-\text{BIC}=\log{n}k-2\log{(\hat{L})}
-$$
+The Bayesian Information Criterion (also known as Schwarz Criterion) was developed by Gideon Schwarz 
+`r citep("10.1214/aos/1176344136")`, and it is based on the same idea as the AIC where the two terms are used in the model selection procedure: the first term is related to the goodness of fit of the model and the second term is related to a penalty for the number of the parameters in the model. In general, this penalty term is greater in the BIC than in the AIC.
 
-Gaussian distribution error
+The estimator of the BIC is given by:
+
+$$
+\text{BIC}=k\log{n}-2\log{(\hat{L})}
+$$
+where $\hat{L}$ is the maximum likelihood obtained by the model, $k$ is the number of parameters and $n$ is the number of data used in the parameter estimation.
+
+When the residuals follow a Gaussian Distribution then the previous equation becomes:
 
 $$
 \text{BIC}=n \log{\sigma_{e}^{2}}+k \log{n}
 $$
+where $\sigma_{e}^{2}$ is the variance of the residuals. When the Residual Sum of Squares is used as goodness of fit measure then the previous equation is transformed into:
+
 $$
 \text{BIC}=n\log{\left( \frac{\text{rss}}{n} \right)} + k\log{n}
 $$
-
+where the Residual Sum of Squares is given by:
 $$
 \text{rss}=\sum_{i}^{n}(\rho_{i} - \hat{\rho}_{i})^{2}
 $$
@@ -142,7 +156,8 @@ print(p1)
 
 
 ```{r simple_results_table,echo=TRUE}
-knitr::kable(rss.results.df)
+knitr::kable(rss.results.df, format = "html") %>%
+  kable_styling(position = "center")
 ```
 
 ```{r simple_assign_results,echo=TRUE,eval=FALSE}
@@ -185,7 +200,8 @@ names(aic.results.df) <- c("Layer", "Resistivity", "Thickness")
 ```
 
 ```{r simple_aic_table,echo=TRUE}
-knitr::kable(aic.results.df)
+knitr::kable(aic.results.df, format = "html") %>%
+  kable_styling(position = "center")
 ```
 
 ```{r simple_assign_results2,echo=FALSE,eval=TRUE}
@@ -222,12 +238,104 @@ names(bic.results.df) <- c("Layer", "Resistivity", "Thickness")
 ```
 
 ```{r simple_bic_table,echo=TRUE}
-knitr::kable(bic.results.df)
+knitr::kable(bic.results.df, format = "html") %>%
+  kable_styling(position = "center")
+```
+
+```{r simple_plot_results3,fig.height=4,fig.width=6,fig.align='center'}
+plot(ves1, type = "ves", main = "3 Layers, Model Selection (BIC)")
+```
+
+## Complex VES
+
+```{r complex_define,echo=TRUE}
+data("ves_data2")
+ves.cmplx <- ves(id = "TD76", ab2 = ves_data2$ab2, apprho = ves_data2$apprho) 
 ```
 
 
+```{r complex_plot1,fig.height=4,fig.width=6,fig.align='center'}
+plot(ves.cmplx, type = "ves")
+```
 
-## Complex VES
+### RSS
+
+```{r complex_stepwise_rss,echo=TRUE,eval=FALSE}
+res.cmplx.rss <- calibrate_step_nls(ves.cmplx, max.layers = 10, 
+                                    iterations = 30, 
+                                    ireport = 5,
+                                    select.measure = "rss")
+```
+
+
+```{r complex_res_rss,echo=FALSE,eval=TRUE}
+cmplx.rho.rss <- c(41.35838, 37.661513, 46.788869, 60.973329, 71.382119, 47.843352,
+                   156.645104, 9.891039)
+cmplx.thick.rss <- c(2.236968, 3.576888, 5.662676, 9.872395, 27.960167, 70.828327, 
+                     144.271810, 30.67130)
+cmplx.all.measures <- matrix(0.0, nrow = 9, ncol = 3)
+cmplx.all.measures[,1] <- c(11.956446, 11.964597, 2.529452, 2.374517, 2.354646,
+                            2.380425, 2.333920,  2.337111, 2.343579)
+cmplx.all.measures[,2] <- c(-35.86501, -31.86409, -94.80763, -93.60882, 
+                            -90.10740, -85.87159, -82.71551, -78.77762,
+                            -74.52214)
+cmplx.all.measures[,3] <- c(-32.33085, -25.97382, -86.56125, -83.00634,
+                            -77.14881, -70.55689, -65.04470, -58.75071,
+                            -52.13912) 
+cmplx.all.measures.df <- as.data.frame(cmplx.all.measures)
+names(cmplx.all.measures.df) <- c("RSS", "AIC", "BIC")
+cmplx.all.measures.df$Layers <- seq(2, 10, by =1)
+```
+
+```{r complex_plots_number_layers,echo=TRUE}
+pc1 <- ggplot() + geom_line(aes(x = Layers, y = RSS), data = cmplx.all.measures.df) + 
+  xlab("Number of Layers") + 
+  ylab("RSS") + 
+    ggtitle("a) Residual Sum of Squares")
+pc2 <- ggplot() + geom_line(aes(x = Layers, y = AIC), data = cmplx.all.measures.df) + 
+  xlab("Number of Layers") + 
+  ylab("AIC")+ 
+    ggtitle("b) Akaike Information Crit.")
+pc3 <- ggplot() + geom_line(aes(x = Layers, y = BIC), data = cmplx.all.measures.df) + 
+  xlab("Number of Layers") + 
+  ylab("BIC") + 
+    ggtitle("c) Bayesian Information Crit.")
+```
+
+```{r cmplx_plots_number_layers1,fig.width=6,fig.height=6,fig.align='center'}
+grid.arrange(pc1,pc2,pc3,ncol=2)
+```
+
+
+### AIC
+
+```{r complex_stepwise_aic,echo=TRUE,eval=FALSE}
+ves.cmplx.aic <- ves.cmplx
+res.cmplx.aic <- calibrate_step_nls(ves.cmplx.aic, max.layers = 10, 
+                                    iterations = 30, 
+                                    ireport = 5,
+                                    select.measure = "aic")
+```
+
+
+```{r complex_res_aic,echo=FALSE,eval=TRUE}
+ves.cmplx.aic <- ves.cmplx
+cmplx.rho.aic <- c(36.612874, 47.304857, 71.050388,  6.927041)
+cmplx.thick.aic <- c(3.38634,  16.24706, 438.38431,  55.66174)
+```
+
+```{r complex_aic_assign_results,echo=TRUE}
+ves.cmplx.aic$rhopar <- cmplx.rho.aic
+ves.cmplx.aic$thickpar <- cmplx.thick.aic
+ves.cmplx.aic$interpreted <- TRUE
+```
+
+```{r complex_aic_results,fig.height=4,fig.width=6,fig.align='center'}
+plot(ves.cmplx.aic,type="ves")
+```
+
+### BIC
+
 
 
 ## References
