@@ -17,9 +17,16 @@ This function displays on the console a summary of the apparent resistivity data
 \description{
 Function to display a short summary of the apparent resistivity data
 }
+\examples{
+data(ves_data1)
+ab2 <- ves_data1$ab2
+apprho <- ves_data1$apprho
+sev1a <- ves(id= "VES1", ab2 = ab2, apprho = apprho)
+summary(sev1a)
+}
 \seealso{
-Other base functions: \code{\link{print.ves}},
-  \code{\link{ves}}
+Other base functions: \code{\link{plot.ves}},
+  \code{\link{print.ves}}, \code{\link{ves}}
 }
 \author{
 Oscar Garcia-Cabrejo \email{khaors@gmail.com}

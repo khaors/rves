@@ -4,7 +4,7 @@
 \alias{calibrate_joint_nls}
 \title{calibrate_joint_nls}
 \usage{
-calibrate_joint_nls(ves.list, par0, iterations = 100, ireport = 10)
+calibrate_joint_nls(ves.list, par0, iterations = 30, ireport = 10)
 }
 \arguments{
 \item{ves.list}{A list of VES objects}

@@ -4,7 +4,7 @@
 \alias{calibrate_seq_joint_nls}
 \title{calibrate_seq_joint_nls}
 \usage{
-calibrate_seq_joint_nls(ves.list, iterations = 100, ireport = 10,
+calibrate_seq_joint_nls(ves.list, iterations = 30, ireport = 10,
   max.layers = 10)
 }
 \arguments{

@@ -19,6 +19,20 @@ This function returns a ggplot2 object.
 \description{
 Function to plot the resistivity-depth transformation from a given VES.
 }
+\examples{
+data(ves_data1)
+ab2 <- ves_data1$ab2
+apprho <- ves_data1$apprho
+sev1a <- ves(id= "VES1", ab2 = ab2, apprho = apprho)
+# Direct Transformation
+plot_transformation(sev1a, trans.type = "direct")
+# Scaling Transformation
+plot_transformation(sev1a, trans.type = "scaling")
+# Zohdy Transformation
+plot_transformation(sev1a, trans.type = "zohdy")
+# Zohdy Transformation
+plot_transformation(sev1a, trans.type = "zohdy.smoothed")
+}
 \author{
 Oscar Garcia-Cabrejo \email{khaors@gmail.com}
 }

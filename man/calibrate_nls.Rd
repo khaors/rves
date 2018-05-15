@@ -4,7 +4,7 @@
 \alias{calibrate_nls}
 \title{calibrate_nls}
 \usage{
-calibrate_nls(ves, par0, iterations = 100, ireport = 10)
+calibrate_nls(ves, par0, iterations = 30, ireport = 10)
 }
 \arguments{
 \item{ves}{A ves object}
@@ -33,6 +33,35 @@ hessian matrix.
 \description{
 Function to estimate the real resistivities and thicknesses using the nonlinear least-squares approach
 proposed by Roy(1999).
+}
+\examples{
+# Example 1
+data(ves_data1)
+ab2 <- ves_data1$ab2
+apprho <- ves_data1$apprho
+sev1a <- ves(id= "VES1", ab2 = ab2, apprho = apprho)
+# Let's fit a four layer model
+rho <- c(40, 70, 30, 20)
+thick <- c(2, 10, 50, 500)
+par0 <- c(rho, thick)
+res.nls1 <- calibrate_nls(sev1a, par0, iterations = 30, ireport = 5)
+sev1a$rhopar <- res.nls1$rho
+sev1a$thickpar <- res.nls1$thickness
+sev1a$interpreted <- TRUE
+plot(sev1a, type = "ves")
+# Example 2
+data(ves_data2)
+ab2 <- ves_data2$ab2
+apprho <- ves_data2$apprho
+sev2a <- ves(id = "TD76", ab2 = ab2, apprho = apprho)
+rho <- c(20, 50, 100, 10)
+thick <- c(10, 20, 500, 100)
+par0 <- c(rho, thick)
+res.nls2 <- calibrate_nls(sev2a, par0, iterations = 30, ireport = 5)
+sev2a$rhopar <- res.nls2$rho
+sev2a$thickpar <- res.nls2$thickness
+sev2a$interpreted <- TRUE
+plot(sev2a, type = "ves")
 }
 \references{
 Roy, I. An efficient non-linear least-squares 1D inversion scheme for resistivity

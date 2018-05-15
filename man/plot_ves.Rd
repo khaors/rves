@@ -20,3 +20,10 @@ apparent resistivity vs electrode spacing. In the interpretation plot, the value
 apparent resistivity vs electrode spacing and the thickness and real resisitivity of the
 layers are included.
 }
+\examples{
+data(ves_data1)
+ab2 <- ves_data1$ab2
+apprho <- ves_data1$apprho
+sev1a <- ves(id= "VES1", ab2 = ab2, apprho = apprho)
+plot_ves(sev1a)
+}

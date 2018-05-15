@@ -4,7 +4,7 @@
 \alias{calibrate_ilsqp}
 \title{calibrate_ilsqp}
 \usage{
-calibrate_ilsqp(ves, iterations = 100, ireport = 10)
+calibrate_ilsqp(ves, iterations = 30, ireport = 10)
 }
 \arguments{
 \item{ves}{A VES object}

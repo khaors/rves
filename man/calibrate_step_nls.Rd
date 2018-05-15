@@ -4,7 +4,7 @@
 \alias{calibrate_step_nls}
 \title{calibrate_step_nls}
 \usage{
-calibrate_step_nls(ves, iterations = 100, ireport = 10, max.layers = 10,
+calibrate_step_nls(ves, iterations = 30, ireport = 10, max.layers = 10,
   select.measure = "rss")
 }
 \arguments{

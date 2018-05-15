@@ -20,6 +20,12 @@ NULL
 #' @author
 #' Oscar Garcia-Cabrejo \email{khaors@gmail.com}
 #' @family base functions
+#' @examples
+#' data(ves_data1)
+#' ab2 <- ves_data1$ab2
+#' apprho <- ves_data1$apprho
+#' sev1a <- ves(id= "VES1", ab2 = ab2, apprho = apprho)
+#' print(sev1a)
 #' @export
 ves <- function(id = character(0), ab2 = NULL, apprho = NULL){
   if(class(ab2) != 'numeric' | class(apprho) != 'numeric'){
@@ -64,6 +70,12 @@ ves <- function(id = character(0), ab2 = NULL, apprho = NULL){
 #' @family base functions
 #' @import stringi
 #' @export
+#' @examples
+#' data(ves_data1)
+#' ab2 <- ves_data1$ab2
+#' apprho <- ves_data1$apprho
+#' sev1a <- ves(id= "VES1", ab2 = ab2, apprho = apprho)
+#' summary(sev1a)
 summary.ves <- function(object, ...){
   ves <- object
   cat('Pumping Test: '%s+%ves$id%s+%'\n')
@@ -85,6 +97,12 @@ summary.ves <- function(object, ...){
 #' @family base functions
 #' @import stringi
 #' @export
+#' @examples
+#' data(ves_data1)
+#' ab2 <- ves_data1$ab2
+#' apprho <- ves_data1$apprho
+#' sev1a <- ves(id= "VES1", ab2 = ab2, apprho = apprho)
+#' print(sev1a)
 print.ves <- function(x, ...){
   ves <- x
   cat('Vertical Electrical Sounding: '%s+%ves$id%s+%'\n')
@@ -104,12 +122,42 @@ print.ves <- function(x, ...){
 #' @param main Title of the plot
 #' @param type A character string specifying the plot type. Currently only ves (measurements and
 #' earth model), transformation (resistivity-depth transformation) and diagnostic are supported.
-#' @param trans.type A character string specifying the transformation type. Only direct and scaling
-#' are currently supported.
+#' @param trans.type A character string specifying the transformation type. Only direct, scaling,
+#' zohdy and zohdy.smoothed  are currently supported.
 #' @param ... Additional parameters to be passed to the plot function
+#' @author
+#' Oscar Garcia-Cabrejo \email{khaors@gmail.com}
+#' @family base functions
 #' @export
+#' @examples
+#' data(ves_data1)
+#' ab2 <- ves_data1$ab2
+#' apprho <- ves_data1$apprho
+#' sev1a <- ves(id= "VES1", ab2 = ab2, apprho = apprho)
+#' # Conventional VES plot
+#' plot(sev1a, type = "ves")
+#' # Apply direct transformation to sev1a
+#' plot(sev1a, type = "transformation", trans.type = "direct")
+#' # Apply scaling transformation to sev1a
+#' plot(sev1a, type = "transformation", trans.type = "scaling")
+#' # Apply Zohdy transformation to sev1a
+#' plot(sev1a, type = "transformation", trans.type = "zohdy")
+#' # Apply Zohdy smoothed transformation to sev1a
+#' plot(sev1a, type = "transformation", trans.type = "scaling")
+#' # Diagnostic plot
+#' rho <- c(40,70,30, 20)
+#' thick <- c(2,10,50,500)
+#' par0 <- c(rho, thick)
+#' res.nls <- calibrate_nls(sev1a, par0, iterations = 30, ireport = 5)
+#' sev1a$rhopar <- res.nls$rho
+#' sev1a$thickpar <- res.nls$thickness
+#' sev1a$interpreted <- TRUE
+#' plot(sev1a, type = "ves")
+#' p1 <- plot(sev1a, type ="diagnostic")
+#' print(p1)
 plot.ves <- function(x, main = NULL, type = c("ves", "transformation", "diagnostic"),
-                     trans.type = c("direct", "scaling"), ...){
+                     trans.type = c("direct", "scaling", "zohdy", "zohdy.smoothed"),
+                     ...){
   if(class(x) != 'ves'){
     stop('A VES object is required as input')
   }
@@ -141,6 +189,12 @@ plot.ves <- function(x, main = NULL, type = c("ves", "transformation", "diagnost
 #' @importFrom gridExtra grid.arrange
 #' @importFrom pracma logseq
 #' @export
+#' @examples
+#' data(ves_data1)
+#' ab2 <- ves_data1$ab2
+#' apprho <- ves_data1$apprho
+#' sev1a <- ves(id= "VES1", ab2 = ab2, apprho = apprho)
+#' plot_ves(sev1a)
 plot_ves <- function(x, main = NULL, ...){
   if(class(x) != 'ves'){
     stop('A VES object is required as input')
@@ -239,6 +293,19 @@ plot_ves <- function(x, main = NULL, ...){
 #' Oscar Garcia-Cabrejo \email{khaors@gmail.com}
 #' @export
 #' @importFrom ggplot2 geom_point geom_line scale_x_log10 scale_y_log10 xlab ylab ggtitle xlim ylim
+#' @examples
+#' data(ves_data1)
+#' ab2 <- ves_data1$ab2
+#' apprho <- ves_data1$apprho
+#' sev1a <- ves(id= "VES1", ab2 = ab2, apprho = apprho)
+#' # Direct Transformation
+#' plot_transformation(sev1a, trans.type = "direct")
+#' # Scaling Transformation
+#' plot_transformation(sev1a, trans.type = "scaling")
+#' # Zohdy Transformation
+#' plot_transformation(sev1a, trans.type = "zohdy")
+#' # Zohdy Transformation
+#' plot_transformation(sev1a, trans.type = "zohdy.smoothed")
 plot_transformation <- function(x, trans.type = c("direct", "scaling",
                                                   "zohdy", "zohdy.smoothed")){
   if(class(x) != 'ves'){

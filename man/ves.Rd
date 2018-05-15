@@ -19,9 +19,16 @@ A VES object
 \description{
 Function to create a VES object
 }
+\examples{
+data(ves_data1)
+ab2 <- ves_data1$ab2
+apprho <- ves_data1$apprho
+sev1a <- ves(id= "VES1", ab2 = ab2, apprho = apprho)
+print(sev1a)
+}
 \seealso{
-Other base functions: \code{\link{print.ves}},
-  \code{\link{summary.ves}}
+Other base functions: \code{\link{plot.ves}},
+  \code{\link{print.ves}}, \code{\link{summary.ves}}
 }
 \author{
 Oscar Garcia-Cabrejo \email{khaors@gmail.com}
