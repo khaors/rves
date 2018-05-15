@@ -5,7 +5,7 @@
 \title{calibrate_step_nls}
 \usage{
 calibrate_step_nls(ves, iterations = 30, ireport = 10, max.layers = 10,
-  select.measure = "rss", trace = TRUE)
+  trace = TRUE)
 }
 \arguments{
 \item{ves}{A VES object}
@@ -16,15 +16,6 @@ calibrate_step_nls(ves, iterations = 30, ireport = 10, max.layers = 10,
 
 \item{max.layers}{An integer specifying the maximum number of layers to include in the
 sequential estimation.}
-
-\item{select.measure}{A character string specifying the criteria used to select the best
-model from the set of models tried during the sequential estimation. Available options
-are:
-\itemize{
-\item rss: (default) sum of residual squares
-\item aic: Akaike Information Criteria
-\item bic: Bayesian Information Criteria
-}}
 
 \item{trace}{A logical flag to indicate if the optimization information must be traced}
 }
