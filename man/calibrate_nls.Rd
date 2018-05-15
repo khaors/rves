@@ -46,7 +46,7 @@ sev1a <- ves(id= "VES1", ab2 = ab2, apprho = apprho)
 rho <- c(40, 70, 30, 20)
 thick <- c(2, 10, 50, 500)
 par0 <- c(rho, thick)
-res.nls1 <- calibrate_nls(sev1a, par0, iterations = 30, ireport = 5)
+res.nls1 <- calibrate_nls(sev1a, par0, iterations = 30, ireport = 5, trace = FALSE)
 sev1a$rhopar <- res.nls1$rho
 sev1a$thickpar <- res.nls1$thickness
 sev1a$interpreted <- TRUE
@@ -59,7 +59,7 @@ sev2a <- ves(id = "TD76", ab2 = ab2, apprho = apprho)
 rho <- c(20, 50, 100, 10)
 thick <- c(10, 20, 500, 100)
 par0 <- c(rho, thick)
-res.nls2 <- calibrate_nls(sev2a, par0, iterations = 30, ireport = 5)
+res.nls2 <- calibrate_nls(sev2a, par0, iterations = 30, ireport = 5, trace = FALSE)
 sev2a$rhopar <- res.nls2$rho
 sev2a$thickpar <- res.nls2$thickness
 sev2a$interpreted <- TRUE
