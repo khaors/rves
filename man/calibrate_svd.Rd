@@ -4,7 +4,7 @@
 \alias{calibrate_svd}
 \title{calibrate_svd}
 \usage{
-calibrate_svd(ves, par0, iterations = 100, ireport = 10)
+calibrate_svd(ves, par0, iterations = 100, ireport = 10, trace = TRUE)
 }
 \arguments{
 \item{ves}{A vertical electrical sounding object}
@@ -14,6 +14,8 @@ calibrate_svd(ves, par0, iterations = 100, ireport = 10)
 \item{iterations}{An integer specifying the maximum number of iterations}
 
 \item{ireport}{An integer specifying the report interval}
+
+\item{trace}{A logical flag to indicate if the optimization information must be traced}
 }
 \value{
 This function returns a list with the following entries:

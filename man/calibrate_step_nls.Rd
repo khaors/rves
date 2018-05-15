@@ -5,7 +5,7 @@
 \title{calibrate_step_nls}
 \usage{
 calibrate_step_nls(ves, iterations = 30, ireport = 10, max.layers = 10,
-  select.measure = "rss")
+  select.measure = "rss", trace = TRUE)
 }
 \arguments{
 \item{ves}{A VES object}
@@ -23,8 +23,10 @@ are:
 \itemize{
 \item rss: (default) sum of residual squares
 \item aic: Akaike Information Criteria
-\item bic; Bayesian Information Criteria
+\item bic: Bayesian Information Criteria
 }}
+
+\item{trace}{A logical flag to indicate if the optimization information must be traced}
 }
 \value{
 This function returns a list with the following entries:

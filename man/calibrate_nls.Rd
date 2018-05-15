@@ -4,7 +4,7 @@
 \alias{calibrate_nls}
 \title{calibrate_nls}
 \usage{
-calibrate_nls(ves, par0, iterations = 30, ireport = 10)
+calibrate_nls(ves, par0, iterations = 30, ireport = 10, trace = TRUE)
 }
 \arguments{
 \item{ves}{A ves object}
@@ -14,6 +14,8 @@ calibrate_nls(ves, par0, iterations = 30, ireport = 10)
 \item{iterations}{Number of iterations}
 
 \item{ireport}{Number of iterations to report results on the console}
+
+\item{trace}{A logical flag to indicate if the optimization information must be traced}
 }
 \value{
 A list with the following entries:

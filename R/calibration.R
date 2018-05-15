@@ -330,6 +330,7 @@ calibrate <- function(ves, opt.method = c("L-BFGS-B", "SA", "GA", "PSO", "DE"),
 #' @param par0 A numeric vector with the values of the layer resistivities and thicknesses
 #' @param iterations Number of iterations
 #' @param ireport Number of iterations to report results on the console
+#' @param trace A logical flag to indicate if the optimization information must be traced
 #' @return
 #' A list with the following entries:
 #' \itemize{
@@ -382,7 +383,7 @@ calibrate <- function(ves, opt.method = c("L-BFGS-B", "SA", "GA", "PSO", "DE"),
 #' sev2a$thickpar <- res.nls2$thickness
 #' sev2a$interpreted <- TRUE
 #' plot(sev2a, type = "ves")
-calibrate_nls <- function(ves, par0, iterations = 30, ireport = 10){
+calibrate_nls <- function(ves, par0, iterations = 30, ireport = 10, trace = TRUE){
   if(class(ves) != "ves"){
     stop('ERROR: A VES object is required as input')
   }
@@ -447,7 +448,9 @@ calibrate_nls <- function(ves, par0, iterations = 30, ireport = 10){
     cal.error[iter+1,1] <- current.error
     cal.error[iter+1,2] <- current.error1
     if(current.error1 > old.error){
-      cat("Final step ", iter, ", Error= ", old.error, "\n")
+      if(trace){
+        cat("Final step ", iter, ", Error= ", old.error, "\n")
+      }
       current.error1 <- old.error
       cpar <- old.par
       break
@@ -471,8 +474,10 @@ calibrate_nls <- function(ves, par0, iterations = 30, ireport = 10){
         mu <- new_mu
       }
     }
-    if(mod(iter,ireport) == 0 | iter == (niter-1)){
-      cat("iteration, RSS, Rel Error = ", c(iter,current.error,current.error1), "\n")
+    if(trace){
+      if(mod(iter,ireport) == 0 | iter == (niter-1)){
+        cat("iteration, RSS, Rel Error = ", c(iter,current.error,current.error1), "\n")
+      }
     }
     iter <- iter+1
   }
@@ -509,6 +514,7 @@ calibrate_nls <- function(ves, par0, iterations = 30, ireport = 10){
 #' @param par0 A numeric vector with the initial values of resistivities and thicknesses
 #' @param iterations An integer specifying the maximum number of iterations
 #' @param ireport An integer specifying the report interval
+#' @param trace A logical flag to indicate if the optimization information must be traced
 #' @return
 #' This function returns a list with the following entries:
 #' \itemize{
@@ -525,7 +531,7 @@ calibrate_nls <- function(ves, par0, iterations = 30, ireport = 10){
 #' @importFrom numDeriv jacobian
 #' @importFrom pracma inv
 #' @export
-calibrate_svd <- function(ves, par0, iterations = 100, ireport = 10){
+calibrate_svd <- function(ves, par0, iterations = 100, ireport = 10, trace = TRUE){
   if(class(ves) != "ves"){
     stop('ERROR: A VES object is required as input')
   }
@@ -603,8 +609,10 @@ calibrate_svd <- function(ves, par0, iterations = 100, ireport = 10){
         }
       }
     }
-    if(mod(iter, ireport) == 0 | iter == (niter-1)){
-      cat("iteration, RSS, Rel Error = ", c(iter,current.error,current.error1), "\n")
+    if(trace){
+      if(mod(iter, ireport) == 0 | iter == (niter-1)){
+        cat("iteration, RSS, Rel Error = ", c(iter,current.error,current.error1), "\n")
+      }
     }
     iter <- iter + 1
   }
@@ -720,8 +728,9 @@ calibrate_ilsqp <- function(ves, iterations = 30, ireport = 10){
 #' \itemize{
 #' \item rss: (default) sum of residual squares
 #' \item aic: Akaike Information Criteria
-#' \item bic; Bayesian Information Criteria
+#' \item bic: Bayesian Information Criteria
 #' }
+#' @param trace A logical flag to indicate if the optimization information must be traced
 #' @return
 #' This function returns a list with the following entries:
 #' \itemize{
@@ -735,7 +744,8 @@ calibrate_ilsqp <- function(ves, iterations = 30, ireport = 10){
 #' @family calibration functions
 #' @export
 calibrate_step_nls <- function(ves, iterations = 30, ireport = 10,
-                              max.layers = 10, select.measure = "rss"){
+                              max.layers = 10, select.measure = "rss",
+                              trace = TRUE){
   if(class(ves) != "ves"){
     stop('ERROR: A VES object is required as input')
   }
@@ -764,7 +774,7 @@ calibrate_step_nls <- function(ves, iterations = 30, ireport = 10,
     }
     current.par <- c(rep(mean(ves$appres), ilay), thick[pos])
     current.res <- calibrate_nls(ves, par0 = current.par, iterations = iterations,
-                                 ireport = ireport)
+                                 ireport = ireport, trace = trace)
     current.err <- current.res$rel.error
     current.lik <- -(n/2)*log(2*pi)-(n/2)*log(current.res$value)
     current.aic <- 2*(2*ilay-1)-2*current.lik

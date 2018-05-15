@@ -47,7 +47,7 @@ plot(sev1a, type = "transformation", trans.type = "scaling")
 rho <- c(40,70,30, 20)
 thick <- c(2,10,50,500)
 par0 <- c(rho, thick)
-res.nls <- calibrate_nls(sev1a, par0, iterations = 30, ireport = 5)
+res.nls <- calibrate_nls(sev1a, par0, iterations = 30, ireport = 5, trace = FALSE)
 sev1a$rhopar <- res.nls$rho
 sev1a$thickpar <- res.nls$thickness
 sev1a$interpreted <- TRUE
