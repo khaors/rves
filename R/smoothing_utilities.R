@@ -33,6 +33,54 @@ NULL
 #' @importFrom wavethresh wd wr threshold
 #' @importFrom pracma interp1
 #' @export
+#' @examples
+#' library(ggplot2)
+#' data("ves_data1")
+#' ab2 <- ves_data1$ab2
+#' apprho <- ves_data1$apprho
+#' sev1a <- ves(id= "VES1", ab2 = ab2, apprho = apprho)
+#' #Smoothing with smooth.spline
+#' res.ss <- smoothing_ves(sev1a, method = "smooth.spline")
+#' sev1ss <- ves(id = "Sounding 1-Smoothing Spline", ab2 = res.ss$ab2,
+#'               apprho = res.ss$apprho)
+#' rho <- c(40,70,30, 20)
+#' thick <- c(2,10,50,500)
+#' par0 <- c(rho, thick)
+#' res.ss.nls <- calibrate_nls(sev1ss, par0, iterations = 20, trace = FALSE)
+#' sev1ss$rhopar <- res.ss.nls$rho
+#' sev1ss$thickpar <- res.ss.nls$thickness
+#' sev1ss$interpreted <- TRUE
+#' p1 <- plot(sev1ss, type = "ves")
+#' p1 <- p1 + geom_point(aes(x = ab2, y = apprho), data = ves_data1)
+#' print(p1)
+#' #Smoothing with kernel regression
+#' res.kr <- smoothing_ves(sev1a, method = "kernel.regression", bw = 0.5)
+#' sev1kr <- ves(id = "Sounding 1-Kernel Regression", ab2 = res.kr$ab2,
+#'               apprho = res.kr$apprho)
+#' res.kr.nls <- calibrate_nls(sev1kr, par0, iterations = 20, trace = FALSE)
+#' sev1kr$rhopar <- res.kr.nls$rho
+#' sev1kr$thickpar <- res.kr.nls$thickness
+#' sev1kr$interpreted <- TRUE
+#' p2 <- plot(sev1kr, type = "ves")
+#' p2 <- p2 + geom_point(aes(x = ab2, y = apprho), data = ves_data1)
+#' print(p2)
+#' #Smoothing using wavelet thresholding
+#' res.wv <- smoothing_ves(sev1a, method = "wavelet")
+#' sev1wv <- ves(id = "Sounding 1-Wavelet Thresholding", ab2 = res.wv$ab2,
+#'               apprho = res.wv$apprho)
+#' res.wv.nls <- calibrate_nls(sev1wv, par0, iterations = 20, trace = FALSE)
+#' sev1wv$rhopar <- res.wv.nls$rho
+#' sev1wv$thickpar <- res.wv.nls$thickness
+#' sev1wv$interpreted <- TRUE
+#' p3 <- plot(sev1wv, type = "ves")
+#' p3 <- p3 + geom_point(aes(x = ab2, y = apprho), data = ves_data1)
+#' print(p3)
+
+
+
+
+
+
 smoothing_ves <- function(ves, method = c("smooth.spline", "kernel.regression",
                                           "wavelet"),
                           bw = 0.1, ...){
