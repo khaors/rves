@@ -1,5 +1,5 @@
 ---
-title:  "Stepwise Estimation and Model selection of VES parameters using the rves package"
+title:  "Stepwise Estimation of VES parameters and Model selection using the rves package"
 author: "Oscar Garcia-Cabrejo"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -33,9 +33,9 @@ The Vertical Electrical Sounding (VES) is one of the oldest resistivity methods,
 
 The main use of VES is to define an Earth model composed of different layers with defined electrical resistivies and thicknesses, but  the main problem with this procedure is the objective definition of the _number of layers_ to be used in this parameter estimation. This means that the _number of layers_ can be considered as another parameter to be estimated but this makes the whole estimation approach more difficult. A simple strategy used since the early days is to identify the inflection points in the apparent resistivity curve and the number of these define the numbers of layers to be estimated. This approach is based on the geometrical characteristics of the geoelectrical response of simple layered models and, although. it is easy to apply, it lacks of a proper foundation on estimation theory. In reality, _the number of layers_ is a redundant parameter since it defines the number of resistivities and thicknesses to be estimated, and therefore its specification is not required as long as the resistivities and thicknesses are correctly specified.
 
-The 
+In practical applications, several models can be fitted to the measured data and now the analyst faces what is called a model selection problem  where the main goal is to distinguish between competing alternatives of parameter values. The purpose of the model selection is to balance the quality of the fit to measured data and the predictive ability of the fitted model. This model selection is based on the use of a model selection statistics which allows a model ranking from which a _best model_ can be identified and used for futher inference. There are two model selection statistics commonly used in practical problems: the Akaike Information Criterion `r citep("10.1109/tac.1974.1100705")` and Bayesian Information Criterion `r citep("10.1214/aos/1176344136")`.
 
-In this document, the basic concepts of the stepwise parameter estimation of VES and model selection are introduced and two examples using the rves package are presented.
+In this document, the basic concepts of the stepwise parameter estimation and model selection are introduced in the analysis of Vertical Electric Soundings and two examples of these approaches using the rves package are presented.
 
 # Stepwise Estimation and Model Selection
 
@@ -64,7 +64,7 @@ A similar approach has been proposed by `r citet("10.1016/S0926-9851(99)00015-4"
 
 The model selection procedure can be defined as the selection a statistical model from a set of candidate models fitted to the same dataset. This situation is very common in geophysics where several models can properly describe the measurements equally well, and therefore it does not make sense to choose a single model as a representation of the subsurface conditions. However, this is the conventional approach where the model that best explain the geophysical measurements is used in the subsequent geological interpretation. Given the importance of this interpretation in the decision making process, it is important to use valid and objective scientific principles in the selection of the statistical model.
 
-The key question of the model selection problem is the objective definition of the _the best model_. In general this definition is based on the goodness of fit of the estimated model, that is, how close the model explain the observations obtained in the field. This sounds reasonable at the beginning, however, this approach might overfit the model in the sense that a model with a large number of parameters eventually will explain the observations. This problematic situation 
+The key question of the model selection problem is the objective definition of the _the best model_. In general this definition is based on the goodness of fit of the estimated model, that is, how close the model explain the observations obtained in the field. This sounds reasonable at the beginning, however, this approach might overfit the model in the sense that a model with a large number of parameters eventually will explain the observations. This problematic situation can be solved by the use of an alternative set of measures that chooses a specific model in terms of the goodness of fit and the number of parameter used. This approach avoids overfitting by penalizing models with a large number of parameters. 
 
 ### Akaike Information Criterion
 
@@ -112,6 +112,8 @@ $$
 
 # Example
 
+In this section two examples of stepwise parameter estimation and model selection of Vertical Electrical Soundings are presented.
+
 ## Simple VES 
 
 
@@ -120,7 +122,7 @@ data("ves_data1")
 ves1 <- ves(id = "VES1", ab2 = ves_data1$ab2, apprho = ves_data1$apprho)
 ```
 
-### RSS
+
 
 ```{r simple_stepwise_rss,echo=TRUE,eval=FALSE}
 res.rss <- calibrate_step_nls(ves1, max.layers = 10, iterations = 30, 

@@ -5,11 +5,11 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Stepwise Estimation and Model selection of VES parameters using the rves package • rves</title>
+<title>Stepwise Estimation of VES parameters and Model selection using the rves package • rves</title>
 <!-- jquery --><script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script><!-- Font Awesome icons --><link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../jquery.sticky-kit.min.js"></script><script src="../pkgdown.js"></script><meta property="og:title" content="Stepwise Estimation and Model selection of VES parameters using the rves package">
+<script src="../jquery.sticky-kit.min.js"></script><script src="../pkgdown.js"></script><meta property="og:title" content="Stepwise Estimation of VES parameters and Model selection using the rves package">
 <meta property="og:description" content="">
 <meta name="twitter:card" content="summary">
 <!-- mathjax --><script src="https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!--[if lt IE 9]>
@@ -52,7 +52,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/rves-modelselection.html">Stepwise Estimation and Model selection of VES parameters using the rves package</a>
+      <a href="../articles/rves-modelselection.html">Stepwise Estimation of VES parameters and Model selection using the rves package</a>
     </li>
     <li>
       <a href="../articles/rves-smoothing.html">VES Smoothing using the rves package</a>
@@ -78,10 +78,10 @@
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1>Stepwise Estimation and Model selection of VES parameters using the rves package</h1>
+      <h1>Stepwise Estimation of VES parameters and Model selection using the rves package</h1>
                         <h4 class="author">Oscar Garcia-Cabrejo</h4>
             
-            <h4 class="date">2018-05-15</h4>
+            <h4 class="date">2018-05-17</h4>
       
       
       <div class="hidden name"><code>rves-modelselection.Rmd</code></div>
@@ -99,8 +99,8 @@
 <li>large investigation depth as required in some specific problems such as groundwater exploration.</li>
 </ul>
 <p>The main use of VES is to define an Earth model composed of different layers with defined electrical resistivies and thicknesses, but the main problem with this procedure is the objective definition of the <em>number of layers</em> to be used in this parameter estimation. This means that the <em>number of layers</em> can be considered as another parameter to be estimated but this makes the whole estimation approach more difficult. A simple strategy used since the early days is to identify the inflection points in the apparent resistivity curve and the number of these define the numbers of layers to be estimated. This approach is based on the geometrical characteristics of the geoelectrical response of simple layered models and, although. it is easy to apply, it lacks of a proper foundation on estimation theory. In reality, <em>the number of layers</em> is a redundant parameter since it defines the number of resistivities and thicknesses to be estimated, and therefore its specification is not required as long as the resistivities and thicknesses are correctly specified.</p>
-<p>The</p>
-<p>In this document, the basic concepts of the stepwise parameter estimation of VES and model selection are introduced and two examples using the rves package are presented.</p>
+<p>In practical applications, several models can be fitted to the measured data and now the analyst faces what is called a model selection problem where the main goal is to distinguish between competing alternatives of parameter values. The purpose of the model selection is to balance the quality of the fit to measured data and the predictive ability of the fitted model. This model selection is based on the use of a model selection statistics which allows a model ranking from which a <em>best model</em> can be identified and used for futher inference. There are two model selection statistics commonly used in practical problems: the Akaike Information Criterion <span class="citation">(Akaike 1974)</span> and Bayesian Information Criterion <span class="citation">(Schwarz 1978)</span>.</p>
+<p>In this document, the basic concepts of the stepwise parameter estimation and model selection are introduced in the analysis of Vertical Electric Soundings and two examples of these approaches using the rves package are presented.</p>
 </div>
 <div id="stepwise-estimation-and-model-selection" class="section level1">
 <h1 class="hasAnchor">
@@ -131,7 +131,7 @@ h^{0}=(h_{1},\ldots,h_{n})
 <h2 class="hasAnchor">
 <a href="#model-selection-basic-concepts" class="anchor"></a>Model Selection: Basic concepts</h2>
 <p>The model selection procedure can be defined as the selection a statistical model from a set of candidate models fitted to the same dataset. This situation is very common in geophysics where several models can properly describe the measurements equally well, and therefore it does not make sense to choose a single model as a representation of the subsurface conditions. However, this is the conventional approach where the model that best explain the geophysical measurements is used in the subsequent geological interpretation. Given the importance of this interpretation in the decision making process, it is important to use valid and objective scientific principles in the selection of the statistical model.</p>
-<p>The key question of the model selection problem is the objective definition of the <em>the best model</em>. In general this definition is based on the goodness of fit of the estimated model, that is, how close the model explain the observations obtained in the field. This sounds reasonable at the beginning, however, this approach might overfit the model in the sense that a model with a large number of parameters eventually will explain the observations. This problematic situation</p>
+<p>The key question of the model selection problem is the objective definition of the <em>the best model</em>. In general this definition is based on the goodness of fit of the estimated model, that is, how close the model explain the observations obtained in the field. This sounds reasonable at the beginning, however, this approach might overfit the model in the sense that a model with a large number of parameters eventually will explain the observations. This problematic situation can be solved by the use of an alternative set of measures that chooses a specific model in terms of the goodness of fit and the number of parameter used. This approach avoids overfitting by penalizing models with a large number of parameters.</p>
 <div id="akaike-information-criterion" class="section level3">
 <h3 class="hasAnchor">
 <a href="#akaike-information-criterion" class="anchor"></a>Akaike Information Criterion</h3>
@@ -167,14 +167,12 @@ h^{0}=(h_{1},\ldots,h_{n})
 <div id="example" class="section level1">
 <h1 class="hasAnchor">
 <a href="#example" class="anchor"></a>Example</h1>
+<p>In this section two examples of stepwise parameter estimation and model selection of Vertical Electrical Soundings are presented.</p>
 <div id="simple-ves" class="section level2">
 <h2 class="hasAnchor">
 <a href="#simple-ves" class="anchor"></a>Simple VES</h2>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(<span class="st">"ves_data1"</span>)
 ves1 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/ves.html">ves</a></span>(<span class="dt">id =</span> <span class="st">"VES1"</span>, <span class="dt">ab2 =</span> ves_data1<span class="op">$</span>ab2, <span class="dt">apprho =</span> ves_data1<span class="op">$</span>apprho)</code></pre></div>
-<div id="rss" class="section level3">
-<h3 class="hasAnchor">
-<a href="#rss" class="anchor"></a>RSS</h3>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">res.rss &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calibrate_step_nls.html">calibrate_step_nls</a></span>(ves1, <span class="dt">max.layers =</span> <span class="dv">10</span>, <span class="dt">iterations =</span> <span class="dv">30</span>, 
                               <span class="dt">ireport =</span> <span class="dv">5</span>, <span class="dt">trace =</span> <span class="ot">FALSE</span>)</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p1 &lt;-<span class="st"> </span><span class="kw">ggplot</span>() <span class="op">+</span><span class="st"> </span><span class="kw">geom_line</span>(<span class="kw">aes</span>(<span class="dt">x =</span> Layers, <span class="dt">y =</span> RSS),<span class="dt">data =</span> res.rss.df) <span class="op">+</span><span class="st"> </span>
@@ -357,7 +355,6 @@ Layer3
 </tr>
 </tbody>
 </table>
-</div>
 </div>
 <div id="complex-ves" class="section level2">
 <h2 class="hasAnchor">
