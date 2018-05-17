@@ -116,20 +116,28 @@ In this section two examples of stepwise parameter estimation and model selectio
 
 ## Simple VES 
 
+In this example, a VES with a simple structure is used to test the stepwise parameter estimation and model selection. The VES data is loaded into R and a VES object is defined using:
 
 ```{r simple_define,echo=TRUE}
 data("ves_data1")
 ves1 <- ves(id = "VES1", ab2 = ves_data1$ab2, apprho = ves_data1$apprho)
 ```
 
+The stepwise parameter estimation procedure can be applied using:
 
-
-```{r simple_stepwise_rss,echo=TRUE,eval=FALSE}
-res.rss <- calibrate_step_nls(ves1, max.layers = 10, iterations = 30, 
-                              ireport = 5, trace = FALSE)
+```{r simple_stepwise_all,echo=TRUE,eval=FALSE}
+res.simple <- calibrate_step_nls(ves1, max.layers = 10, iterations = 30, 
+                                 ireport = 5, trace = FALSE)
 ```
 
-```{r simple_stepwise_all,echo=FALSE,eval=TRUE,message=FALSE,warning=FALSE}
+The values of the RSS, AIC and BIC are stored in the _all.measures_ variable inside the _res.simple_ list, and these are extracted using:
+```{r,echo=TRUE,eval=FALSE}
+res.all.df <- as.data.frame(res.imple$all.measures)
+names(res.all.df) <- c("RSS", "AIC", "BIC")
+res.all.df$Layers <- seq(2, 10 , by = 1)
+```
+
+```{r simple_stepwise_all1,echo=FALSE,eval=TRUE,message=FALSE,warning=FALSE}
 ves1.rss <- ves1
 rho.rss <- c(49.06263,  44.49187, 108.55586,  20.36878)
 thick.rss <-c(1.006542, 3.336569, 8.984935, 8.695652)
@@ -144,9 +152,9 @@ labels <- c("Layer1", "Layer2", "Layer3", "Layer4")
 rss.results <- cbind(labels, rho.rss, thick.rss)
 rss.results.df <- as.data.frame(rss.results)
 names(rss.results.df) <- c("Layer", "Resistivity", "Thickness")
-res.rss.df <- as.data.frame(all.measures)
-names(res.rss.df) <- c("RSS", "AIC", "BIC")
-res.rss.df$Layers <- seq(2, 10 , by = 1)
+res.all.df <- as.data.frame(all.measures)
+names(res.all.df) <- c("RSS", "AIC", "BIC")
+res.all.df$Layers <- seq(2, 10 , by = 1)
 ves1.rss$rhopar <- rho.rss
 ves1.rss$thickpar<- thick.rss
 ves1.rss$interpreted <- TRUE
@@ -173,30 +181,36 @@ ves1.bic$rhopar <- rho.bic
 ves1.bic$thickpar <- thick.bic
 ves1.bic$interpreted <- TRUE
 ```
+The plot of the RSS, AIC and BIC for this simple VES is shown below. The minimum value of RSS is obtained for $4$ layers while only $3$ layers are needed if the AIC and BIC are the applied criteria.
 
 ```{r simple_plot_model,fig.align='center',fig.height=6,fig.width=6}
-p1 <- ggplot() + geom_line(aes(x = Layers, y = RSS),data = res.rss.df) + 
+p1 <- ggplot() + geom_line(aes(x = Layers, y = RSS), data = res.all.df) + 
   xlab("Number of Layers") + 
   ylab("RSS") + 
-  ggtitle("VES1: Residual Sum of Squares")
-p2 <- ggplot() + geom_line(aes(x = Layers, y = AIC),data = res.rss.df) + 
+  ggtitle("a) Residual Sum of Squares")
+p2 <- ggplot() + geom_line(aes(x = Layers, y = AIC),data = res.all.df) + 
   xlab("Number of Layers") + 
   ylab("AIC") + 
-  ggtitle("VES1: Akaike Information Criterion")
-p3 <- ggplot() + geom_line(aes(x = Layers, y = BIC),data = res.rss.df) + 
+  ggtitle("b) Akaike Information Crit.")
+p3 <- ggplot() + geom_line(aes(x = Layers, y = BIC),data = res.all.df) + 
   xlab("Number of Layers") + 
   ylab("BIC") + 
-  ggtitle("VES1: Bayesian Information Criterion")
+  ggtitle("c) Bayesian Information Crit.")
 grid.arrange(p1, p2 ,p3, ncol = 2)
 ```
 
-
+The layered model estimated using the RSS criteria is shown in the following table:
 ```{r simple_results_table,echo=TRUE}
 knitr::kable(rss.results.df, format = "html") %>%
   kable_styling(position = "center")
 ```
+whereas the model estimated using the AIC and BIC criteria is:
+```{r simple_aic_table,echo=TRUE}
+knitr::kable(aic.results.df, format = "html") %>%
+  kable_styling(position = "center")
+```
 
-
+The models chosen using different measures are shown in the following figure. 
 
 
 ```{r simple_plot_results,fig.height=8,fig.width=6,fig.align='center'}
@@ -206,21 +220,7 @@ p1bic <- plot(ves1.bic, type = "ves", main = "3 Layers, Model Selection (BIC)")
 grid.arrange(p1rss, p1aic, p1bic, ncol = 1)
 ```
 
-
-
-
-```{r simple_aic_table,echo=TRUE}
-knitr::kable(aic.results.df, format = "html") %>%
-  kable_styling(position = "center")
-```
-
-
-
-
-```{r simple_bic_table,echo=TRUE}
-knitr::kable(bic.results.df, format = "html") %>%
-  kable_styling(position = "center")
-```
+The differences between the fitted models are not great, and the same model is chosen by the AIC and BIC measures. The second layer in the models chosen by the AIC and BIC has a resistivity close to the mean value of the resistivity of the second and third layers in the model chosen by the RSS measure. In this specific case there are no large differences in the number of layers selected and therefore the three models chosen can be considered as equivalent.
 
 ## Complex VES
 
