@@ -75,12 +75,6 @@ NULL
 #' p3 <- plot(sev1wv, type = "ves")
 #' p3 <- p3 + geom_point(aes(x = ab2, y = apprho), data = ves_data1)
 #' print(p3)
-
-
-
-
-
-
 smoothing_ves <- function(ves, method = c("smooth.spline", "kernel.regression",
                                           "wavelet"),
                           bw = 0.1, ...){
