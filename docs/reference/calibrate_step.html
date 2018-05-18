@@ -121,8 +121,8 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>calibrate_step</span>(<span class='no'>ves</span>, <span class='no'>opt.method</span>, <span class='kw'>max.layers</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>lower</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>upper</span> <span class='kw'>=</span> <span class='fl'>500</span>,
-  <span class='kw'>trace</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+    <pre class="usage"><span class='fu'>calibrate_step</span>(<span class='no'>ves</span>, <span class='no'>opt.method</span>, <span class='kw'>max.layers</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>lower</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>1</span>, <span class='fl'>1</span>),
+  <span class='kw'>upper</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>500</span>, <span class='fl'>100</span>), <span class='kw'>trace</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -141,11 +141,11 @@
     </tr>
     <tr>
       <th>lower</th>
-      <td><p>A numeric value</p></td>
+      <td><p>A numeric vector with min values of the real resistivity and thickness</p></td>
     </tr>
     <tr>
       <th>upper</th>
-      <td><p>A numeric value</p></td>
+      <td><p>A numeric value with max values of the real resistivit and thickness</p></td>
     </tr>
     <tr>
       <th>trace</th>

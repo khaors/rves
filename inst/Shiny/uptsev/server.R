@@ -736,7 +736,7 @@ shinyServer(function(input, output, session) {
     current.optMethod <- isolate(input$seqOptMethod)
     current.res <- NULL
     if(current.optMethod == "None"){
-      return(NULL)Stepw
+      return(NULL)
     }
     else if(current.optMethod == "NLS"){
       current.res <- calibrate_step_nls(current.ves,
