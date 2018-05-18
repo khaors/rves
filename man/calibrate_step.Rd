@@ -4,8 +4,8 @@
 \alias{calibrate_step}
 \title{calibrate_step}
 \usage{
-calibrate_step(ves, opt.method, max.layers = 10, lower = 1, upper = 500,
-  trace = FALSE)
+calibrate_step(ves, opt.method, max.layers = 10, lower = c(1, 1),
+  upper = c(500, 100), trace = FALSE)
 }
 \arguments{
 \item{ves}{A VES object}
@@ -14,9 +14,9 @@ calibrate_step(ves, opt.method, max.layers = 10, lower = 1, upper = 500,
 
 \item{max.layers}{An integer with the maximum number of layers to be testsed}
 
-\item{lower}{A numeric value}
+\item{lower}{A numeric vector with min values of the real resistivity and thickness}
 
-\item{upper}{A numeric value}
+\item{upper}{A numeric value with max values of the real resistivit and thickness}
 
 \item{trace}{A logical flag indicating if optimization information must be shown}
 }

@@ -799,8 +799,8 @@ calibrate_step_nls <- function(ves, iterations = 30, ireport = 10,
 #' @param ves A VES object
 #' @param opt.method A character string specifying the optimization method to be used
 #' @param max.layers An integer with the maximum number of layers to be testsed
-#' @param lower A numeric value
-#' @param upper A numeric value
+#' @param lower A numeric vector with min values of the real resistivity and thickness
+#' @param upper A numeric value with max values of the real resistivit and thickness
 #' @param trace A logical flag indicating if optimization information must be shown
 #' @return
 #' This function returns a list with the following entries:
@@ -814,7 +814,8 @@ calibrate_step_nls <- function(ves, iterations = 30, ireport = 10,
 #' Oscar Garcia-Cabrejo \email{khaors@gmail.com}
 #' @family calibration functions
 #' @export
-calibrate_step <- function(ves, opt.method, max.layers = 10, lower = 1, upper = 500,
+calibrate_step <- function(ves, opt.method, max.layers = 10, lower = c(1, 1),
+                           upper = c(500, 100),
                            trace = FALSE){
   if(class(ves) != "ves"){
     stop('ERROR: A VES object is required as input')
@@ -850,8 +851,12 @@ calibrate_step <- function(ves, opt.method, max.layers = 10, lower = 1, upper = 
     #print(ilay)
     #print(pos)
     #print(current.par)
-    lowerlim <- rep(rep(lower, ilay), 2)
-    upperlim <- rep(rep(upper, ilay), 2)
+    lowerlim1 <- rep(lower[1], ilay)
+    lowerlim2 <- rep(lower[2], ilay)
+    lowerlim <- c(lowerlim1, lowerlim2)
+    upperlim1 <- rep(upper[1], ilay)
+    upperlim2 <- rep(upper[2], ilay)
+    upperlim <- c(upperlim1, upperlim2)
     current.res <- calibrate(ves, par0 = current.par,
                              opt.method = opt.method,
                              obj.fn = "log_rss",
