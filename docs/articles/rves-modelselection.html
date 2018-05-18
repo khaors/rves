@@ -178,7 +178,7 @@ ves1 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/ves.ht
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">res.simple &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calibrate_step_nls.html">calibrate_step_nls</a></span>(ves1, <span class="dt">max.layers =</span> <span class="dv">10</span>, <span class="dt">iterations =</span> <span class="dv">30</span>, 
                                  <span class="dt">ireport =</span> <span class="dv">5</span>, <span class="dt">trace =</span> <span class="ot">FALSE</span>)</code></pre></div>
 <p>The values of the RSS, AIC and BIC are stored in the <em>all.measures</em> variable inside the <em>res.simple</em> list, and these are extracted using:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">res.all.df &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>(res.imple<span class="op">$</span>all.measures)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">res.all.df &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>(res.simple<span class="op">$</span>all.measures)
 <span class="kw">names</span>(res.all.df) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">"RSS"</span>, <span class="st">"AIC"</span>, <span class="st">"BIC"</span>)
 res.all.df<span class="op">$</span>Layers &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">2</span>, <span class="dv">10</span> , <span class="dt">by =</span> <span class="dv">1</span>)</code></pre></div>
 <p>The plot of the RSS, AIC and BIC for this simple VES is shown below. The minimum value of RSS is obtained for <span class="math inline">\(4\)</span> layers while only <span class="math inline">\(3\)</span> layers are needed if the AIC and BIC are the applied criteria.</p>
@@ -320,14 +320,22 @@ p1bic &lt;-<span class="st"> </span><span class="kw">plot</span>(ves1.bic, <span
 <div id="complex-ves" class="section level2">
 <h2 class="hasAnchor">
 <a href="#complex-ves" class="anchor"></a>Complex VES</h2>
+<p>This example shows the stepwise parameter estimation of a VES acquired in a terrain with a complex geology. The VES data is loaded into R and then the VES object is created:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(<span class="st">"ves_data2"</span>)
 ves.cmplx &lt;-<span class="st"> </span><span class="kw"><a href="../reference/ves.html">ves</a></span>(<span class="dt">id =</span> <span class="st">"TD76"</span>, <span class="dt">ab2 =</span> ves_data2<span class="op">$</span>ab2, <span class="dt">apprho =</span> ves_data2<span class="op">$</span>apprho) </code></pre></div>
+<p>The VES is shown in the following figure. From the visual inspection of this plot, it is clear that the VES data has a high degree of variability represnted by the fluctuations seen in the middle part of the curve.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(ves.cmplx, <span class="dt">type =</span> <span class="st">"ves"</span>)</code></pre></div>
 <p><img src="rves-modelselection_files/figure-html/complex_plot1-1.png" width="576" style="display: block; margin: auto;"></p>
+<p>The stepwise parameter estimation procedure can be applied using:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">res.cmplx &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calibrate_step_nls.html">calibrate_step_nls</a></span>(ves.cmplx, <span class="dt">max.layers =</span> <span class="dv">10</span>, 
                                     <span class="dt">iterations =</span> <span class="dv">30</span>, 
                                     <span class="dt">ireport =</span> <span class="dv">5</span>,
                                     <span class="dt">trace =</span> <span class="ot">FALSE</span>)</code></pre></div>
+<p>The values of the RSS, AIC and BIC are stored in the <em>all.measures</em> variable inside the <em>res.simple</em> list, and these are extracted using:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">cmplx.all.measures.df &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>(res.imple<span class="op">$</span>all.measures)
+<span class="kw">names</span>(cmplx.all.measures.df) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">"RSS"</span>, <span class="st">"AIC"</span>, <span class="st">"BIC"</span>)
+cmplx.all.measures.df<span class="op">$</span>Layers &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">2</span>, <span class="dv">10</span> , <span class="dt">by =</span> <span class="dv">1</span>)</code></pre></div>
+<p>The plot of the RSS, AIC and BIC for this complex VES is shown below. The minimum value of RSS is obtained for <span class="math inline">\(9\)</span> layers while only <span class="math inline">\(4\)</span> layers are needed if the AIC and BIC are the applied criteria.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pc1 &lt;-<span class="st"> </span><span class="kw">ggplot</span>() <span class="op">+</span><span class="st"> </span><span class="kw">geom_line</span>(<span class="kw">aes</span>(<span class="dt">x =</span> Layers, <span class="dt">y =</span> RSS), <span class="dt">data =</span> cmplx.all.measures.df) <span class="op">+</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">xlab</span>(<span class="st">"Number of Layers"</span>) <span class="op">+</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">ylab</span>(<span class="st">"RSS"</span>) <span class="op">+</span><span class="st"> </span>
@@ -342,11 +350,13 @@ pc3 &lt;-<span class="st"> </span><span class="kw">ggplot</span>() <span class="
 <span class="st">    </span><span class="kw">ggtitle</span>(<span class="st">"c) Bayesian Information Crit."</span>)</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">grid.arrange</span>(pc1,pc2,pc3,<span class="dt">ncol=</span><span class="dv">2</span>)</code></pre></div>
 <p><img src="rves-modelselection_files/figure-html/cmplx_plots_number_layers1-1.png" width="576" style="display: block; margin: auto;"></p>
+<p>The models chosen using different measures are shown in the following figure.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p1cmplx &lt;-<span class="st"> </span><span class="kw">plot</span>(ves.cmplx.rss, <span class="dt">type =</span> <span class="st">"ves"</span>, <span class="dt">main =</span> <span class="st">"9 Layers, Model Selection (RSS)"</span>)
 p2cmplx &lt;-<span class="st"> </span><span class="kw">plot</span>(ves.cmplx.aic, <span class="dt">type =</span> <span class="st">"ves"</span>, <span class="dt">main =</span> <span class="st">"4 Layers, Model Selection (AIC)"</span>)
 p3cmplx &lt;-<span class="st"> </span><span class="kw">plot</span>(ves.cmplx.bic, <span class="dt">type =</span> <span class="st">"ves"</span>, <span class="dt">main =</span> <span class="st">"4 Layers, Model Selection (BIC)"</span>)
 <span class="kw">grid.arrange</span>(p1cmplx, p2cmplx, p3cmplx, <span class="dt">nrow =</span> <span class="dv">3</span>)</code></pre></div>
 <p><img src="rves-modelselection_files/figure-html/complex_aic_results-1.png" width="576" style="display: block; margin: auto;"></p>
+<p>Now, there are clear differences between the fitted models, and again the same model is chosen by the AIC and BIC measures. The first eight layers of the model chosen by the RSS measure clearly are defined by the fluctuations in the apparent resistivity values present in the middle part of the curve. In contrast, the first three layers of the model chosen by the AIC and BIC measures are equivalent to the first eight layers identified in the previously mentioned model.</p>
 </div>
 <div id="references" class="section level2 unnumbered">
 <h2 class="hasAnchor">

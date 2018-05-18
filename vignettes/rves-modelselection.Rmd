@@ -132,7 +132,7 @@ res.simple <- calibrate_step_nls(ves1, max.layers = 10, iterations = 30,
 
 The values of the RSS, AIC and BIC are stored in the _all.measures_ variable inside the _res.simple_ list, and these are extracted using:
 ```{r,echo=TRUE,eval=FALSE}
-res.all.df <- as.data.frame(res.imple$all.measures)
+res.all.df <- as.data.frame(res.simple$all.measures)
 names(res.all.df) <- c("RSS", "AIC", "BIC")
 res.all.df$Layers <- seq(2, 10 , by = 1)
 ```
@@ -224,22 +224,33 @@ The differences between the fitted models are not great, and the same model is c
 
 ## Complex VES
 
+This example shows the stepwise parameter estimation of a VES acquired in a terrain with a complex geology.  The VES data is loaded into R and then the VES object is created:
+
 ```{r complex_define,echo=TRUE}
 data("ves_data2")
 ves.cmplx <- ves(id = "TD76", ab2 = ves_data2$ab2, apprho = ves_data2$apprho) 
 ```
 
+The VES is shown in the following figure. From the visual inspection of this plot, it is clear that the VES data has a high degree of variability represnted by the fluctuations seen in the middle part of the curve. 
 
 ```{r complex_plot1,fig.height=4,fig.width=6,fig.align='center'}
 plot(ves.cmplx, type = "ves")
 ```
 
+The stepwise parameter estimation procedure can be applied using:
 
 ```{r complex_stepwise_rss,echo=TRUE,eval=FALSE}
 res.cmplx <- calibrate_step_nls(ves.cmplx, max.layers = 10, 
                                     iterations = 30, 
                                     ireport = 5,
                                     trace = FALSE)
+```
+
+The values of the RSS, AIC and BIC are stored in the _all.measures_ variable inside the _res.simple_ list, and these are extracted using:
+```{r,echo=TRUE,eval=FALSE}
+cmplx.all.measures.df <- as.data.frame(res.imple$all.measures)
+names(cmplx.all.measures.df) <- c("RSS", "AIC", "BIC")
+cmplx.all.measures.df$Layers <- seq(2, 10 , by = 1)
 ```
 
 
@@ -280,6 +291,8 @@ ves.cmplx.bic$thickpar <- cmplx.thick.bic
 ves.cmplx.bic$interpreted <- TRUE
 ```
 
+The plot of the RSS, AIC and BIC for this complex VES is shown below. The minimum value of RSS is obtained for $9$ layers while only $4$ layers are needed if the AIC and BIC are the applied criteria.
+
 ```{r complex_plots_number_layers,echo=TRUE}
 pc1 <- ggplot() + geom_line(aes(x = Layers, y = RSS), data = cmplx.all.measures.df) + 
   xlab("Number of Layers") + 
@@ -299,8 +312,7 @@ pc3 <- ggplot() + geom_line(aes(x = Layers, y = BIC), data = cmplx.all.measures.
 grid.arrange(pc1,pc2,pc3,ncol=2)
 ```
 
-
-
+The models chosen using different measures are shown in the following figure. 
 
 ```{r complex_aic_results,fig.height=8,fig.width=6,fig.align='center'}
 p1cmplx <- plot(ves.cmplx.rss, type = "ves", main = "9 Layers, Model Selection (RSS)")
@@ -308,6 +320,8 @@ p2cmplx <- plot(ves.cmplx.aic, type = "ves", main = "4 Layers, Model Selection (
 p3cmplx <- plot(ves.cmplx.bic, type = "ves", main = "4 Layers, Model Selection (BIC)")
 grid.arrange(p1cmplx, p2cmplx, p3cmplx, nrow = 3)
 ```
+
+Now, there are clear differences between the fitted models, and again the same model is chosen by the AIC and BIC measures. The first eight layers of the model chosen by the RSS measure clearly are defined by the fluctuations in the apparent resistivity values present in the middle part of the curve. In contrast, the first three layers of the model chosen by the AIC and BIC measures are equivalent to the first eight layers identified in the previously mentioned model.
 
 
 ## References
