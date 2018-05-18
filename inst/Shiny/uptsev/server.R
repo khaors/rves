@@ -748,15 +748,20 @@ shinyServer(function(input, output, session) {
     else if(current.optMethod != "NLS"){
       lower.lim <- isolate(as.numeric(unlist(strsplit(input$seqLowerLim,",")))) #isolate(as.numeric(input$seqLowerLim))
       upper.lim <- isolate(as.numeric(unlist(strsplit(input$seqUpperLim,","))))#isolate(as.numeric(input$seqUpperLim))
-      current.res <- calibrate_step(current.ves, opt.method = current.optMethod,
+      current.res1 <- calibrate_step(current.ves, opt.method = current.optMethod,
                                     max.layers = max.layers,
                                     lower = lower.lim,
-                                    upper = upper.lim)
+                                    upper = upperlim)
+      #print(names(current.res1))
+      #print(current.res1$all.measures)
+      current.res <- current.res1$best.res.rss
     }
     #
+    #print(current.res)
     current.ves$rhopar <- current.res$rho
     current.ves$thickpar <- current.res$thickness
     current.ves$interpreted <- TRUE
+    #print(current.ves)
     #
     server.env$current.ves <- current.ves
     return(current.res)
@@ -780,8 +785,8 @@ shinyServer(function(input, output, session) {
         need(!is.null(current.ves), "The VES object is not defined")
       )
       #
-      current.res1 <- calibrate.seq.results()
-      current.res <- current.res1$best.res.rss
+      current.res <- calibrate.seq.results()
+      #current.res <- current.res1$best.res.rss
       nlayers <- length(current.res$rho)
       #print(nlayers)
       #
