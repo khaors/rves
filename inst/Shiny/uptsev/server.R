@@ -736,7 +736,7 @@ shinyServer(function(input, output, session) {
     current.optMethod <- isolate(input$seqOptMethod)
     current.res <- NULL
     if(current.optMethod == "None"){
-      return(NULL)
+      return(NULL)Stepw
     }
     else if(current.optMethod == "NLS"){
       current.res <- calibrate_step_nls(current.ves,
@@ -746,8 +746,8 @@ shinyServer(function(input, output, session) {
                                         trace = FALSE)
     }
     else if(current.optMethod != "NLS"){
-      lower.lim <- isolate(as.numeric(input$seqLowerLim))
-      upper.lim <- isolate(as.numeric(input$seqUpperLim))
+      lower.lim <- isolate(as.numeric(unlist(strsplit(input$seqLowerLim,",")))) #isolate(as.numeric(input$seqLowerLim))
+      upper.lim <- isolate(as.numeric(unlist(strsplit(input$seqUpperLim,","))))#isolate(as.numeric(input$seqUpperLim))
       current.res <- calibrate_step(current.ves, opt.method = current.optMethod,
                                     max.layers = max.layers,
                                     lower = lower.lim,

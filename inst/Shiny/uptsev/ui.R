@@ -338,9 +338,9 @@ automaticSeqTab <- tabItem(
       conditionalPanel(
         condition = "input.seqOptMethod != 'None' & input.seqOptMethod !='NLS' ",
         textInput(inputId = "seqLowerLim", label = "Resistivity,Thickness Lower limit",
-                  value = "1.0"),
+                  value = "1.0,1.0"),
         textInput(inputId = "seqUpperLim", label = "Resistivity,Thickness Upper limit",
-                  value = "1000.0")
+                  value = "1000.0,100.0")
       ),
       actionButton(inputId = "seq_plot", label = "Plot"),
       actionButton(inputId = "seqRun", label = "Run (a lot) VES Run (a lot)",
