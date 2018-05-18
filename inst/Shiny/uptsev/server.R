@@ -242,7 +242,6 @@ shinyServer(function(input, output, session) {
       return(p1)
     })
   })
-
   ########################################################################################
   #                           Graphical Inversion Tab
   ########################################################################################
@@ -773,7 +772,6 @@ shinyServer(function(input, output, session) {
       plot(current.ves, type = "ves")
     })
   })
-
   #
   observeEvent(input$seqRun, {
     output$seq_plot <- renderPlot({
@@ -1041,5 +1039,4 @@ shinyServer(function(input, output, session) {
     res <- define_report_files1()
     return(res)
   }
-
 })
