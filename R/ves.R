@@ -130,6 +130,8 @@ print.ves <- function(x, ...){
 #' @family base functions
 #' @export
 #' @examples
+#' library(grid)
+#' library(gridExtra)
 #' data(ves_data1)
 #' ab2 <- ves_data1$ab2
 #' apprho <- ves_data1$apprho
@@ -152,8 +154,7 @@ print.ves <- function(x, ...){
 #' sev1a$rhopar <- res.nls$rho
 #' sev1a$thickpar <- res.nls$thickness
 #' sev1a$interpreted <- TRUE
-#' plot(sev1a, type = "ves")
-#' p1 <- plot(sev1a, type ="diagnostic")
+#' p1 <- plot(sev1a, type = "ves")
 #' print(p1)
 plot.ves <- function(x, main = NULL, type = c("ves", "transformation", "diagnostic"),
                      trans.type = c("direct", "scaling", "zohdy", "zohdy.smoothed"),

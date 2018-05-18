@@ -29,6 +29,8 @@ apparent resistivity vs electrode spacing and the thickness and real resisitivit
 layers are included.
 }
 \examples{
+library(grid)
+library(gridExtra)
 data(ves_data1)
 ab2 <- ves_data1$ab2
 apprho <- ves_data1$apprho
@@ -51,8 +53,7 @@ res.nls <- calibrate_nls(sev1a, par0, iterations = 30, ireport = 5, trace = FALS
 sev1a$rhopar <- res.nls$rho
 sev1a$thickpar <- res.nls$thickness
 sev1a$interpreted <- TRUE
-plot(sev1a, type = "ves")
-p1 <- plot(sev1a, type ="diagnostic")
+p1 <- plot(sev1a, type = "ves")
 print(p1)
 }
 \seealso{
