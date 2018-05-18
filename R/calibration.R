@@ -883,7 +883,7 @@ calibrate_step <- function(ves, opt.method, max.layers = 10, lower = c(1, 1),
   res <- list(best.res.rss = best.res, best.res.aic = best.res.aic,
               best.res.bic = best.res.bic)
   res$all.measures <- all.measures
-  return(best.res)
+  return(res)
 }
 #' @title
 #' calibrate_joint_nls
