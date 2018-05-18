@@ -496,7 +496,8 @@ shinyServer(function(input, output, session) {
     if(automatic_method == "Nonlinear Least Squares"){
       current.res <- calibrate_nls(current.ves.auto, par0 = par0,
                                    iterations = nls_niter,
-                                   ireport = nls_nreport)
+                                   ireport = nls_nreport,
+                                   trace = FALSE)
     }
     else if(automatic_method == "L-BFGS-B"){
       lower_rho <- isolate(as.numeric(input$lbfgs_low_rho))
@@ -742,7 +743,8 @@ shinyServer(function(input, output, session) {
       current.res <- calibrate_step_nls(current.ves,
                                         iterations = niterations,
                                         ireport = nreport,
-                                        max.layers = max.layers)
+                                        max.layers = max.layers,
+                                        trace = FALSE)
     }
     else if(current.optMethod != "NLS"){
       lower.lim <- isolate(as.numeric(input$seqLowerLim))
@@ -780,7 +782,8 @@ shinyServer(function(input, output, session) {
         need(!is.null(current.ves), "The VES object is not defined")
       )
       #
-      current.res <- calibrate.seq.results()
+      current.res1 <- calibrate.seq.results()
+      current.res <- current.res1$best.res.rss
       nlayers <- length(current.res$rho)
       #print(nlayers)
       #
