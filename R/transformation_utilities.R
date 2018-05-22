@@ -149,12 +149,12 @@ transform_zohdy <- function(ves){
   #
   old.rms <- 1.5*current.rms
   while(old.rms > current.rms){
-    old.rms <- current.rms
     old.thick <- thick
     thick <- 0.9*thick
     current.apprho <- apparent_resistivities_simple(par = c(true.rho, thick),
                                                     rves::filt$V1,
                                                     spacing)
+    old.rms <- current.rms
     current.rms <- sqrt(sum(((obs.rho-current.apprho)/obs.rho)^2)/length(obs.rho))
   }
   rms.depth <- current.rms
