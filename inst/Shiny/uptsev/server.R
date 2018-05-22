@@ -12,6 +12,7 @@ library(rves)
 library(ggplot2)
 library(gridExtra)
 library(DT)
+library(pracma)
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output, session) {
@@ -167,6 +168,7 @@ shinyServer(function(input, output, session) {
   #                             Transformation Tab
   ########################################################################################
   observeEvent(input$transformationRun, {
+    #
     output$transform_results <- renderDataTable({
       current.ves <- server.env$current.ves
       if(input$transform_results_plot){
@@ -203,7 +205,6 @@ shinyServer(function(input, output, session) {
                           real.resistivity = res_transform$real.res)
         return(res)
       }
-
     }, extensions = c('Buttons'),
     options = list(
       pageLength = length(server.env$current.ves$ab2),
@@ -212,6 +213,64 @@ shinyServer(function(input, output, session) {
       text = 'Download',
       scrollY = 200,
       scroller = TRUE))
+    #
+    output$transformSampleTable <- renderDataTable({
+      current.ves <- server.env$current.ves
+      if(input$transform_results_plot){
+        validate(
+          need(!is.null(current.ves), "The VES is not defined")
+        )
+        #
+        if(is.null(current.ves))
+          return(NULL)
+        #
+        if(!input$transform_sample_plot)
+          return(NULL)
+        #
+        current.transformation <- isolate(input$transformation.type)
+        validate(
+          need(current.transformation != "None", "Please choose a Transformation")
+        )
+        current.transf <- NULL
+        if(current.transformation == "Direct"){
+          current.transf <- "direct"
+        }
+        else if(current.transformation == "Scaling"){
+          current.transf <- "scaling"
+        }
+        else if(current.transformation == "Zohdy"){
+          current.transf <- "zohdy"
+        }
+        else if(current.transformation == "Smoothed.Zohdy"){
+          current.transf <- "smoothed_zohdy"
+        }
+        #
+        base_transform <- "transform_"
+        def_transform <- paste0(base_transform, current.transf)
+        args <- list(ves = current.ves)
+        res_transform <- do.call(def_transform, args)
+        depth.mn <- min(res_transform$depth)
+        depth.mx <- max(res_transform$depth)
+        depth.seq <- seq(depth.mn, depth.mx, by = 1)
+        #print(depth.seq)
+        depth.int <- interp1(x = res_transform$depth,
+                             y = res_transform$real.res,
+                             xi = depth.seq,
+                             method = "linear")
+        #print(depth.int)
+        #print(names(depth.int))
+        res <- data.frame(depth = depth.seq,
+                          real.resistivity = depth.int)
+        return(res)
+    }
+  }, extensions = c('Buttons'),
+     options = list(
+     pageLength = length(server.env$current.ves$ab2),
+     dom = 'Bfrtip',
+     buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
+     text = 'Download',
+     scrollY = 200,
+     scroller = TRUE))
     #
     output$transformationPlot <- renderPlot({
       current.ves <- server.env$current.ves

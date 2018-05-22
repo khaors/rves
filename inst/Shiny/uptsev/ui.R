@@ -114,7 +114,6 @@ homeTab <- tabItem(
       "6. Evaluate the estimated model on the Model Diagnostic Tab and be more confident about the ",
       "estimated parameters."
     )
-
   )
 )
 #########################################################################################
@@ -221,13 +220,18 @@ transformationTab <- tabItem(
       br(),
       checkboxInput(inputId = "transform_results_plot", label = "Show Results", value = FALSE),
       br(),
+      checkboxInput(inputId = "transform_sample_plot", label = "Sample Results 1 m", value = FALSE),
+      br(),
       actionButton(inputId = "transformationRun", label = "Apply Transformation", icon = icon("bullseye"))
     ),
     mainPanel(
       # Add Plot
       plotOutput(outputId = "transformationPlot"),
       br(),
-      dataTableOutput("transform_results")
+      dataTableOutput("transform_results"),
+      br(),
+      dataTableOutput(outputId = "transformSampleTable")
+
     )
   )
 )
