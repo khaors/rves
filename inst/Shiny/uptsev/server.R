@@ -803,6 +803,7 @@ shinyServer(function(input, output, session) {
                                         ireport = nreport,
                                         max.layers = max.layers,
                                         trace = FALSE)
+      current.res <- current.res$best.res.rss
     }
     else if(current.optMethod != "NLS"){
       lower.lim <- isolate(as.numeric(unlist(strsplit(input$seqLowerLim,",")))) #isolate(as.numeric(input$seqLowerLim))
@@ -816,7 +817,6 @@ shinyServer(function(input, output, session) {
       current.res <- current.res1$best.res.rss
     }
     #
-    #print(current.res)
     current.ves$rhopar <- current.res$rho
     current.ves$thickpar <- current.res$thickness
     current.ves$interpreted <- TRUE
@@ -845,6 +845,7 @@ shinyServer(function(input, output, session) {
       )
       #
       current.res <- calibrate.seq.results()
+      #print(current.res)
       #current.res <- current.res1$best.res.rss
       nlayers <- length(current.res$rho)
       #print(nlayers)
