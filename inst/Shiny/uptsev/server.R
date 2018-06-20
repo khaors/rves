@@ -735,7 +735,9 @@ shinyServer(function(input, output, session) {
       )
       rho <- current.ves$rhopar
       thick <- current.ves$thickpar
-      res.df <- data.frame('Real_Resistivity(Ohm_m)' = rho, 'Thickness(m)' = thick)
+      depth <- cumsum(current.ves$thickpar)
+      res.df <- data.frame('Real_Resistivity(Ohm_m)' = rho, 'Thickness(m)' = thick,
+                           'Depth(m)' = depth)
       nlay <- length(rho)
       layers <- vector('character', nlay)
       for(i in 1:nlay){
@@ -902,9 +904,14 @@ shinyServer(function(input, output, session) {
         need(current.ves$interpreted, "The VES object is not interpreted")
       )
       rho <- current.ves$rhopar
-      thick <- current.ves$thickpar
-      res.df <- data.frame('Real_Resistivity(Ohm_m)' = rho, 'Thickness(m)' = thick)
       nlay <- length(rho)
+      thick <- current.ves$thickpar
+      max.depth <- max(current.ves$ab2)/2.3
+      thick[nlay] <- max.depth-thick[nlay-1]
+      depth <- cumsum(thick)
+      res.df <- data.frame('Real_Resistivity(Ohm_m)' = rho,
+                           'Thickness(m)' = thick,
+                           'Depth(m)' = depth)
       layers <- vector('character', nlay)
       for(i in 1:nlay){
         layers[i] <- paste0("Layer", as.character(i))
