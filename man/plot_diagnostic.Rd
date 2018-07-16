@@ -34,7 +34,7 @@ sev1a$rhopar <- res.nls1$rho
 sev1a$thickpar <- res.nls1$thickness
 sev1a$interpreted <- TRUE
 p1 <- plot_diagnostic(sev1a)
-print(p1)
+grid.draw(p1)
 }
 \author{
 Oscar Garcia-Cabrejo, \email{khaors@gmail.com}

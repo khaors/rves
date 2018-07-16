@@ -424,7 +424,7 @@ plot_transformation <- function(x, trans.type = c("direct", "scaling",
 #' sev1a$thickpar <- res.nls1$thickness
 #' sev1a$interpreted <- TRUE
 #' p1 <- plot_diagnostic(sev1a)
-#' print(p1)
+#' grid.draw(p1)
 plot_diagnostic <- function(x){
   if(class(x) != 'ves'){
     stop('A VES object is required as input')
