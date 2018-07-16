@@ -21,9 +21,11 @@
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script>
 
+<!-- sticky kit -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script>
+
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
-<script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
 
 
@@ -32,6 +34,7 @@
 
 <meta property="og:description" content="Function to plot the resistivity-depth transformation from a given VES." />
 <meta name="twitter:card" content="summary" />
+
 
 
 <!-- mathjax -->
@@ -151,7 +154,7 @@ scaling, zohdy and zohdy.smoothed transformation are defined.</p></td>
 <span class='co'># Direct Transformation</span>
 <span class='fu'>plot_transformation</span>(<span class='no'>sev1a</span>, <span class='kw'>trans.type</span> <span class='kw'>=</span> <span class='st'>"direct"</span>)</div><div class='img'><img src='plot_transformation-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'># Scaling Transformation</span>
 <span class='fu'>plot_transformation</span>(<span class='no'>sev1a</span>, <span class='kw'>trans.type</span> <span class='kw'>=</span> <span class='st'>"scaling"</span>)</div><div class='img'><img src='plot_transformation-2.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'># Zohdy Transformation</span>
-<span class='fu'>plot_transformation</span>(<span class='no'>sev1a</span>, <span class='kw'>trans.type</span> <span class='kw'>=</span> <span class='st'>"zohdy"</span>)</div><div class='img'><img src='plot_transformation-3.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'># Zohdy Transformation</span>
+<span class='fu'>plot_transformation</span>(<span class='no'>sev1a</span>, <span class='kw'>trans.type</span> <span class='kw'>=</span> <span class='st'>"zohdy"</span>)</div><div class='img'><img src='plot_transformation-3.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'># Zohdy Smoothed Transformation</span>
 <span class='fu'>plot_transformation</span>(<span class='no'>sev1a</span>, <span class='kw'>trans.type</span> <span class='kw'>=</span> <span class='st'>"zohdy.smoothed"</span>)</div><div class='img'><img src='plot_transformation-4.png' alt='' width='700' height='433' /></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

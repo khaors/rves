@@ -21,6 +21,20 @@ Function to create an estimation diagnostic plot composed of:
 \item QQplot of the residuals
 }
 }
+\examples{
+data(ves_data1)
+ab2 <- ves_data1$ab2
+apprho <- ves_data1$apprho
+sev1a <- ves(id= "VES1", ab2 = ab2, apprho = apprho)
+rho <- c(40, 70, 30, 20)
+thick <- c(2, 10, 50, 500)
+par0 <- c(rho, thick)
+res.nls1 <- calibrate_nls(sev1a, par0, iterations = 30, ireport = 5, trace = FALSE)
+sev1a$rhopar <- res.nls1$rho
+sev1a$thickpar <- res.nls1$thickness
+sev1a$interpreted <- TRUE
+plot_diagnostic(sev1a)
+}
 \author{
 Oscar Garcia-Cabrejo, \email{khaors@gmail.com}
 }

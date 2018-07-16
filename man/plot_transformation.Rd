@@ -30,8 +30,9 @@ plot_transformation(sev1a, trans.type = "direct")
 plot_transformation(sev1a, trans.type = "scaling")
 # Zohdy Transformation
 plot_transformation(sev1a, trans.type = "zohdy")
-# Zohdy Transformation
-plot_transformation(sev1a, trans.type = "zohdy.smoothed")
+# Zohdy Smoothed Transformation
+p1 <- plot_transformation(sev1a, trans.type = "zohdy.smoothed")
+print(p1)
 }
 \author{
 Oscar Garcia-Cabrejo \email{khaors@gmail.com}

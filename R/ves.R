@@ -305,8 +305,9 @@ plot_ves <- function(x, main = NULL, ...){
 #' plot_transformation(sev1a, trans.type = "scaling")
 #' # Zohdy Transformation
 #' plot_transformation(sev1a, trans.type = "zohdy")
-#' # Zohdy Transformation
-#' plot_transformation(sev1a, trans.type = "zohdy.smoothed")
+#' # Zohdy Smoothed Transformation
+#' p1 <- plot_transformation(sev1a, trans.type = "zohdy.smoothed")
+#' print(p1)
 plot_transformation <- function(x, trans.type = c("direct", "scaling",
                                                   "zohdy", "zohdy.smoothed")){
   if(class(x) != 'ves'){
@@ -411,6 +412,19 @@ plot_transformation <- function(x, trans.type = c("direct", "scaling",
 #' @export
 #' @importFrom ggplot2 ggplot geom_point geom_smooth coord_equal geom_qq
 #' @importFrom gridExtra grid.arrange arrangeGrob
+#' @examples
+#' data(ves_data1)
+#' ab2 <- ves_data1$ab2
+#' apprho <- ves_data1$apprho
+#' sev1a <- ves(id= "VES1", ab2 = ab2, apprho = apprho)
+#' rho <- c(40, 70, 30, 20)
+#' thick <- c(2, 10, 50, 500)
+#' par0 <- c(rho, thick)
+#' res.nls1 <- calibrate_nls(sev1a, par0, iterations = 30, ireport = 5, trace = FALSE)
+#' sev1a$rhopar <- res.nls1$rho
+#' sev1a$thickpar <- res.nls1$thickness
+#' sev1a$interpreted <- TRUE
+#' plot_diagnostic(sev1a)
 plot_diagnostic <- function(x){
   if(class(x) != 'ves'){
     stop('A VES object is required as input')
