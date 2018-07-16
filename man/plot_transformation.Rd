@@ -24,15 +24,14 @@ data(ves_data1)
 ab2 <- ves_data1$ab2
 apprho <- ves_data1$apprho
 sev1a <- ves(id= "VES1", ab2 = ab2, apprho = apprho)
-# Direct Transformation
+# Direct Transfor mation
 plot_transformation(sev1a, trans.type = "direct")
 # Scaling Transformation
 plot_transformation(sev1a, trans.type = "scaling")
 # Zohdy Transformation
 plot_transformation(sev1a, trans.type = "zohdy")
 # Zohdy Smoothed Transformation
-p1 <- plot_transformation(sev1a, trans.type = "zohdy.smoothed")
-print(p1)
+plot_transformation(sev1a, trans.type = "zohdy.smoothed")
 }
 \author{
 Oscar Garcia-Cabrejo \email{khaors@gmail.com}

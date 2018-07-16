@@ -299,15 +299,14 @@ plot_ves <- function(x, main = NULL, ...){
 #' ab2 <- ves_data1$ab2
 #' apprho <- ves_data1$apprho
 #' sev1a <- ves(id= "VES1", ab2 = ab2, apprho = apprho)
-#' # Direct Transformation
+#' # Direct Transfor mation
 #' plot_transformation(sev1a, trans.type = "direct")
 #' # Scaling Transformation
 #' plot_transformation(sev1a, trans.type = "scaling")
 #' # Zohdy Transformation
 #' plot_transformation(sev1a, trans.type = "zohdy")
 #' # Zohdy Smoothed Transformation
-#' p1 <- plot_transformation(sev1a, trans.type = "zohdy.smoothed")
-#' print(p1)
+#' plot_transformation(sev1a, trans.type = "zohdy.smoothed")
 plot_transformation <- function(x, trans.type = c("direct", "scaling",
                                                   "zohdy", "zohdy.smoothed")){
   if(class(x) != 'ves'){
@@ -424,7 +423,8 @@ plot_transformation <- function(x, trans.type = c("direct", "scaling",
 #' sev1a$rhopar <- res.nls1$rho
 #' sev1a$thickpar <- res.nls1$thickness
 #' sev1a$interpreted <- TRUE
-#' plot_diagnostic(sev1a)
+#' p1 <- plot_diagnostic(sev1a)
+#' print(p1)
 plot_diagnostic <- function(x){
   if(class(x) != 'ves'){
     stop('A VES object is required as input')

@@ -33,7 +33,8 @@ res.nls1 <- calibrate_nls(sev1a, par0, iterations = 30, ireport = 5, trace = FAL
 sev1a$rhopar <- res.nls1$rho
 sev1a$thickpar <- res.nls1$thickness
 sev1a$interpreted <- TRUE
-plot_diagnostic(sev1a)
+p1 <- plot_diagnostic(sev1a)
+print(p1)
 }
 \author{
 Oscar Garcia-Cabrejo, \email{khaors@gmail.com}
