@@ -22,6 +22,7 @@ Function to create an estimation diagnostic plot composed of:
 }
 }
 \examples{
+library(grid)
 data(ves_data1)
 ab2 <- ves_data1$ab2
 apprho <- ves_data1$apprho

@@ -412,6 +412,7 @@ plot_transformation <- function(x, trans.type = c("direct", "scaling",
 #' @importFrom ggplot2 ggplot geom_point geom_smooth coord_equal geom_qq
 #' @importFrom gridExtra grid.arrange arrangeGrob
 #' @examples
+#' library(grid)
 #' data(ves_data1)
 #' ab2 <- ves_data1$ab2
 #' apprho <- ves_data1$apprho
