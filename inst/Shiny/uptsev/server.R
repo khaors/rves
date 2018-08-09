@@ -665,7 +665,7 @@ shinyServer(function(input, output, session) {
              does not match with number of layers")
       )
       if(length(rho) != nlayers)
-        return(NULL)zz
+        return(NULL)
       validate(
         need(length(thick) == nlayers & length(thick) > 1, "Number of thicknesses
              does not match with number of layers")
